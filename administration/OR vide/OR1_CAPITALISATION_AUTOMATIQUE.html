@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OR1 - Capitalisation automatique des connaissances IT</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2c5282;
+            --accent-color: #3182ce;
+            --success-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --text-color: #2d3748;
+            --light-bg: #f7fafc;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #fff;
+            font-size: 11pt;
+        }
+
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        @media print {
+            body { font-size: 10pt; }
+            .page-break { page-break-before: always; }
+            .no-break { page-break-inside: avoid; }
+        }
+
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20px 40px;
+        }
+
+        /* Header */
+        .document-header {
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .document-header .or-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12pt;
+            margin-bottom: 10px;
+        }
+
+        .document-header h1 {
+            color: var(--primary-color);
+            font-size: 20pt;
+            margin-bottom: 10px;
+        }
+
+        .document-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 10pt;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        .document-meta span {
+            background: var(--light-bg);
+            padding: 5px 12px;
+            border-radius: 4px;
+        }
+
+        .potentiel-badge {
+            background: #c6f6d5 !important;
+            color: #22543d !important;
+            font-weight: 600;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 35px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 14pt;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 12pt;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: var(--text-color);
+            font-size: 11pt;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        /* Problematique box */
+        .problematique {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 12pt;
+            font-style: italic;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        /* Verrou cards */
+        .verrou {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .verrou-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .verrou-number {
+            background: var(--accent-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14pt;
+            margin-right: 15px;
+        }
+
+        .verrou-title {
+            font-weight: 600;
+            font-size: 12pt;
+            color: var(--primary-color);
+        }
+
+        .incertitudes {
+            background: #faf5ff;
+            border-left: 3px solid #805ad5;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .incertitudes h5 {
+            color: #553c9a;
+            font-size: 10pt;
+            margin-bottom: 10px;
+        }
+
+        .incertitudes ul {
+            margin: 0 0 0 20px;
+            font-size: 10pt;
+        }
+
+        .incertitudes li {
+            margin-bottom: 6px;
+        }
+
+        /* Hypotheses table */
+        .hypotheses-table {
+            background: #fffaf0;
+            border: 1px solid #ed8936;
+        }
+
+        .hypotheses-table th {
+            background: #ed8936;
+        }
+
+        /* Info boxes */
+        .info-box {
+            padding: 18px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box.etat-art {
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+        }
+
+        .info-box.resultats {
+            background: #f0fff4;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .info-box.warning {
+            background: #fffaf0;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .info-box h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        /* Diagram */
+        .diagram {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+            margin: 20px 0;
+        }
+
+        /* Frascati evaluation */
+        .frascati-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .frascati-item {
+            text-align: center;
+            padding: 15px 8px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .frascati-item .criterion {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .frascati-item .evaluation {
+            font-weight: 700;
+            font-size: 11pt;
+        }
+
+        .frascati-item .evaluation.fort {
+            color: #22543d;
+        }
+
+        .frascati-item .evaluation.moyen {
+            color: #744210;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 9pt;
+            font-weight: 600;
+        }
+
+        .badge.fort {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge.moyen {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .badge.a-completer {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 12px 0 12px 25px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .checklist li:before {
+            content: "☐ ";
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .document-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 9pt;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Metrics placeholder */
+        .metric-placeholder {
+            color: #a0aec0;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tete -->
+        <header class="document-header">
+            <span class="or-badge">OPERATION DE RECHERCHE 1</span>
+            <h1>Capitalisation automatique des connaissances IT par IA</h1>
+            <div class="document-meta">
+                <span><strong>Projet :</strong> WIDIP / WIBOT</span>
+                <span><strong>Composants :</strong> Enrichisseur + RAG evolutif</span>
+                <span class="potentiel-badge">Potentiel CIR : FORT</span>
+            </div>
+        </header>
+
+        <!-- Problematique -->
+        <section>
+            <h2>1. Problematique scientifique</h2>
+            <div class="problematique">
+                Comment transformer automatiquement l'historique operationnel non structure d'une PME (tickets, conversations, resolutions) en une base de connaissances fiable, evolutive et exploitable par des agents IA — sans degradation de qualite dans le temps ?
+            </div>
+        </section>
+
+        <!-- Etat de l'art -->
+        <section>
+            <h2>2. Etat de l'art</h2>
+
+            <div class="info-box etat-art">
+                <h4>Contexte scientifique</h4>
+                <p>La capitalisation automatique de connaissances a partir de donnees non structurees est un domaine actif de recherche en NLP et Knowledge Management. Cependant, l'application specifique au support IT avec boucle de feedback continue presente des defis non resolus.</p>
+            </div>
+
+            <h3>2.1 Solutions existantes et leurs limites</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Solution / Approche</th>
+                        <th>Description</th>
+                        <th>Limites identifiees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bases de connaissances manuelles (Confluence, Wiki)</td>
+                        <td>Documentation redigee manuellement par les techniciens</td>
+                        <td>Effort de maintenance eleve, obsolescence rapide, adoption faible</td>
+                    </tr>
+                    <tr>
+                        <td>Systemes RAG statiques</td>
+                        <td>Indexation de documentation existante pour recherche semantique</td>
+                        <td>Pas d'enrichissement automatique, qualite dependante des sources initiales</td>
+                    </tr>
+                    <tr>
+                        <td>Extraction d'information classique (NER, RE)</td>
+                        <td>Extraction d'entites et relations avec modeles supervises</td>
+                        <td>Necessite annotations manuelles, peu adapte au langage IT informel</td>
+                    </tr>
+                    <tr>
+                        <td>Summarization par LLM</td>
+                        <td>Resume automatique de documents</td>
+                        <td>Perte d'information procedurale, pas de structuration en etapes</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.2 Positionnement du projet</h3>
+            <p>L'approche WIDIP se distingue par :</p>
+            <ul>
+                <li><strong>Extraction procedurale</strong> : identification de patterns de resolution generalisables (pas de simple resume)</li>
+                <li><strong>Boucle de feedback continue</strong> : le systeme s'enrichit automatiquement a partir des tickets resolus</li>
+                <li><strong>Validation humaine integree</strong> : les procedures proposees sont soumises a validation SAFEGUARD</li>
+                <li><strong>Mesure de qualite RAG</strong> : mecanismes de detection d'obsolescence et de contradictions</li>
+            </ul>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Verrous techniques -->
+        <section>
+            <h2>3. Verrous techniques identifies</h2>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">1</span>
+                    <span class="verrou-title">Extraction de procedures a partir de texte libre</span>
+                </div>
+                <p>Les tickets GLPI sont rediges en langage naturel non standardise par des techniciens et des utilisateurs finaux. L'information utile est noyee dans du bruit (formules de politesse, descriptions imprecises, fautes). Le LLM doit identifier un <strong>pattern de resolution generalisable</strong> a partir de cas individuels, ce qui depasse la simple synthese de texte.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment distinguer une resolution reellement transposable d'un cas trop specifique ?</li>
+                        <li>Comment extraire des etapes de procedure quand le technicien n'a pas documente toutes ses actions ?</li>
+                        <li>Quel seuil de recurrence (nombre de tickets similaires) est necessaire pour justifier la creation d'une procedure ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">2</span>
+                    <span class="verrou-title">Maintien de la qualite d'une base RAG auto-alimentee</span>
+                </div>
+                <p>La base de connaissances s'enrichit en continu via l'Enrichisseur. Cela cree un risque de <strong>data drift</strong> : procedures obsoletes, contradictions entre anciennes et nouvelles procedures, redondances qui polluent les resultats de recherche semantique.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment detecter qu'une procedure existante est rendue obsolete par une nouvelle ?</li>
+                        <li>Comment mesurer la qualite globale du RAG au fil de son enrichissement ?</li>
+                        <li>Comment eviter que l'accumulation de documents degrade la precision de retrieval plutot que de l'ameliorer ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">3</span>
+                    <span class="verrou-title">Boucle de feedback et cercle vertueux</span>
+                </div>
+                <p>Le systeme repose sur un cercle : tickets resolus → procedures generees → RAG enrichi → IA plus performante → meilleure resolution → plus de matiere pour l'Enrichisseur. La convergence de cette boucle n'est pas garantie.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>La boucle converge-t-elle reellement (amelioration mesurable) ou diverge-t-elle (accumulation de bruit) ?</li>
+                        <li>Comment mesurer l'impact de chaque procedure ajoutee sur la performance globale du systeme ?</li>
+                        <li>Quel est le ratio optimal entre procedures generees automatiquement et procedures validees humainement ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Architecture et flux -->
+        <section>
+            <h2>4. Architecture et flux de capitalisation</h2>
+
+            <svg viewBox="0 0 650 600" style="width: 100%; max-width: 650px; height: auto; display: block; margin: 20px auto;">
+                <defs>
+                    <linearGradient id="gradStepOR1t" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#9f7aea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#805ad5;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradApproveOR1t" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#48bb78;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#38a169;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradRejectOR1t" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#fc8181;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#e53e3e;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="shadowOR1t" x="-10%" y="-10%" width="120%" height="120%">
+                        <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.15"/>
+                    </filter>
+                    <marker id="arrowOR1t" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#718096"/>
+                    </marker>
+                </defs>
+
+                <!-- Source -->
+                <rect x="175" y="5" width="300" height="30" rx="15" fill="#e2e8f0" filter="url(#shadowOR1t)"/>
+                <text x="325" y="25" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#4a5568">📋 Tickets clotures (GLPI)</text>
+
+                <line x1="325" y1="35" x2="325" y2="48" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1t)"/>
+
+                <!-- Etape 1 -->
+                <g filter="url(#shadowOR1t)">
+                    <rect x="100" y="53" width="450" height="60" rx="8" fill="url(#gradStepOR1t)"/>
+                    <circle cx="125" cy="70" r="10" fill="white"/>
+                    <text x="125" y="74" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#805ad5">1</text>
+                    <text x="155" y="73" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">Filtrage et selection</text>
+                    <text x="125" y="90" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">• Tickets documentes • Recurrents • Exclusion cas specifiques</text>
+                </g>
+
+                <line x1="325" y1="113" x2="325" y2="126" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1t)"/>
+
+                <!-- Etape 2 -->
+                <g filter="url(#shadowOR1t)">
+                    <rect x="100" y="131" width="450" height="60" rx="8" fill="url(#gradStepOR1t)"/>
+                    <circle cx="125" cy="148" r="10" fill="white"/>
+                    <text x="125" y="152" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#805ad5">2</text>
+                    <text x="155" y="151" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">Analyse LLM (Mistral Large)</text>
+                    <text x="125" y="170" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">• Extraction etapes • Pattern • Redaction procedure</text>
+                </g>
+
+                <line x1="325" y1="191" x2="325" y2="204" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1t)"/>
+
+                <!-- Etape 3 -->
+                <g filter="url(#shadowOR1t)">
+                    <rect x="100" y="209" width="450" height="55" rx="8" fill="#38b2ac"/>
+                    <circle cx="125" cy="226" r="10" fill="white"/>
+                    <text x="125" y="230" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#38b2ac">3</text>
+                    <text x="155" y="229" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">Verification coherence</text>
+                    <text x="125" y="248" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">• Procedures similaires • Contradictions • Obsolescence</text>
+                </g>
+
+                <line x1="325" y1="264" x2="325" y2="277" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1t)"/>
+
+                <!-- Etape 4 - SAFEGUARD -->
+                <g filter="url(#shadowOR1t)">
+                    <rect x="100" y="282" width="450" height="55" rx="8" fill="#e53e3e"/>
+                    <circle cx="125" cy="299" r="10" fill="white"/>
+                    <text x="125" y="303" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#e53e3e">4</text>
+                    <text x="155" y="302" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">🛡️ SAFEGUARD (L2)</text>
+                    <text x="325" y="322" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9" font-style="italic">"Nouvelle procedure. Valider ?"</text>
+                </g>
+
+                <!-- Branches decision -->
+                <line x1="325" y1="337" x2="325" y2="352" stroke="#718096" stroke-width="2"/>
+                <line x1="325" y1="352" x2="200" y2="352" stroke="#718096" stroke-width="2"/>
+                <line x1="325" y1="352" x2="450" y2="352" stroke="#718096" stroke-width="2"/>
+                <line x1="200" y1="352" x2="200" y2="365" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1t)"/>
+                <line x1="450" y1="352" x2="450" y2="365" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1t)"/>
+
+                <!-- Approuve -->
+                <rect x="125" y="370" width="150" height="35" rx="17" fill="url(#gradApproveOR1t)" filter="url(#shadowOR1t)"/>
+                <text x="200" y="393" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">✓ APPROUVE</text>
+
+                <!-- Refuse -->
+                <rect x="375" y="370" width="150" height="35" rx="17" fill="url(#gradRejectOR1t)" filter="url(#shadowOR1t)"/>
+                <text x="450" y="393" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">✗ REFUSE</text>
+
+                <line x1="200" y1="405" x2="200" y2="418" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1t)"/>
+                <line x1="450" y1="405" x2="450" y2="418" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1t)"/>
+
+                <!-- Etape 5 - Stockage -->
+                <g filter="url(#shadowOR1t)">
+                    <rect x="100" y="423" width="200" height="45" rx="8" fill="#4fd1c5"/>
+                    <circle cx="120" cy="440" r="8" fill="white"/>
+                    <text x="120" y="443" text-anchor="middle" font-family="Segoe UI" font-size="9" font-weight="700" fill="#38b2ac">5</text>
+                    <text x="200" y="440" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="600" fill="white">Stockage RAG</text>
+                    <text x="200" y="455" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">Vectorisation + Indexation</text>
+                </g>
+
+                <!-- Feedback negatif -->
+                <rect x="350" y="423" width="200" height="45" rx="8" fill="#a0aec0" filter="url(#shadowOR1t)"/>
+                <text x="450" y="445" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="600" fill="white">Feedback negatif</text>
+                <text x="450" y="460" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">Amelioration filtrage</text>
+
+                <!-- Etape 6 - Boucle feedback -->
+                <line x1="200" y1="468" x2="200" y2="483" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1t)"/>
+                <g filter="url(#shadowOR1t)">
+                    <rect x="50" y="488" width="300" height="50" rx="8" fill="#667eea"/>
+                    <circle cx="75" cy="508" r="8" fill="white"/>
+                    <text x="75" y="511" text-anchor="middle" font-family="Segoe UI" font-size="9" font-weight="700" fill="#667eea">6</text>
+                    <text x="200" y="508" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="600" fill="white">🔄 Boucle de feedback</text>
+                    <text x="200" y="525" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">Utilisation • Taux succes • Ajustement seuils</text>
+                </g>
+
+                <!-- Fleche retour -->
+                <path d="M 50 513 Q 20 513 20 300 Q 20 53 100 53" stroke="#667eea" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#arrowOR1t)"/>
+            </svg>
+        </section>
+
+        <!-- Experimentations -->
+        <section>
+            <h2>5. Experimentations et resultats</h2>
+
+            <h3>5.1 Protocole de test</h3>
+            <div class="info-box warning">
+                <h4>A documenter</h4>
+                <p>Description du protocole d'experimentation : echantillon de tickets utilise, criteres d'evaluation, methodologie de mesure.</p>
+            </div>
+
+            <h3>5.2 Metriques collectees</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metrique</th>
+                        <th>Description</th>
+                        <th>Valeur initiale</th>
+                        <th>Valeur actuelle</th>
+                        <th>Objectif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Taux de validation</strong></td>
+                        <td>% de procedures proposees validees par un humain</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>> 70%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Precision RAG</strong></td>
+                        <td>Pertinence des documents retrouves (top 5)</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>> 80%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Taux de resolution auto</strong></td>
+                        <td>% de tickets resolus sans intervention humaine</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>> 30%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Procedures actives</strong></td>
+                        <td>Nombre de procedures dans le RAG</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Taux d'obsolescence</strong></td>
+                        <td>% de procedures marquees obsoletes</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>< 10%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>5.3 Resultats</h3>
+            <div class="info-box resultats">
+                <h4>Resultats des experimentations</h4>
+                <p class="metric-placeholder">A completer : resultats observes, graphiques d'evolution, analyse des ecarts par rapport aux objectifs.</p>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Iterations -->
+        <section>
+            <h2>6. Iterations et historique des travaux</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 12%">Version</th>
+                        <th style="width: 15%">Date</th>
+                        <th style="width: 45%">Modifications / Hypothese testee</th>
+                        <th style="width: 28%">Resultat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="metric-placeholder">v1</td>
+                        <td class="metric-placeholder">-</td>
+                        <td class="metric-placeholder">A completer</td>
+                        <td class="metric-placeholder">A completer</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-placeholder">v2</td>
+                        <td class="metric-placeholder">-</td>
+                        <td class="metric-placeholder">A completer</td>
+                        <td class="metric-placeholder">A completer</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-placeholder">v3</td>
+                        <td class="metric-placeholder">-</td>
+                        <td class="metric-placeholder">A completer</td>
+                        <td class="metric-placeholder">A completer</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Preuves -->
+        <section>
+            <h2>7. Preuves materielles a constituer</h2>
+
+            <ul class="checklist">
+                <li>Logs de l'Enrichisseur : tickets analyses, procedures proposees, taux validation/rejet</li>
+                <li>Metriques RAG : precision de retrieval avant/apres enrichissement</li>
+                <li>Experimentations comparatives : criteres de filtrage testes, seuils de recurrence</li>
+                <li>Exemples de procedures generees (anonymisees)</li>
+                <li>Cas de procedures contradictoires ou obsoletes detectees (ou non)</li>
+                <li>Evolution du taux de resolution automatique correlee a l'enrichissement</li>
+                <li>Captures d'ecran de l'interface de validation SAFEGUARD</li>
+            </ul>
+        </section>
+
+        <!-- Evaluation Frascati -->
+        <section>
+            <h2>8. Evaluation selon les criteres de Frascati</h2>
+
+            <div class="frascati-grid">
+                <div class="frascati-item">
+                    <div class="criterion">Nouveaute</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Creativite</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Incertitude</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Systematisation</div>
+                    <div class="evaluation moyen">A DOCUMENTER</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Transferabilite</div>
+                    <div class="evaluation moyen">MOYEN</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Critere</th>
+                        <th>Evaluation</th>
+                        <th>Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nouveaute</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>L'etat de l'art ne propose pas de solution etablie pour la capitalisation automatique continue de connaissances IT operationnelles via LLM avec boucle de feedback</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creativite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>La chaine complete ticket → analyse LLM → extraction pattern → generation procedure → validation humaine → vectorisation → reutilisation est une architecture originale</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incertitude</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Trois verrous identifies sans solution connue : extraction fiable, maintien qualite RAG, convergence de la boucle</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Systematisation</strong></td>
+                        <td><span class="badge moyen">A documenter</span></td>
+                        <td>Necessite des metriques de suivi, des protocoles d'experimentation comparatifs, des criteres de validation formalises</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transferabilite</strong></td>
+                        <td><span class="badge moyen">Moyen</span></td>
+                        <td>La methodologie est generalisable a tout contexte de support IT, voire au-dela (support client, maintenance industrielle)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Footer -->
+        <footer class="document-footer">
+            <p>Operation de Recherche 1 - Capitalisation automatique des connaissances IT</p>
+            <p>Projet WIDIP - Dossier Credit d'Impot Recherche</p>
+            <p><em>Document a completer au fil des travaux de recherche</em></p>
+        </footer>
+    </div>
+</body>
+</html>

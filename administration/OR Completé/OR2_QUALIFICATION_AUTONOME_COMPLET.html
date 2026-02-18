@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OR2 - Qualification et resolution autonome de tickets IT</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2c5282;
+            --accent-color: #38a169;
+            --success-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --text-color: #2d3748;
+            --light-bg: #f7fafc;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #fff;
+            font-size: 11pt;
+        }
+
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        @media print {
+            body { font-size: 10pt; }
+            .page-break { page-break-before: always; }
+            .no-break { page-break-inside: avoid; }
+        }
+
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20px 40px;
+        }
+
+        .document-header {
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .document-header .or-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12pt;
+            margin-bottom: 10px;
+        }
+
+        .document-header .status-badge {
+            display: inline-block;
+            background: var(--warning-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 10pt;
+            margin-left: 10px;
+        }
+
+        .document-header h1 {
+            color: var(--primary-color);
+            font-size: 20pt;
+            margin-bottom: 10px;
+        }
+
+        .document-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 10pt;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        .document-meta span {
+            background: var(--light-bg);
+            padding: 5px 12px;
+            border-radius: 4px;
+        }
+
+        .potentiel-badge {
+            background: #c6f6d5 !important;
+            color: #22543d !important;
+            font-weight: 600;
+        }
+
+        section {
+            margin-bottom: 35px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 14pt;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 12pt;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: var(--text-color);
+            font-size: 11pt;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        .problematique {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 12pt;
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        .verrou {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .verrou-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .verrou-number {
+            background: var(--accent-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14pt;
+            margin-right: 15px;
+        }
+
+        .verrou-title {
+            font-weight: 600;
+            font-size: 12pt;
+            color: var(--primary-color);
+        }
+
+        .incertitudes {
+            background: #faf5ff;
+            border-left: 3px solid #805ad5;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .incertitudes h5 {
+            color: #553c9a;
+            font-size: 10pt;
+            margin-bottom: 10px;
+        }
+
+        .incertitudes ul {
+            margin: 0 0 0 20px;
+            font-size: 10pt;
+        }
+
+        .incertitudes li {
+            margin-bottom: 6px;
+        }
+
+        .hypotheses-table {
+            background: #fffaf0;
+            border: 1px solid #ed8936;
+        }
+
+        .hypotheses-table th {
+            background: #ed8936;
+        }
+
+        .info-box {
+            padding: 18px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box.etat-art {
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+        }
+
+        .info-box.resultats {
+            background: #f0fff4;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .info-box.warning {
+            background: #fffaf0;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .info-box.critical {
+            background: #fff5f5;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .info-box.en-cours {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+        }
+
+        .info-box h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .diagram {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+            margin: 20px 0;
+        }
+
+        .frascati-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .frascati-item {
+            text-align: center;
+            padding: 15px 8px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .frascati-item .criterion {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .frascati-item .evaluation {
+            font-weight: 700;
+            font-size: 11pt;
+        }
+
+        .frascati-item .evaluation.fort {
+            color: #22543d;
+        }
+
+        .frascati-item .evaluation.moyen {
+            color: #744210;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 9pt;
+            font-weight: 600;
+        }
+
+        .badge.fort { background: #c6f6d5; color: #22543d; }
+        .badge.moyen { background: #fefcbf; color: #744210; }
+        .badge.en-cours { background: #bee3f8; color: #2b6cb0; }
+        .badge.valide { background: #c6f6d5; color: #22543d; }
+        .badge.echec { background: #fed7d7; color: #742a2a; }
+        .badge.partiel { background: #fefcbf; color: #744210; }
+
+        .niveau-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .niveau-card {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .niveau-card.simple { background: #c6f6d5; border: 2px solid #38a169; }
+        .niveau-card.moyen { background: #fefcbf; border: 2px solid #d69e2e; }
+        .niveau-card.complexe { background: #fed7aa; border: 2px solid #dd6b20; }
+        .niveau-card.expert { background: #fed7d7; border: 2px solid #e53e3e; }
+
+        .niveau-card h5 {
+            margin-bottom: 8px;
+            font-size: 11pt;
+        }
+
+        .niveau-card p {
+            font-size: 9pt;
+            margin: 0;
+            text-align: center;
+        }
+
+        ul, ol {
+            margin: 12px 0 12px 25px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .checklist li:before {
+            content: "☐ ";
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .checklist li.done:before {
+            content: "☑ ";
+            color: var(--success-color);
+        }
+
+        .document-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 9pt;
+            color: #666;
+            text-align: center;
+        }
+
+        .timeline {
+            border-left: 3px solid var(--accent-color);
+            padding-left: 20px;
+            margin: 20px 0;
+        }
+
+        .timeline-item {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-item:before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            position: absolute;
+            left: -26px;
+            top: 5px;
+        }
+
+        .timeline-date {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="document-header">
+            <span class="or-badge">OPERATION DE RECHERCHE 2</span>
+            <span class="status-badge">EN COURS</span>
+            <h1>Qualification et resolution autonome de tickets IT avec indice de confiance calibre</h1>
+            <div class="document-meta">
+                <span><strong>Projet :</strong> WIDIP / WIBOT</span>
+                <span><strong>Composants :</strong> Assistant Ticket + Sentinel</span>
+                <span><strong>Periode :</strong> Novembre 2025 - Fevrier 2026</span>
+                <span class="potentiel-badge">Potentiel CIR : FORT</span>
+            </div>
+        </header>
+
+        <section>
+            <h2>1. Problematique scientifique</h2>
+            <div class="problematique">
+                Comment un systeme IA peut-il qualifier de maniere fiable la difficulte d'un ticket IT et resoudre les cas simples de facon autonome — tout en garantissant un niveau de confiance calibre et un fallback sur vers l'humain lorsque l'incertitude est trop elevee ?
+            </div>
+
+            <div class="info-box en-cours">
+                <h4>Statut actuel : En cours de developpement</h4>
+                <p>L'Assistant Ticket est fonctionnel en mode consultation (analyse de tickets). La partie resolution autonome est en cours d'implementation. Sentinel est operationnel pour la detection de pannes mais la qualification automatique est en phase de test.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>2. Etat de l'art</h2>
+
+            <div class="info-box etat-art">
+                <h4>Contexte scientifique</h4>
+                <p>La calibration de confiance des LLM est un probleme de recherche reconnu dans la communaute IA. Les modeles de langage sont notoirement mal calibres : ils expriment souvent une haute confiance meme lorsqu'ils se trompent (phenomene de "overconfidence"). Appliquer ces modeles a des actions IT avec consequences reelles pose des defis specifiques non resolus.</p>
+            </div>
+
+            <h3>2.1 Solutions existantes et leurs limites</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Solution / Approche</th>
+                        <th>Description</th>
+                        <th>Limites identifiees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Classification supervisee traditionnelle</td>
+                        <td>Modeles ML entraines sur tickets etiquetes</td>
+                        <td>Necessite annotations massives, peu adaptatif aux nouveaux types de problemes</td>
+                    </tr>
+                    <tr>
+                        <td>Routage par mots-cles</td>
+                        <td>Regles basees sur la presence de termes specifiques</td>
+                        <td>Rigide, nombreux faux positifs, maintenance lourde des regles</td>
+                    </tr>
+                    <tr>
+                        <td>LLM avec prompt engineering</td>
+                        <td>Classification par LLM sans calibration</td>
+                        <td>Confiance non fiable, risque d'erreurs sur cas critiques</td>
+                    </tr>
+                    <tr>
+                        <td>Temperature sampling</td>
+                        <td>Utilisation de la temperature pour estimer l'incertitude</td>
+                        <td>Correlation faible avec la precision reelle, non adapte aux taches de classification</td>
+                    </tr>
+                    <tr>
+                        <td>Helpdesk IA commerciaux (Zendesk AI, Freshdesk)</td>
+                        <td>Solutions SaaS de triage automatique</td>
+                        <td>Boite noire, pas de controle sur la confiance, pas d'integration GLPI/AD</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.2 Positionnement du projet WIDIP</h3>
+            <p>L'approche WIDIP se distingue par :</p>
+            <ul>
+                <li><strong>Calibration contextuelle</strong> : ajustement du seuil de confiance par type d'action et criticite</li>
+                <li><strong>Integration SAFEGUARD</strong> : escalade humaine native et structuree selon le niveau de risque</li>
+                <li><strong>Feedback loop</strong> : les tickets "IA_NON_RESOLU" alimentent l'apprentissage et l'amelioration</li>
+                <li><strong>Actions IT reelles</strong> : validation dans un contexte operationnel (AD, GLPI, Observium) et non sur benchmark academique</li>
+                <li><strong>Contexte client</strong> : prise en compte de l'historique et de l'infrastructure specifique du client</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Matrice de qualification des tickets</h2>
+
+            <div class="niveau-grid">
+                <div class="niveau-card simple">
+                    <h5>SIMPLE</h5>
+                    <p>L'IA peut resoudre seule</p>
+                    <p><em>Reset MDP, deblocage</em></p>
+                </div>
+                <div class="niveau-card moyen">
+                    <h5>MOYEN</h5>
+                    <p>L'IA peut tenter</p>
+                    <p><em>Ajout groupe AD</em></p>
+                </div>
+                <div class="niveau-card complexe">
+                    <h5>COMPLEXE</h5>
+                    <p>Technicien N1 requis</p>
+                    <p><em>Diagnostic reseau</em></p>
+                </div>
+                <div class="niveau-card expert">
+                    <h5>EXPERT</h5>
+                    <p>Technicien N2+ requis</p>
+                    <p><em>Migration serveur</em></p>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Niveau</th>
+                        <th>Traitement prevu</th>
+                        <th>Seuil confiance</th>
+                        <th>Exemples concrets</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>SIMPLE</strong></td>
+                        <td>Resolution automatique + validation SAFEGUARD L3</td>
+                        <td>> 80%</td>
+                        <td>Reset mot de passe AD, deblocage compte, ajout alias mail</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MOYEN</strong></td>
+                        <td>Tentative avec escalade si echec</td>
+                        <td>> 70%</td>
+                        <td>Ajout groupe AD, modification droits partage, config Outlook</td>
+                    </tr>
+                    <tr>
+                        <td><strong>COMPLEXE</strong></td>
+                        <td>Flagging + notification technicien N1</td>
+                        <td>-</td>
+                        <td>Diagnostic reseau, probleme VPN, lenteur applicative</td>
+                    </tr>
+                    <tr>
+                        <td><strong>EXPERT</strong></td>
+                        <td>Escalade immediate N2+</td>
+                        <td>-</td>
+                        <td>Migration serveur, incident securite, panne infrastructure</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>4. Verrous techniques identifies</h2>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">1</span>
+                    <span class="verrou-title">Qualification automatique en 4 niveaux de difficulte</span>
+                </div>
+                <p>L'Assistant Ticket doit classer chaque ticket entrant en SIMPLE / MOYEN / COMPLEXE / EXPERT. Cette classification determine directement le traitement : resolution IA autonome vs escalade humaine. Une erreur de classification a des consequences operationnelles directes.</p>
+
+                <div class="info-box critical">
+                    <h4>Cas critique : le faux SIMPLE</h4>
+                    <p>Un ticket classe SIMPLE par l'IA alors qu'il necessitait un expert peut entrainer : action inappropriee sur le systeme client, perte de temps, degradation de la relation client, voire incident de securite.</p>
+                </div>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment un LLM peut-il evaluer la difficulte reelle d'un ticket a partir d'une description souvent incomplete ou ambigue ?</li>
+                        <li>Comment gerer le cas critique du faux SIMPLE (ticket classe simple mais qui necessitait un expert) ?</li>
+                        <li>Comment integrer le contexte historique du client (tickets passes, infrastructure connue) dans la qualification ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Classification directe par LLM avec prompt detaille</td>
+                            <td><span class="badge partiel">Partiel</span> - Tendance a sur-classifier en SIMPLE</td>
+                            <td>Dec. 2025</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Ajout du contexte client (entite GLPI, historique) dans le prompt</td>
+                            <td><span class="badge valide">Ameliore</span> - Meilleure detection des cas complexes</td>
+                            <td>Jan. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Double verification : si SIMPLE, re-analyser avec prompt "cherche les risques"</td>
+                            <td><span class="badge en-cours">En cours</span> - Tests en cours</td>
+                            <td>Fev. 2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">2</span>
+                    <span class="verrou-title">Calibration de l'indice de confiance</span>
+                </div>
+                <p>Le systeme SAFEGUARD utilise un seuil de confiance (> 80% pour execution automatique en L1). Ce seuil conditionne le degre d'autonomie du systeme. Or, les LLM sont notoirement <strong>mal calibres</strong> en termes de confiance — ils expriment souvent une haute confiance meme lorsqu'ils se trompent.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment obtenir un score de confiance fiable d'un LLM pour des actions IT concretes ?</li>
+                        <li>Comment calibrer ce score (faire en sorte que "80% de confiance" corresponde reellement a 80% de reussite) ?</li>
+                        <li>Le seuil optimal est-il universel ou doit-il varier par type d'action, par client, par complexite ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Demander au LLM d'auto-evaluer sa confiance (0-100%)</td>
+                            <td><span class="badge echec">Echec</span> - Scores systematiquement > 85%, non discriminants</td>
+                            <td>Dec. 2025</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Confiance basee sur la similarite avec cas resolus dans le RAG</td>
+                            <td><span class="badge partiel">Prometteur</span> - Meilleure correlation, a affiner</td>
+                            <td>Jan. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Seuils differencies par type d'action (plus bas pour actions reversibles)</td>
+                            <td><span class="badge en-cours">En cours</span> - Implementation dans SAFEGUARD</td>
+                            <td>Fev. 2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">3</span>
+                    <span class="verrou-title">Resolution autonome avec actions irreversibles</span>
+                </div>
+                <p>Resoudre un ticket simple implique des actions reelles sur Active Directory, GLPI, ou l'infrastructure client : reset de mot de passe, deblocage de compte, creation d'utilisateur. Ces actions ont des effets concrets et certaines sont irreversibles ou difficiles a annuler.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment valider qu'une procedure RAG retrouvee est applicable au cas precis du ticket courant ?</li>
+                        <li>Comment detecter une mauvaise application de procedure avant l'execution de l'action ?</li>
+                        <li>Quel protocole de rollback pour les actions partiellement executees en cas d'erreur detectee en cours ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Validation SAFEGUARD L3 obligatoire pour toute action AD</td>
+                            <td><span class="badge valide">Retenu</span> - Implemente et fonctionnel</td>
+                            <td>Jan. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Mode "dry-run" : simuler l'action avant execution reelle</td>
+                            <td><span class="badge en-cours">En cours</span> - Faisable pour certaines actions AD</td>
+                            <td>Fev. 2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">4</span>
+                    <span class="verrou-title">Decision autonome dans le monitoring proactif (Sentinel)</span>
+                </div>
+                <p>Sentinel surveille Observium en continu et doit prendre des decisions en temps reel : identifier les clients impactes par une panne, determiner s'il s'agit d'une panne FAI ou infrastructure WIDIP, decider quand et qui alerter par SMS.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment l'IA peut-elle distinguer automatiquement une panne FAI d'une panne infrastructure WIDIP sans intervention humaine ?</li>
+                        <li>Comment le parsing de hostnames (format CLIENT-SITE-VILLE-DEVICE) peut-il gerer les cas non conformes au pattern standard ?</li>
+                        <li>Comment correler automatiquement un equipement Observium DOWN avec les bonnes entites GLPI quand les nomenclatures ne sont pas parfaitement alignees ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Parsing regex strict du hostname pour extraction client/site</td>
+                            <td><span class="badge partiel">Partiel</span> - Fonctionne pour 80% des cas, echec sur nommages atypiques</td>
+                            <td>Dec. 2025</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Fallback LLM pour hostnames non conformes</td>
+                            <td><span class="badge valide">OK</span> - Le LLM devine correctement dans la plupart des cas</td>
+                            <td>Jan. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Detection FAI par correlation multi-sites (si plusieurs sites down = FAI)</td>
+                            <td><span class="badge en-cours">En cours</span> - Logique implementee, tests en conditions reelles</td>
+                            <td>Fev. 2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>5. Experimentations et resultats</h2>
+
+            <h3>5.1 Protocole de test - Qualification</h3>
+            <p>Evaluation de la qualification sur un echantillon de tickets GLPI :</p>
+            <ul>
+                <li><strong>Echantillon</strong> : 80 tickets clotures (decembre 2025 - janvier 2026)</li>
+                <li><strong>Ground truth</strong> : classification manuelle par technicien senior</li>
+                <li><strong>Methode</strong> : comparaison classification IA vs classification humaine</li>
+            </ul>
+
+            <h3>5.2 Protocole de test - Sentinel</h3>
+            <p>Evaluation de Sentinel sur les alertes Observium :</p>
+            <ul>
+                <li><strong>Periode</strong> : 3 semaines de monitoring (janvier 2026)</li>
+                <li><strong>Metriques</strong> : taux de detection, faux positifs, temps de reaction</li>
+                <li><strong>Validation</strong> : comparaison avec les incidents reellement traites</li>
+            </ul>
+
+            <h3>5.3 Metriques collectees</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metrique</th>
+                        <th>Description</th>
+                        <th>Phase N8N</th>
+                        <th>Phase Python</th>
+                        <th>Objectif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Precision qualification</strong></td>
+                        <td>% de tickets correctement classifies</td>
+                        <td>~65%</td>
+                        <td>~75% (preliminaire)</td>
+                        <td>> 85%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Taux faux SIMPLE</strong></td>
+                        <td>% de tickets SIMPLE qui etaient COMPLEXE+</td>
+                        <td>~15%</td>
+                        <td>~8% (preliminaire)</td>
+                        <td>< 5%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Detection Sentinel</strong></td>
+                        <td>% de pannes detectees avant signalement client</td>
+                        <td>N/A</td>
+                        <td>~90%</td>
+                        <td>> 95%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Faux positifs Sentinel</strong></td>
+                        <td>Alertes declenchees pour non-pannes</td>
+                        <td>N/A</td>
+                        <td>~12%</td>
+                        <td>< 5%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>5.4 Resultats preliminaires</h3>
+            <div class="info-box resultats">
+                <h4>Observations phase N8N (Nov-Dec 2025)</h4>
+                <ul>
+                    <li>La qualification basique fonctionne mais tendance a sur-classifier en SIMPLE (optimisme du LLM)</li>
+                    <li>Le taux de faux SIMPLE (15%) est trop eleve pour une mise en production</li>
+                    <li>L'ajout du contexte client ameliore significativement la precision</li>
+                    <li>Limite N8N : difficulte a implementer la logique de confiance calibree</li>
+                </ul>
+            </div>
+
+            <div class="info-box en-cours">
+                <h4>Travaux en cours (Jan-Fev 2026)</h4>
+                <ul>
+                    <li>Implementation de la double verification pour les tickets classes SIMPLE</li>
+                    <li>Calibration des seuils de confiance par type d'action</li>
+                    <li>Tests de Sentinel en conditions reelles avec alertes SMS</li>
+                    <li>Constitution de la matrice de confusion complete</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>6. Iterations et historique des travaux</h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">Fin novembre 2025</div>
+                    <p><strong>Phase 1 - Prototype N8N</strong></p>
+                    <p>Premier prototype de qualification de tickets avec N8N. Classification binaire (simple/complexe). Resultats encourageants mais taux d'erreur eleve.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Decembre 2025</div>
+                    <p><strong>Phase 2 - Enrichissement N8N</strong></p>
+                    <p>Passage a 4 niveaux de qualification. Ajout du contexte client. Premier prototype Sentinel pour monitoring Observium. Limites de N8N pour la logique complexe.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Janvier 2026</div>
+                    <p><strong>Phase 3 - Migration Python</strong></p>
+                    <p>Reimplementation complete en Python. Integration avec SAFEGUARD pour validation des actions. Sentinel operationnel avec detection de pannes.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Fevrier 2026</div>
+                    <p><strong>Phase 4 - Calibration (en cours)</strong></p>
+                    <p>Travail sur la calibration de confiance. Implementation de la double verification. Tests de resolution autonome sur tickets simples.</p>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 12%">Version</th>
+                        <th style="width: 15%">Date</th>
+                        <th style="width: 45%">Modifications / Hypothese testee</th>
+                        <th style="width: 28%">Resultat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>N8N v1</td>
+                        <td>Nov. 2025</td>
+                        <td>Classification binaire simple/complexe par LLM</td>
+                        <td><span class="badge partiel">Partiel</span> - Trop simpliste</td>
+                    </tr>
+                    <tr>
+                        <td>N8N v2</td>
+                        <td>Dec. 2025</td>
+                        <td>4 niveaux + contexte client + Sentinel basique</td>
+                        <td><span class="badge partiel">Ameliore</span> - Mais limites N8N</td>
+                    </tr>
+                    <tr>
+                        <td>Python v1</td>
+                        <td>Jan. 2026</td>
+                        <td>Reimplementation + SAFEGUARD + Sentinel complet</td>
+                        <td><span class="badge valide">OK</span> - Base solide</td>
+                    </tr>
+                    <tr>
+                        <td>Python v2</td>
+                        <td>Fev. 2026</td>
+                        <td>Double verification + calibration confiance</td>
+                        <td><span class="badge en-cours">En cours</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>7. Preuves materielles disponibles</h2>
+
+            <ul class="checklist">
+                <li class="done">Workflows N8N exports (versions v1 et v2)</li>
+                <li class="done">Code source Python Assistant Ticket et Sentinel</li>
+                <li class="done">Echantillon de tickets GLPI avec classification manuelle (ground truth)</li>
+                <li class="done">Logs Sentinel : alertes declenchees, temps de detection</li>
+                <li class="done">Exemples de faux SIMPLE identifies et analyses</li>
+                <li>Matrice de confusion complete (a finaliser)</li>
+                <li>Courbe de calibration confiance vs precision (a produire)</li>
+                <li>Logs de resolution autonome (a collecter en production)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Evaluation selon les criteres de Frascati</h2>
+
+            <div class="frascati-grid">
+                <div class="frascati-item">
+                    <div class="criterion">Nouveaute</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Creativite</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Incertitude</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Systematisation</div>
+                    <div class="evaluation moyen">EN COURS</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Transferabilite</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Critere</th>
+                        <th>Evaluation</th>
+                        <th>Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nouveaute</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>La calibration de confiance d'un LLM pour des actions IT operationnelles avec consequences reelles est un probleme ouvert dans la litterature</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creativite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Le couplage qualification → resolution → flagging "IA_NON_RESOLU" → enrichissement ulterieur est une boucle de feedback innovante</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incertitude</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Quatre verrous identifies. L'echec de l'hypothese 1 (auto-evaluation confiance) demontre l'incertitude reelle du projet</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Systematisation</strong></td>
+                        <td><span class="badge moyen">En cours</span></td>
+                        <td>Protocoles definis, metriques collectees. Matrice de confusion et courbe de calibration en cours de finalisation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transferabilite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>La methodologie de qualification par confiance calibree est transposable a tout domaine d'automatisation par IA</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <footer class="document-footer">
+            <p>Operation de Recherche 2 - Qualification et resolution autonome de tickets IT</p>
+            <p>Projet WIDIP - Dossier Credit d'Impot Recherche</p>
+            <p>Periode : Novembre 2025 - Fevrier 2026 | Statut : EN COURS</p>
+        </footer>
+    </div>
+</body>
+</html>

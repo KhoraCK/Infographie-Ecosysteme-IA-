@@ -1,0 +1,1679 @@
+{
+  "name": "WIDIP_MCP_GLPI_v7",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "operation"
+            },
+            {
+              "name": "name"
+            },
+            {
+              "name": "email"
+            },
+            {
+              "name": "phone"
+            },
+            {
+              "name": "title"
+            },
+            {
+              "name": "description"
+            },
+            {
+              "name": "client_name"
+            },
+            {
+              "name": "priority",
+              "type": "number"
+            },
+            {
+              "name": "urgency",
+              "type": "number"
+            },
+            {
+              "name": "impact",
+              "type": "number"
+            },
+            {
+              "name": "ticket_id"
+            },
+            {
+              "name": "content"
+            },
+            {
+              "name": "is_private",
+              "type": "boolean"
+            },
+            {
+              "name": "status",
+              "type": "number"
+            },
+            {
+              "name": "solution"
+            },
+            {
+              "name": "minutes_since",
+              "type": "number"
+            },
+            {
+              "name": "limit",
+              "type": "number"
+            },
+            {
+              "name": "user_id"
+            },
+            {
+              "name": "login"
+            },
+            {
+              "name": "password"
+            },
+            {
+              "name": "firstname"
+            },
+            {
+              "name": "realname"
+            },
+            {
+              "name": "profiles_id",
+              "type": "number"
+            },
+            {
+              "name": "entities_id",
+              "type": "number"
+            },
+            {
+              "name": "is_active",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "id": "b6892939-c5fd-4717-b133-58dfd2398db9",
+      "name": "When called by another workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        288,
+        1152
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "search_client",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "search_client"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "create_ticket",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "create_ticket"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "get_ticket_status",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "get_ticket_status"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "add_ticket_followup",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "add_ticket_followup"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "search_new_tickets",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "search_new_tickets"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "get_ticket_details",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "get_ticket_details"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "update_ticket_status",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "update_ticket_status"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "close_ticket",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "close_ticket"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "create_glpi_user",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "create_glpi_user"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "get_glpi_user",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "get_glpi_user"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "update_glpi_user",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "update_glpi_user"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "disable_glpi_user",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "disable_glpi_user"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.operation }}",
+                    "rightValue": "get_ticket_history",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "get_ticket_history"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "97b3f36a-6902-4680-aa2f-dd749402dbc9",
+      "name": "Route Operation",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        512,
+        976
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const searchValue = $input.first().json.name || $input.first().json.email || $input.first().json.phone || '';\nif (!searchValue) throw new Error('Au moins un paramètre (name, email, phone) est requis');\nlet searchField = 1;\nif ($input.first().json.email) searchField = 5;\nelse if ($input.first().json.phone) searchField = 6;\nreturn [{ json: { searchField, searchValue, originalInput: $input.first().json } }];"
+      },
+      "id": "4ad98b77-0b27-4cfa-96d0-faf31d7f26fb",
+      "name": "Build Search Query",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $credentials.glpiApi.url }}/search/User",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpMultipleHeadersAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "criteria[0][field]",
+              "value": "={{ $json.searchField }}"
+            },
+            {
+              "name": "criteria[0][searchtype]",
+              "value": "contains"
+            },
+            {
+              "name": "criteria[0][value]",
+              "value": "={{ $json.searchValue }}"
+            },
+            {
+              "name": "forcedisplay[0]",
+              "value": "1"
+            },
+            {
+              "name": "forcedisplay[1]",
+              "value": "2"
+            },
+            {
+              "name": "forcedisplay[2]",
+              "value": "5"
+            },
+            {
+              "name": "forcedisplay[3]",
+              "value": "6"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "bc315eb0-615f-452d-a813-d1b55186ede5",
+      "name": "HTTP - Search Client",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        0
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nkNCOc99RoHFboVh",
+          "name": "WIDIP Phibee"
+        },
+        "httpMultipleHeadersAuth": {
+          "id": "r1Xh9AhgHiA9QViN",
+          "name": "WIDIP GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const response = $input.first().json;\n  const data = response.data || [];\n  const clients = data.map(item => ({ id: item['2'], name: item['1'], email: item['5'], phone: item['6'] }));\n  return [{ json: { success: true, operation: 'search_client', found: data.length > 0, count: data.length, clients } }];\n} catch (error) {\n  return [{ json: { success: false, operation: 'search_client', error: error.message } }];\n}"
+      },
+      "id": "7479d9a4-ba80-4a8e-8bd2-014458b2e252",
+      "name": "Format Search Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nif (!input.title) throw new Error('Le titre est requis');\nconst payload = {\n  input: {\n    name: input.title,\n    content: input.description || '',\n    priority: input.priority || 3,\n    urgency: input.urgency || 3,\n    impact: input.impact || 3,\n    type: 1,\n    status: 1\n  }\n};\nreturn [{ json: { payload, originalInput: input } }];"
+      },
+      "id": "38b35636-7cf2-4372-a5b0-b2cd10ee84e2",
+      "name": "Build Create Ticket Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $credentials.glpiApi.url }}/Ticket",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpMultipleHeadersAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "89994209-00ed-4d52-8033-c36c69b64b09",
+      "name": "HTTP - Create Ticket",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        192
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nkNCOc99RoHFboVh",
+          "name": "WIDIP Phibee"
+        },
+        "httpMultipleHeadersAuth": {
+          "id": "r1Xh9AhgHiA9QViN",
+          "name": "WIDIP GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const response = $input.first().json;\n  if (!response.id) return [{ json: { success: false, operation: 'create_ticket', error: response.error || 'Failed' } }];\n  return [{ json: { success: true, operation: 'create_ticket', ticket_id: response.id.toString(), message: 'Ticket créé' } }];\n} catch (error) {\n  return [{ json: { success: false, operation: 'create_ticket', error: error.message } }];\n}"
+      },
+      "id": "6cd3a202-c7b9-482a-bf1d-3d47900727b4",
+      "name": "Format Create Ticket Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $credentials.glpiApi.url }}/Ticket/{{ $json.ticket_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpMultipleHeadersAuth",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "0af9f35f-109a-450d-9d01-e3f2494ea4da",
+      "name": "HTTP - Get Ticket Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        896,
+        384
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nkNCOc99RoHFboVh",
+          "name": "WIDIP Phibee"
+        },
+        "httpMultipleHeadersAuth": {
+          "id": "r1Xh9AhgHiA9QViN",
+          "name": "WIDIP GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const response = $input.first().json;\n  const statusMap = { 1: 'Nouveau', 2: 'En cours (attribué)', 3: 'En cours (planifié)', 4: 'En attente', 5: 'Résolu', 6: 'Clos' };\n  return [{ json: { success: true, operation: 'get_ticket_status', ticket_id: response.id?.toString(), title: response.name, status: statusMap[response.status], status_code: response.status } }];\n} catch (error) {\n  return [{ json: { success: false, operation: 'get_ticket_status', error: error.message } }];\n}"
+      },
+      "id": "c0f00bcc-fef6-411c-b74a-91b0f26dd87c",
+      "name": "Format Status Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nif (!input.ticket_id || !input.content) throw new Error('ticket_id et content requis');\nconst payload = { input: { itemtype: 'Ticket', items_id: parseInt(input.ticket_id), content: input.content, is_private: input.is_private || false } };\nreturn [{ json: { payload, originalInput: input } }];"
+      },
+      "id": "d2d4716f-541f-472b-b8b5-a3d29a6d9053",
+      "name": "Build Followup Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $credentials.glpiApi.url }}/ITILFollowup",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpMultipleHeadersAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "42d21f75-1d92-4f90-8180-fa4800b10332",
+      "name": "HTTP - Add Followup",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        576
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nkNCOc99RoHFboVh",
+          "name": "WIDIP Phibee"
+        },
+        "httpMultipleHeadersAuth": {
+          "id": "r1Xh9AhgHiA9QViN",
+          "name": "WIDIP GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const response = $input.first().json;\n  const original = $('Build Followup Payload').first().json.originalInput;\n  if (!response.id) return [{ json: { success: false, operation: 'add_ticket_followup', error: 'Failed' } }];\n  return [{ json: { success: true, operation: 'add_ticket_followup', followup_id: response.id.toString(), ticket_id: original.ticket_id, message: 'Suivi ajouté' } }];\n} catch (error) {\n  return [{ json: { success: false, operation: 'add_ticket_followup', error: error.message } }];\n}"
+      },
+      "id": "dbb34f2f-55d5-4926-ac05-19bdd9951fc0",
+      "name": "Format Followup Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        576
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// SEARCH NEW TICKETS - Récupérer les tickets récents avec status Nouveau\nconst input = $input.first().json;\nconst minutesSince = input.minutes_since || 10;\nconst limit = input.limit || 20;\n\n// Calculer la date de recherche\nconst searchDate = new Date(Date.now() - minutesSince * 60 * 1000).toISOString().replace('T', ' ').substring(0, 19);\n\nreturn [{ json: { searchDate, limit, originalInput: input } }];"
+      },
+      "id": "3b6bbc17-4d7f-4b76-80cf-f81faa456793",
+      "name": "Build Search New Tickets",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $credentials.glpiApi.url }}/search/Ticket",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpMultipleHeadersAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "criteria[0][field]",
+              "value": "12"
+            },
+            {
+              "name": "criteria[0][searchtype]",
+              "value": "equals"
+            },
+            {
+              "name": "criteria[0][value]",
+              "value": "1"
+            },
+            {
+              "name": "criteria[1][link]",
+              "value": "AND"
+            },
+            {
+              "name": "criteria[1][field]",
+              "value": "15"
+            },
+            {
+              "name": "criteria[1][searchtype]",
+              "value": "morethan"
+            },
+            {
+              "name": "criteria[1][value]",
+              "value": "={{ $json.searchDate }}"
+            },
+            {
+              "name": "forcedisplay[0]",
+              "value": "1"
+            },
+            {
+              "name": "forcedisplay[1]",
+              "value": "2"
+            },
+            {
+              "name": "forcedisplay[2]",
+              "value": "21"
+            },
+            {
+              "name": "forcedisplay[3]",
+              "value": "12"
+            },
+            {
+              "name": "forcedisplay[4]",
+              "value": "15"
+            },
+            {
+              "name": "range",
+              "value": "=0-{{ $json.limit }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "901709a6-3223-45d1-b69e-43b62a279d2e",
+      "name": "HTTP - Search New Tickets",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        768
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nkNCOc99RoHFboVh",
+          "name": "WIDIP Phibee"
+        },
+        "httpMultipleHeadersAuth": {
+          "id": "r1Xh9AhgHiA9QViN",
+          "name": "WIDIP GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const response = $input.first().json;\n  const data = response.data || [];\n  const tickets = data.map(item => ({\n    id: item['2'],\n    title: item['1'],\n    content_preview: item['21']?.substring(0, 200),\n    status: item['12'],\n    date_creation: item['15']\n  }));\n  return [{ json: { success: true, operation: 'search_new_tickets', count: tickets.length, tickets } }];\n} catch (error) {\n  return [{ json: { success: false, operation: 'search_new_tickets', error: error.message } }];\n}"
+      },
+      "id": "959c4aed-9d1a-48c0-bc43-6102e20e05fc",
+      "name": "Format Search New Tickets",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $credentials.glpiApi.url }}/Ticket/{{ $json.ticket_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpMultipleHeadersAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "expand_dropdowns",
+              "value": "true"
+            },
+            {
+              "name": "with_logs",
+              "value": "false"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "4ab4d5d8-2010-4940-8f60-d2f2a81e46cc",
+      "name": "HTTP - Get Ticket Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        896,
+        960
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nkNCOc99RoHFboVh",
+          "name": "WIDIP Phibee"
+        },
+        "httpMultipleHeadersAuth": {
+          "id": "r1Xh9AhgHiA9QViN",
+          "name": "WIDIP GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const response = $input.first().json;\n  if (!response.id) return [{ json: { success: false, operation: 'get_ticket_details', error: 'Ticket not found' } }];\n  \n  // Nettoyer le contenu HTML\n  const cleanContent = (response.content || '').replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\\s+/g, ' ').trim();\n  \n  const statusMap = { 1: 'Nouveau', 2: 'En cours (attribué)', 3: 'En cours (planifié)', 4: 'En attente', 5: 'Résolu', 6: 'Clos' };\n  \n  return [{ json: {\n    success: true,\n    operation: 'get_ticket_details',\n    ticket: {\n      id: response.id,\n      title: response.name,\n      content: cleanContent,\n      status: statusMap[response.status] || response.status,\n      status_code: response.status,\n      priority: response.priority,\n      urgency: response.urgency,\n      impact: response.impact,\n      date_creation: response.date_creation,\n      date_mod: response.date_mod,\n      entities_id: response.entities_id,\n      users_id_recipient: response.users_id_recipient,\n      requesttypes_id: response.requesttypes_id\n    }\n  }}];\n} catch (error) {\n  return [{ json: { success: false, operation: 'get_ticket_details', error: error.message } }];\n}"
+      },
+      "id": "3ca94699-3870-46e6-9d0b-9d4840bb7512",
+      "name": "Format Ticket Details",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nif (!input.ticket_id || !input.status) throw new Error('ticket_id et status requis');\nconst payload = { input: { id: parseInt(input.ticket_id), status: parseInt(input.status) } };\nreturn [{ json: { payload, originalInput: input } }];"
+      },
+      "id": "83506975-f685-42b9-8557-fa32fcd53690",
+      "name": "Build Update Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        1152
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $credentials.glpiApi.url }}/Ticket/{{ $json.originalInput.ticket_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpMultipleHeadersAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "7ac76222-83ab-4cd4-bc54-fefe9fcb5331",
+      "name": "HTTP - Update Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        1152
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nkNCOc99RoHFboVh",
+          "name": "WIDIP Phibee"
+        },
+        "httpMultipleHeadersAuth": {
+          "id": "r1Xh9AhgHiA9QViN",
+          "name": "WIDIP GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const response = $input.first().json;\n  const original = $('Build Update Status').first().json.originalInput;\n  const statusMap = { 1: 'Nouveau', 2: 'En cours (attribué)', 3: 'En cours (planifié)', 4: 'En attente', 5: 'Résolu', 6: 'Clos' };\n  return [{ json: { success: true, operation: 'update_ticket_status', ticket_id: original.ticket_id, new_status: statusMap[original.status], message: 'Statut mis à jour' } }];\n} catch (error) {\n  return [{ json: { success: false, operation: 'update_ticket_status', error: error.message } }];\n}"
+      },
+      "id": "1c6941e8-55d7-448a-b013-bed04db91932",
+      "name": "Format Update Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        1152
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// CLOSE TICKET - Ajouter solution + mettre status Résolu\nconst input = $input.first().json;\nif (!input.ticket_id) throw new Error('ticket_id requis');\nconst solution = input.solution || 'Ticket résolu automatiquement par le système.';\n\n// On va d'abord ajouter la solution comme followup, puis mettre à jour le status\nreturn [{ json: {\n  ticket_id: input.ticket_id,\n  solution: solution,\n  originalInput: input\n} }];"
+      },
+      "id": "20f8ea1a-30be-4200-9294-25e302499409",
+      "name": "Build Close Ticket",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        1344
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $credentials.glpiApi.url }}/ITILFollowup",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpMultipleHeadersAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"input\": {\n    \"itemtype\": \"Ticket\",\n    \"items_id\": {{ $json.ticket_id }},\n    \"content\": \"{{ $json.solution }}\",\n    \"is_private\": false\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "c3ad5128-38dd-4f0a-a09b-2676ef5dd5b8",
+      "name": "HTTP - Add Solution",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        1344
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nkNCOc99RoHFboVh",
+          "name": "WIDIP Phibee"
+        },
+        "httpMultipleHeadersAuth": {
+          "id": "r1Xh9AhgHiA9QViN",
+          "name": "WIDIP GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $credentials.glpiApi.url }}/Ticket/{{ $('Build Close Ticket').first().json.ticket_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpMultipleHeadersAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"input\": {\n    \"id\": {{ $('Build Close Ticket').first().json.ticket_id }},\n    \"status\": 5\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "2654c956-c261-43ba-8240-b552fb23ea52",
+      "name": "HTTP - Set Resolved",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1344,
+        1344
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nkNCOc99RoHFboVh",
+          "name": "WIDIP Phibee"
+        },
+        "httpMultipleHeadersAuth": {
+          "id": "r1Xh9AhgHiA9QViN",
+          "name": "WIDIP GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const original = $('Build Close Ticket').first().json;\n  return [{ json: { success: true, operation: 'close_ticket', ticket_id: original.ticket_id, solution: original.solution, new_status: 'Résolu', message: 'Ticket clôturé avec solution' } }];\n} catch (error) {\n  return [{ json: { success: false, operation: 'close_ticket', error: error.message } }];\n}"
+      },
+      "id": "4d2531b5-f264-47b2-8426-c1fd480f3af3",
+      "name": "Format Close Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        1344
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================================================\n// CREATE GLPI USER - Créer un utilisateur dans GLPI\n// =============================================================================\nconst input = $input.first().json;\n\n// Validation des champs requis\nif (!input.login) throw new Error('Le login est requis');\nif (!input.realname) throw new Error('Le nom (realname) est requis');\n\n// Construire le payload\nconst payload = {\n  input: {\n    name: input.login,\n    realname: input.realname,\n    firstname: input.firstname || '',\n    is_active: input.is_active !== false ? 1 : 0,\n    entities_id: input.entities_id || 0,\n    profiles_id: input.profiles_id || 0\n  }\n};\n\n// Ajouter le mot de passe si fourni\nif (input.password) {\n  payload.input.password = input.password;\n  payload.input.password2 = input.password;\n}\n\nreturn [{ json: { payload, originalInput: input } }];"
+      },
+      "id": "71af5359-0b07-4385-8a9f-262e2825f25a",
+      "name": "Build Create User Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        1536
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $credentials.glpiApi.url }}/User",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpMultipleHeadersAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "97c99442-17c2-42ad-aa6a-06c733aa94f1",
+      "name": "HTTP - Create User",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        1536
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nkNCOc99RoHFboVh",
+          "name": "WIDIP Phibee"
+        },
+        "httpMultipleHeadersAuth": {
+          "id": "r1Xh9AhgHiA9QViN",
+          "name": "WIDIP GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const response = $input.first().json;\n  const original = $('Build Create User Payload').first().json.originalInput;\n  \n  if (!response.id) {\n    const errorMsg = response.error || response[0] || 'Échec de la création';\n    return [{ json: { success: false, operation: 'create_glpi_user', error: errorMsg } }];\n  }\n  \n  return [{ json: {\n    success: true,\n    operation: 'create_glpi_user',\n    user_id: response.id.toString(),\n    login: original.login,\n    realname: original.realname,\n    firstname: original.firstname || '',\n    message: 'Utilisateur GLPI créé avec succès'\n  }}];\n} catch (error) {\n  return [{ json: { success: false, operation: 'create_glpi_user', error: error.message } }];\n}"
+      },
+      "id": "6c59a858-4f98-4a03-b7cd-a8d475950619",
+      "name": "Format Create User Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        1536
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $credentials.glpiApi.url }}/User/{{ $json.user_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpMultipleHeadersAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "expand_dropdowns",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "dd089e65-bccf-44bb-be99-d593ea7f37d6",
+      "name": "HTTP - Get User",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        896,
+        1728
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nkNCOc99RoHFboVh",
+          "name": "WIDIP Phibee"
+        },
+        "httpMultipleHeadersAuth": {
+          "id": "r1Xh9AhgHiA9QViN",
+          "name": "WIDIP GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const response = $input.first().json;\n  \n  if (!response.id) {\n    return [{ json: { success: false, operation: 'get_glpi_user', error: 'Utilisateur non trouvé' } }];\n  }\n  \n  return [{ json: {\n    success: true,\n    operation: 'get_glpi_user',\n    user: {\n      id: response.id,\n      login: response.name,\n      realname: response.realname,\n      firstname: response.firstname,\n      email: response.email || null,\n      phone: response.phone || null,\n      is_active: response.is_active === 1,\n      entities_id: response.entities_id,\n      profiles_id: response.profiles_id,\n      date_creation: response.date_creation,\n      date_mod: response.date_mod,\n      last_login: response.last_login\n    }\n  }}];\n} catch (error) {\n  return [{ json: { success: false, operation: 'get_glpi_user', error: error.message } }];\n}"
+      },
+      "id": "17110b41-4a4d-4279-a3e5-013b56ddb7cd",
+      "name": "Format Get User Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        1728
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================================================\n// UPDATE GLPI USER - Modifier un utilisateur existant\n// =============================================================================\nconst input = $input.first().json;\n\n// Validation\nif (!input.user_id) throw new Error('user_id est requis');\n\n// Construire le payload avec uniquement les champs fournis\nconst updateFields = { id: parseInt(input.user_id) };\n\nif (input.realname !== undefined) updateFields.realname = input.realname;\nif (input.firstname !== undefined) updateFields.firstname = input.firstname;\nif (input.email !== undefined) updateFields.email = input.email;\nif (input.phone !== undefined) updateFields.phone = input.phone;\nif (input.is_active !== undefined) updateFields.is_active = input.is_active ? 1 : 0;\nif (input.entities_id !== undefined) updateFields.entities_id = input.entities_id;\nif (input.profiles_id !== undefined) updateFields.profiles_id = input.profiles_id;\n\n// Mise à jour du mot de passe si fourni\nif (input.password) {\n  updateFields.password = input.password;\n  updateFields.password2 = input.password;\n}\n\nconst payload = { input: updateFields };\n\nreturn [{ json: { payload, originalInput: input } }];"
+      },
+      "id": "e8469f75-4cf8-40d9-9dcb-5f70ba3133aa",
+      "name": "Build Update User Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        1920
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $credentials.glpiApi.url }}/User/{{ $json.originalInput.user_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpMultipleHeadersAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "bdf07080-246c-41d0-9c39-f70a0be603b4",
+      "name": "HTTP - Update User",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        1920
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nkNCOc99RoHFboVh",
+          "name": "WIDIP Phibee"
+        },
+        "httpMultipleHeadersAuth": {
+          "id": "r1Xh9AhgHiA9QViN",
+          "name": "WIDIP GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const response = $input.first().json;\n  const original = $('Build Update User Payload').first().json.originalInput;\n  \n  // L'API GLPI retourne un tableau avec l'ID si succès\n  const success = Array.isArray(response) ? response[0]?.id || response[0] : response.id;\n  \n  if (!success && response.error) {\n    return [{ json: { success: false, operation: 'update_glpi_user', error: response.error } }];\n  }\n  \n  return [{ json: {\n    success: true,\n    operation: 'update_glpi_user',\n    user_id: original.user_id,\n    message: 'Utilisateur GLPI mis à jour avec succès'\n  }}];\n} catch (error) {\n  return [{ json: { success: false, operation: 'update_glpi_user', error: error.message } }];\n}"
+      },
+      "id": "de2e1201-206d-47d7-b826-818c21ee7570",
+      "name": "Format Update User Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        1920
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// =============================================================================\n// DISABLE GLPI USER - Désactiver un utilisateur (is_active = 0)\n// =============================================================================\nconst input = $input.first().json;\n\n// Validation\nif (!input.user_id) throw new Error('user_id est requis');\n\nconst payload = {\n  input: {\n    id: parseInt(input.user_id),\n    is_active: 0\n  }\n};\n\nreturn [{ json: { payload, originalInput: input } }];"
+      },
+      "id": "2ff154ac-4f6d-468a-a2e2-8dbd45c6c61c",
+      "name": "Build Disable User Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        2112
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ $credentials.glpiApi.url }}/User/{{ $json.originalInput.user_id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpMultipleHeadersAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.payload) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      },
+      "id": "174537c6-2abe-4033-96c6-30e3f2e30587",
+      "name": "HTTP - Disable User",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1120,
+        2112
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "nkNCOc99RoHFboVh",
+          "name": "WIDIP Phibee"
+        },
+        "httpMultipleHeadersAuth": {
+          "id": "r1Xh9AhgHiA9QViN",
+          "name": "WIDIP GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const response = $input.first().json;\n  const original = $('Build Disable User Payload').first().json.originalInput;\n  \n  // L'API GLPI retourne un tableau avec l'ID si succès\n  const success = Array.isArray(response) ? response[0]?.id || response[0] : response.id;\n  \n  if (!success && response.error) {\n    return [{ json: { success: false, operation: 'disable_glpi_user', error: response.error } }];\n  }\n  \n  return [{ json: {\n    success: true,\n    operation: 'disable_glpi_user',\n    user_id: original.user_id,\n    is_active: false,\n    message: 'Utilisateur GLPI désactivé avec succès'\n  }}];\n} catch (error) {\n  return [{ json: { success: false, operation: 'disable_glpi_user', error: error.message } }];\n}"
+      },
+      "id": "664c44fe-a9c9-4eb7-82d5-a25d1e50b5d0",
+      "name": "Format Disable User Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        2112
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $input.first().json;\nreturn [{ json: {\n  success: false,\n  operation: input.operation || 'unknown',\n  error: `Opération '${input.operation}' non reconnue`,\n  available_operations: [\n    'search_client',\n    'create_ticket',\n    'get_ticket_status',\n    'add_ticket_followup',\n    'search_new_tickets',\n    'get_ticket_details',\n    'update_ticket_status',\n    'close_ticket',\n    'create_glpi_user',\n    'get_glpi_user',\n    'update_glpi_user',\n    'disable_glpi_user'\n  ]\n} }];"
+      },
+      "id": "44043ecd-5123-40c4-b056-2de658212e4e",
+      "name": "Opération Non Reconnue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        2304
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🔧 WIDIP MCP GLPI v7\n\n### Opérations Tickets (v6)\n- `search_client` - Recherche utilisateur par nom/email/phone\n- `create_ticket` - Créer un ticket\n- `get_ticket_status` - Statut d'un ticket\n- `add_ticket_followup` - Ajouter un suivi\n- `search_new_tickets` - Chercher nouveaux tickets\n- `get_ticket_details` - Détails complet d'un ticket\n- `update_ticket_status` - Modifier le statut\n- `close_ticket` - Fermer avec solution\n\n### Opérations Utilisateurs (v7 - NOUVEAU)\n- `create_glpi_user` - Créer un utilisateur\n- `get_glpi_user` - Récupérer infos utilisateur\n- `update_glpi_user` - Modifier utilisateur\n- `disable_glpi_user` - Désactiver utilisateur\n\n### Paramètres Utilisateurs\n- `user_id` - ID utilisateur (pour get/update/disable)\n- `login` - Identifiant de connexion\n- `password` - Mot de passe\n- `firstname` - Prénom\n- `realname` - Nom de famille\n- `email` - Email\n- `profiles_id` - ID du profil/rôle\n- `entities_id` - ID de l'entité\n- `is_active` - Actif (true/false)",
+        "height": 708,
+        "width": 400,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -144,
+        688
+      ],
+      "typeVersion": 1,
+      "id": "3ee7161d-622e-42d8-b8db-66857c658808",
+      "name": "Documentation v7"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When called by another workflow": {
+      "main": [
+        [
+          {
+            "node": "Route Operation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Operation": {
+      "main": [
+        [
+          {
+            "node": "Build Search Query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Create Ticket Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP - Get Ticket Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Followup Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Search New Tickets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP - Get Ticket Details",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Update Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Close Ticket",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Create User Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP - Get User",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Update User Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Disable User Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP - Get Ticket History",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Opération Non Reconnue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Search Query": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Search Client",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Search Client": {
+      "main": [
+        [
+          {
+            "node": "Format Search Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Create Ticket Payload": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Create Ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Create Ticket": {
+      "main": [
+        [
+          {
+            "node": "Format Create Ticket Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Get Ticket Status": {
+      "main": [
+        [
+          {
+            "node": "Format Status Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Followup Payload": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Add Followup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Add Followup": {
+      "main": [
+        [
+          {
+            "node": "Format Followup Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Search New Tickets": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Search New Tickets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Search New Tickets": {
+      "main": [
+        [
+          {
+            "node": "Format Search New Tickets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Get Ticket Details": {
+      "main": [
+        [
+          {
+            "node": "Format Ticket Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Update Status": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Update Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Update Status": {
+      "main": [
+        [
+          {
+            "node": "Format Update Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Close Ticket": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Add Solution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Add Solution": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Set Resolved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Set Resolved": {
+      "main": [
+        [
+          {
+            "node": "Format Close Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Create User Payload": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Create User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Create User": {
+      "main": [
+        [
+          {
+            "node": "Format Create User Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Get User": {
+      "main": [
+        [
+          {
+            "node": "Format Get User Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Update User Payload": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Update User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Update User": {
+      "main": [
+        [
+          {
+            "node": "Format Update User Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Disable User Payload": {
+      "main": [
+        [
+          {
+            "node": "HTTP - Disable User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP - Disable User": {
+      "main": [
+        [
+          {
+            "node": "Format Disable User Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6fa4d313-25e0-4add-8245-95af8cd19173",
+  "meta": {
+    "instanceId": "2f7feaa62d84455355dbe5623ed2cf399d33e00898464e812f19febe1805a15d"
+  },
+  "id": "c9sDkkS8stHEdliP",
+  "tags": [
+    {
+      "updatedAt": "2025-12-03T09:39:24.898Z",
+      "createdAt": "2025-12-03T09:39:24.898Z",
+      "id": "50kCEexLhb9Mk0n4",
+      "name": "v7"
+    },
+    {
+      "updatedAt": "2025-12-02T10:59:31.282Z",
+      "createdAt": "2025-12-02T10:59:31.282Z",
+      "id": "TUivszOF7k1MmcuG",
+      "name": "widip"
+    },
+    {
+      "updatedAt": "2025-12-03T09:39:24.893Z",
+      "createdAt": "2025-12-03T09:39:24.893Z",
+      "id": "fe3lqfY0v3QcmkKN",
+      "name": "glpi"
+    },
+    {
+      "updatedAt": "2025-12-02T11:04:01.172Z",
+      "createdAt": "2025-12-02T11:04:01.172Z",
+      "id": "tZGgdpJWslBwOYsL",
+      "name": "assist"
+    }
+  ]
+}

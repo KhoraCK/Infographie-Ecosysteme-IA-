@@ -1,0 +1,161 @@
+{
+    "name": "WIDIP_RAG_Ingestor",
+    "nodes": [
+        {
+            "parameters": {},
+            "type": "n8n-nodes-base.manualTrigger",
+            "typeVersion": 1,
+            "position": [
+                0,
+                0
+            ],
+            "id": "manual-trigger",
+            "name": "Démarrage Manuel (Bulk)"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT \n  id as ticket_id,\n  name as title,\n  content as description,\n  solution_content as solution\nFROM glpi_tickets \nWHERE status = 6 -- Clos\nAND solution_content IS NOT NULL\nORDER BY date_mod DESC\nLIMIT 100;",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.4,
+            "position": [
+                220,
+                0
+            ],
+            "id": "fetch-glpi-tickets",
+            "name": "Fetch GLPI Closed Tickets",
+            "credentials": {
+                "postgres": {
+                    "id": "Postgres_GLPI",
+                    "name": "GLPI Database (To Configure)"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Prepare text for embedding\n// Format: \"Title: ... Description: ... Solution: ...\"\nreturn $input.all().map(item => {\n  const tick = item.json;\n  // Clean HTML tags if necessary\n  const cleanSol = tick.solution.replace(/<[^>]*>?/gm, '');\n  const cleanDesc = tick.description.replace(/<[^>]*>?/gm, '');\n  \n  return {\n    json: {\n      ticket_id: tick.ticket_id.toString(),\n      problem_summary: tick.title,\n      solution_summary: cleanSol.substring(0, 500), // Truncate for summary\n      full_content: `Problème: ${tick.title}\\nDescription: ${cleanDesc}\\nSolution: ${cleanSol}`\n    }\n  };\n});"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                440,
+                0
+            ],
+            "id": "format-for-rag",
+            "name": "Format Text"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "http://widip-ai:11434/api/embeddings",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "model",
+                            "value": "nomic-embed-text"
+                        },
+                        {
+                            "name": "prompt",
+                            "value": "={{ $json.full_content }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                660,
+                0
+            ],
+            "id": "embed-ticket",
+            "name": "Generate Embedding"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "={{ 'INSERT INTO widip_knowledge_base (ticket_id, problem_summary, solution_summary, full_content, embedding) VALUES (\\'' + $json.ticket_id + '\\', \\'' + $json.problem_summary.replace(/'/g, \"''\") + '\\', \\'' + $json.solution_summary.replace(/'/g, \"''\") + '\\', \\'' + $json.full_content.replace(/'/g, \"''\") + '\\', \\'' + JSON.stringify($json.embedding) + '\\'::vector) ON CONFLICT (ticket_id) DO NOTHING;' }}"
+            },
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.4,
+            "position": [
+                880,
+                0
+            ],
+            "id": "save-vector",
+            "name": "Save to Vector DB",
+            "credentials": {
+                "postgres": {
+                    "id": "Postgres_WIDIP",
+                    "name": "Postgres Local"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "content": "## 📥 WIDIP RAG Ingestor\nCe workflow alimente la mémoire vectorielle.\n\n1. Récupère les tickets clos de GLPI.\n2. Nettoie et formate (Problème + Solution).\n3. Génère l'embedding vectoriel (nomic-embed-text).\n4. Sauvegarde dans `widip_knowledge_base`.\n\n**Note**: Nécessite un accès lecture à la DB GLPI.",
+                "height": 280,
+                "width": 340,
+                "color": 5
+            },
+            "type": "n8n-nodes-base.stickyNote",
+            "position": [
+                220,
+                -260
+            ],
+            "typeVersion": 1,
+            "id": "doc-ingest",
+            "name": "Documentation"
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "Démarrage Manuel (Bulk)": {
+            "main": [
+                [
+                    {
+                        "node": "Fetch GLPI Closed Tickets",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Fetch GLPI Closed Tickets": {
+            "main": [
+                [
+                    {
+                        "node": "Format Text",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Text": {
+            "main": [
+                [
+                    {
+                        "node": "Generate Embedding",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Generate Embedding": {
+            "main": [
+                [
+                    {
+                        "node": "Save to Vector DB",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}

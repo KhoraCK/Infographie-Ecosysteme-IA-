@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow ASSISTANT TICKET - Documentation Fonctionnelle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #333;
+            background: #fff;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm 25mm;
+            margin: 0 auto;
+            background: #fff;
+            position: relative;
+        }
+
+        .header {
+            background: #28a745;
+            color: #fff;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 12pt;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-icon {
+            font-size: 18pt;
+        }
+
+        .cover-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 250mm;
+            text-align: center;
+        }
+
+        .cover-icon {
+            font-size: 80pt;
+            margin-bottom: 30px;
+        }
+
+        .cover-title {
+            font-size: 32pt;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+
+        .cover-subtitle {
+            font-size: 18pt;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .cover-description {
+            font-size: 14pt;
+            color: #888;
+            margin-bottom: 80px;
+            max-width: 450px;
+        }
+
+        .cover-date {
+            font-size: 12pt;
+            color: #888;
+            font-style: italic;
+        }
+
+        h1 {
+            font-size: 18pt;
+            color: #28a745;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 8px;
+            margin: 30px 0 20px 0;
+        }
+
+        h2 {
+            font-size: 14pt;
+            color: #28a745;
+            margin: 25px 0 15px 0;
+        }
+
+        h3 {
+            font-size: 12pt;
+            color: #333;
+            margin: 20px 0 10px 0;
+            border-left: 4px solid #28a745;
+            padding-left: 10px;
+        }
+
+        h4 {
+            font-size: 11pt;
+            color: #333;
+            margin: 15px 0 8px 0;
+            font-style: italic;
+        }
+
+        p {
+            margin: 10px 0;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin: 10px 0 10px 25px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid #999;
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #28a745;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .table-small {
+            font-size: 9pt;
+        }
+
+        .table-small th, .table-small td {
+            padding: 5px 8px;
+        }
+
+        pre {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            margin: 15px 0;
+            line-height: 1.3;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 10pt;
+        }
+
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .important {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 15mm;
+            left: 25mm;
+            right: 25mm;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9pt;
+            color: #666;
+            border-top: 1px solid #ccc;
+            padding-top: 8px;
+        }
+
+        .toc {
+            margin: 20px 0;
+        }
+
+        .toc a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .toc-h1 {
+            font-weight: bold;
+            margin: 10px 0 5px 0;
+        }
+
+        .toc-h2 {
+            margin: 3px 0 3px 20px;
+        }
+
+        .toc-h3 {
+            margin: 2px 0 2px 40px;
+            font-size: 10pt;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .level-l0 { background: #d4edda; }
+        .level-l1 { background: #d1ecf1; }
+        .level-l2 { background: #fff3cd; }
+        .level-l3 { background: #f8d7da; }
+        .level-l4 { background: #e2e3e5; }
+
+        .workflow-box {
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            background: #f8f9fa;
+        }
+
+        .orchestrator-box {
+            border: 2px solid #17a2b8;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            background: #e8f4f8;
+        }
+
+        .orchestrator-box h4 {
+            color: #17a2b8;
+        }
+
+        .agent-box {
+            border: 2px solid #6f42c1;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            background: #f3f0ff;
+        }
+
+        .agent-box h4 {
+            color: #6f42c1;
+        }
+
+        .profile-authorized {
+            background: #d4edda;
+            color: #155724;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .profile-denied {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        @media print {
+            .page {
+                margin: 0;
+                padding: 15mm 20mm;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- PAGE DE GARDE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="cover-page">
+        <div class="cover-icon">&#127915;</div>
+        <div class="cover-title">ASSISTANT TICKET</div>
+        <div class="cover-subtitle">Workflow de Traitement Automatique des Tickets</div>
+        <div class="cover-description">
+            Orchestrateur Python + Agent Devstral2 pour la qualification et le traitement automatique des demandes de cr&eacute;ation de compte
+        </div>
+        <div class="cover-date">Documentation Fonctionnelle<br>Janvier 2026</div>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SOMMAIRE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1>Sommaire</h1>
+
+    <div class="toc">
+        <div class="toc-h1"><a href="#section1">1. Vue d'ensemble</a></div>
+        <div class="toc-h2"><a href="#section1-1">1.1. Mission de l'Assistant Ticket</a></div>
+        <div class="toc-h2"><a href="#section1-2">1.2. Architecture Orchestrateur + Agent</a></div>
+        <div class="toc-h2"><a href="#section1-3">1.3. S&eacute;paration des responsabilit&eacute;s</a></div>
+
+        <div class="toc-h1"><a href="#section2">2. Orchestrateur (Python)</a></div>
+        <div class="toc-h2"><a href="#section2-1">2.1. Cycle de polling GLPI (180 secondes)</a></div>
+        <div class="toc-h2"><a href="#section2-2">2.2. Filtrage et qualification pr&eacute;liminaire</a></div>
+        <div class="toc-h2"><a href="#section2-3">2.3. D&eacute;clenchement de l'agent</a></div>
+
+        <div class="toc-h1"><a href="#section3">3. Agent Assistant Ticket (Devstral2)</a></div>
+        <div class="toc-h2"><a href="#section3-1">3.1. Contexte re&ccedil;u de l'orchestrateur</a></div>
+        <div class="toc-h2"><a href="#section3-2">3.2. V&eacute;rification du profil demandeur</a></div>
+        <div class="toc-h2"><a href="#section3-3">3.3. Extraction des informations du ticket</a></div>
+        <div class="toc-h2"><a href="#section3-4">3.4. Identification du serveur AD</a></div>
+
+        <div class="toc-h1"><a href="#section4">4. Proc&eacute;dure : Cr&eacute;ation de compte AD</a></div>
+        <div class="toc-h2"><a href="#section4-1">4.1. R&egrave;gles m&eacute;tier</a></div>
+        <div class="toc-h2"><a href="#section4-2">4.2. Architecture Active Directory WIDIP</a></div>
+        <div class="toc-h2"><a href="#section4-3">4.3. Le script d'Alexis</a></div>
+        <div class="toc-h2"><a href="#section4-4">4.4. Flux complet de traitement</a></div>
+        <div class="toc-h2"><a href="#section4-5">4.5. Proc&eacute;dure : Suppression de compte AD (L4)</a></div>
+
+        <div class="toc-h1"><a href="#section5">5. Outils MCP et Safeguard</a></div>
+        <div class="toc-h2"><a href="#section5-1">5.1. Outils utilis&eacute;s par l'agent</a></div>
+        <div class="toc-h2"><a href="#section5-2">5.2. Niveaux Safeguard</a></div>
+
+        <div class="toc-h1"><a href="#section6">6. Interaction avec l'Enrichisseur</a></div>
+
+        <div class="toc-h1"><a href="#section7">7. Prompt syst&egrave;me de l'agent</a></div>
+
+        <div class="toc-h1"><a href="#section8">8. Configuration</a></div>
+
+        <div class="toc-h1"><a href="#section9">9. Cercle vertueux avec l'Enrichisseur</a></div>
+        <div class="toc-h2"><a href="#section9-1">9.1. Principe d'extension progressive</a></div>
+        <div class="toc-h2"><a href="#section9-2">9.2. Catalogue de proc&eacute;dures &eacute;volutif</a></div>
+        <div class="toc-h2"><a href="#section9-3">9.3. M&eacute;canisme d'ajout de proc&eacute;dure</a></div>
+
+        <div class="toc-h1"><a href="#section10">10. Indicateurs et objectifs</a></div>
+        <div class="toc-h2"><a href="#section10-1">10.1. KPIs de succ&egrave;s</a></div>
+        <div class="toc-h2"><a href="#section10-2">10.2. Am&eacute;liorations futures</a></div>
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>2</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 1 : VUE D'ENSEMBLE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section1">1. Vue d'ensemble</h1>
+
+    <h2 id="section1-1">1.1. Mission de l'Assistant Ticket</h2>
+
+    <p>L'ASSISTANT TICKET est un workflow autonome qui surveille les nouveaux tickets GLPI et traite automatiquement les demandes de <strong>cr&eacute;ation de compte</strong> (premi&egrave;re proc&eacute;dure impl&eacute;ment&eacute;e). Il lib&egrave;re les techniciens des t&acirc;ches r&eacute;p&eacute;titives tout en garantissant un contr&ocirc;le humain via Safeguard.</p>
+
+    <div class="workflow-box">
+        <h4>Objectif</h4>
+        <p><em>"Qualifier, traiter et ex&eacute;cuter les demandes de cr&eacute;ation de compte automatiquement, en v&eacute;rifiant les autorisations et en utilisant le script existant."</em></p>
+    </div>
+
+    <h3>P&eacute;rim&egrave;tre actuel (Phase 1)</h3>
+
+    <table>
+        <tr>
+            <th>Proc&eacute;dure</th>
+            <th>Statut</th>
+            <th>Description</th>
+        </tr>
+        <tr style="background: #d4edda;">
+            <td><strong>Cr&eacute;ation de compte AD</strong></td>
+            <td>Impl&eacute;ment&eacute;e</td>
+            <td>Utilise le script d'Alexis via RDM (L3)</td>
+        </tr>
+        <tr style="background: #d4edda;">
+            <td><strong>Suppression de compte AD</strong></td>
+            <td>Impl&eacute;ment&eacute;e</td>
+            <td>Ex&eacute;cution diff&eacute;r&eacute;e avec d&eacute;lai (L4)</td>
+        </tr>
+        <tr style="background: #e2e3e5;">
+            <td>Reset mot de passe</td>
+            <td>Non impl&eacute;ment&eacute;</td>
+            <td>N&eacute;cessite appel t&eacute;l&eacute;phonique (hors scope)</td>
+        </tr>
+        <tr style="background: #e2e3e5;">
+            <td>D&eacute;blocage compte</td>
+            <td>Non impl&eacute;ment&eacute;</td>
+            <td>N&eacute;cessite appel t&eacute;l&eacute;phonique (hors scope)</td>
+        </tr>
+    </table>
+
+    <div class="important">
+        <strong>Limitation actuelle :</strong> Les resets de mot de passe et d&eacute;blocages de compte ne peuvent PAS &ecirc;tre automatis&eacute;s car ils n&eacute;cessitent un appel t&eacute;l&eacute;phonique pour transmettre le nouveau mot de passe &agrave; l'utilisateur.
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>3</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 1.2 : ARCHITECTURE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section1-2">1.2. Architecture Orchestrateur + Agent</h2>
+
+    <p>L'ASSISTANT TICKET est compos&eacute; de <strong>deux couches distinctes</strong> avec des responsabilit&eacute;s s&eacute;par&eacute;es :</p>
+
+    <div class="workflow-box">
+        <pre>
++-----------------------------------------------------------------------+
+|                    ORCHESTRATEUR (Python)                              |
+|                                                                        |
+|  Responsabilit&eacute;s:                                                      |
+|  - Polling GLPI toutes les 180 secondes                               |
+|  - V&eacute;rification cache Redis (ticket d&eacute;j&agrave; trait&eacute; ?)                      |
+|  - Filtrage par cat&eacute;gorie (cr&eacute;ation de compte)                        |
+|  - Extraction mots-cl&eacute;s basiques (titre, description)                 |
+|  - SI ticket &eacute;ligible -&gt; D&eacute;clencher l'agent                           |
+|                                                                        |
+|  Logique: D&eacute;terministe, rapide, sans co&ucirc;t LLM                          |
++-----------------------------------------------------------------------+
+                              |
+                              | Contexte enrichi JSON
+                              | {ticket_id, demandeur, entite,
+                              |  description, categorie, ...}
+                              v
++-----------------------------------------------------------------------+
+|                    AGENT ASSISTANT TICKET (Devstral2)                  |
+|                                                                        |
+|  Responsabilit&eacute;s:                                                      |
+|  - V&eacute;rifier le profil du demandeur (Directeur/R&eacute;f&eacute;rent)               |
+|  - Extraire les informations du formulaire/description                |
+|  - Identifier le serveur AD cible ({CLIENT}-DC01)                     |
+|  - Pr&eacute;parer les param&egrave;tres pour le script d'Alexis                    |
+|  - Demander validation Safeguard (L3)                                 |
+|  - Ex&eacute;cuter la cr&eacute;ation de compte                                     |
+|  - Documenter dans GLPI et notifier                                   |
+|                                                                        |
+|  Logique: Raisonnement LLM pour l'extraction et validation            |
++-----------------------------------------------------------------------+
+        </pre>
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>4</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 1.3 : SEPARATION RESPONSABILITES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section1-3">1.3. S&eacute;paration des responsabilit&eacute;s</h2>
+
+    <table>
+        <tr>
+            <th style="width:220px;">T&acirc;che</th>
+            <th>Orchestrateur (Python)</th>
+            <th>Agent (Devstral2)</th>
+        </tr>
+        <tr>
+            <td>Polling GLPI</td>
+            <td style="background:#e8f4f8;">&#10003; Code Python</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>Check cache Redis</td>
+            <td style="background:#e8f4f8;">&#10003; Code Python</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>Filtrage cat&eacute;gorie</td>
+            <td style="background:#e8f4f8;">&#10003; Code Python</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>D&eacute;tection mots-cl&eacute;s</td>
+            <td style="background:#e8f4f8;">&#10003; Code Python</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>V&eacute;rification profil demandeur</td>
+            <td>-</td>
+            <td style="background:#f3f0ff;">&#10003; Raisonnement LLM</td>
+        </tr>
+        <tr>
+            <td>Extraction donn&eacute;es formulaire</td>
+            <td>-</td>
+            <td style="background:#f3f0ff;">&#10003; Raisonnement LLM</td>
+        </tr>
+        <tr>
+            <td>Identification serveur AD</td>
+            <td>-</td>
+            <td style="background:#f3f0ff;">&#10003; Appel MCP</td>
+        </tr>
+        <tr>
+            <td>Ex&eacute;cution script Alexis</td>
+            <td>-</td>
+            <td style="background:#f3f0ff;">&#10003; Appel MCP (L3)</td>
+        </tr>
+        <tr>
+            <td>Mise &agrave; jour ticket GLPI</td>
+            <td>-</td>
+            <td style="background:#f3f0ff;">&#10003; Appel MCP</td>
+        </tr>
+    </table>
+
+    <h3>Avantages de cette architecture</h3>
+
+    <table class="table-small">
+        <tr>
+            <th>Aspect</th>
+            <th>B&eacute;n&eacute;fice</th>
+        </tr>
+        <tr>
+            <td><strong>Co&ucirc;t</strong></td>
+            <td>L'agent n'est appel&eacute; que pour les tickets &eacute;ligibles (pas de tokens pour filtrage)</td>
+        </tr>
+        <tr>
+            <td><strong>Performance</strong></td>
+            <td>Polling GLPI + cache Redis instantan&eacute; en Python</td>
+        </tr>
+        <tr>
+            <td><strong>Fiabilit&eacute;</strong></td>
+            <td>Logique d&eacute;terministe pour le filtrage, LLM pour l'extraction complexe</td>
+        </tr>
+        <tr>
+            <td><strong>Extensibilit&eacute;</strong></td>
+            <td>Nouvelles proc&eacute;dures ajoutables sans modifier l'orchestrateur</td>
+        </tr>
+    </table>
+
+    <div class="success">
+        <strong>Principe cl&eacute; :</strong> L'orchestrateur fait le travail "m&eacute;canique" (polling, filtrage, cache). L'agent fait le travail "intelligent" (extraction, validation, ex&eacute;cution).
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>5</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 2 : ORCHESTRATEUR -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section2">2. Orchestrateur (Python)</h1>
+
+    <h2 id="section2-1">2.1. Cycle de polling GLPI (180 secondes)</h2>
+
+    <p>L'orchestrateur s'ex&eacute;cute en boucle infinie avec un intervalle de 180 secondes (3 minutes).</p>
+
+    <div class="orchestrator-box">
+        <h4>Cycle de l'orchestrateur</h4>
+        <pre>
+while True:
+    # 1. R&eacute;cup&eacute;rer les nouveaux tickets GLPI
+    tickets = glpi_api.search_tickets(
+        status=["Nouveau", "En attente"],
+        categories=["creation_compte", "ouverture_session"],
+        age_max_hours=24
+    )
+
+    # 2. Pour chaque ticket
+    for ticket in tickets:
+
+        # 3. V&eacute;rifier si d&eacute;j&agrave; trait&eacute; (cache Redis)
+        if redis.exists(f"assistant:processed:{ticket.id}"):
+            continue  # D&eacute;j&agrave; trait&eacute;, passer au suivant
+
+        # 4. D&eacute;tection mots-cl&eacute;s dans titre/description
+        keywords = ["cr&eacute;er un compte", "ouverture de session",
+                    "nouveau compte", "cr&eacute;ation utilisateur"]
+        if not any(kw in ticket.content.lower() for kw in keywords):
+            continue  # Pas une demande de cr&eacute;ation de compte
+
+        # 5. Construire le contexte pour l'agent
+        context = {
+            "ticket_id": ticket.id,
+            "ticket_title": ticket.title,
+            "ticket_content": ticket.content,
+            "demandeur_id": ticket.requester_id,
+            "demandeur_name": ticket.requester_name,
+            "entite_id": ticket.entity_id,
+            "entite_name": ticket.entity_name,
+            "categorie": ticket.category,
+            "date_creation": ticket.date_creation
+        }
+
+        # 6. D&Eacute;CLENCHER L'AGENT
+        result = agent_assistant.process(context)
+
+        # 7. Marquer comme trait&eacute; dans Redis (TTL 7 jours)
+        redis.setex(f"assistant:processed:{ticket.id}", 604800, "1")
+
+    # Attendre 180 secondes avant le prochain cycle
+    sleep(180)
+        </pre>
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>6</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 2.2 : FILTRAGE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section2-2">2.2. Filtrage et qualification pr&eacute;liminaire</h2>
+
+    <p>L'orchestrateur effectue 4 v&eacute;rifications <strong>d&eacute;terministes</strong> avant de d&eacute;clencher l'agent.</p>
+
+    <div class="orchestrator-box">
+        <h4>V&eacute;rification 1 : Cache Redis</h4>
+        <table class="table-small">
+            <tr>
+                <th>Cl&eacute;</th>
+                <td><code>assistant:processed:{ticket_id}</code></td>
+            </tr>
+            <tr>
+                <th>TTL</th>
+                <td>7 jours</td>
+            </tr>
+            <tr>
+                <th>Logique</th>
+                <td>Si la cl&eacute; existe &rarr; ticket d&eacute;j&agrave; trait&eacute; &rarr; ignorer</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="orchestrator-box">
+        <h4>V&eacute;rification 2 : Statut du ticket</h4>
+        <table class="table-small">
+            <tr>
+                <th>Statuts accept&eacute;s</th>
+                <td><code>Nouveau</code>, <code>En attente</code></td>
+            </tr>
+            <tr>
+                <th>Logique</th>
+                <td>Tickets d&eacute;j&agrave; assign&eacute;s ou en cours &rarr; ignorer</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="orchestrator-box">
+        <h4>V&eacute;rification 3 : Cat&eacute;gorie</h4>
+        <table class="table-small">
+            <tr>
+                <th>Cat&eacute;gories accept&eacute;es</th>
+                <td><code>creation_compte</code>, <code>ouverture_session</code>, <code>gestion_utilisateurs</code></td>
+            </tr>
+            <tr>
+                <th>Logique</th>
+                <td>Seules ces cat&eacute;gories d&eacute;clenchent l'agent</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="orchestrator-box">
+        <h4>V&eacute;rification 4 : Mots-cl&eacute;s</h4>
+        <table class="table-small">
+            <tr>
+                <th>Mots-cl&eacute;s recherch&eacute;s</th>
+                <td>"cr&eacute;er un compte", "ouverture de session", "nouveau compte", "cr&eacute;ation utilisateur"</td>
+            </tr>
+            <tr>
+                <th>Logique</th>
+                <td>Au moins un mot-cl&eacute; doit &ecirc;tre pr&eacute;sent dans titre ou description</td>
+            </tr>
+        </table>
+    </div>
+
+    <h2 id="section2-3">2.3. D&eacute;clenchement de l'agent</h2>
+
+    <p>Si toutes les v&eacute;rifications passent, l'orchestrateur construit un <strong>contexte JSON</strong> et appelle l'agent.</p>
+
+    <pre>
+{
+    "ticket_id": 5234,
+    "ticket_title": "Cr&eacute;ation de compte pour nouveau collaborateur",
+    "ticket_content": "Bonjour, je voudrais cr&eacute;er un compte pour M. Jean DUPONT...",
+    "demandeur_id": 142,
+    "demandeur_name": "Marie MARTIN",
+    "entite_id": 42,
+    "entite_name": "MFI - Maison Familiale Is&egrave;re",
+    "categorie": "creation_compte",
+    "date_creation": "2026-01-21T09:30:00"
+}
+    </pre>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>7</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3 : AGENT -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section3">3. Agent Assistant Ticket (Devstral2)</h1>
+
+    <h2 id="section3-1">3.1. Contexte re&ccedil;u de l'orchestrateur</h2>
+
+    <p>L'agent re&ccedil;oit un contexte <strong>propre et filtr&eacute;</strong> de l'orchestrateur. Il sait d&eacute;j&agrave; que le ticket est &eacute;ligible.</p>
+
+    <div class="agent-box">
+        <h4>Contexte d'entr&eacute;e</h4>
+        <pre>
+{
+    "ticket_id": 5234,                           // ID ticket GLPI
+    "ticket_title": "Cr&eacute;ation de compte...",      // Titre du ticket
+    "ticket_content": "Bonjour, je voudrais...",  // Contenu complet
+    "demandeur_id": 142,                          // ID demandeur GLPI
+    "demandeur_name": "Marie MARTIN",             // Nom demandeur
+    "entite_id": 42,                              // ID entit&eacute; (association)
+    "entite_name": "MFI - Maison Familiale",      // Nom entit&eacute;
+    "categorie": "creation_compte",               // Cat&eacute;gorie ticket
+    "date_creation": "2026-01-21T09:30:00"       // Date cr&eacute;ation
+}
+        </pre>
+    </div>
+
+    <h3>Ce que l'agent doit faire</h3>
+
+    <table>
+        <tr>
+            <th style="width:50px;">&Eacute;tape</th>
+            <th>Action</th>
+            <th>Outil MCP</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>V&eacute;rifier le profil du demandeur (Directeur/R&eacute;f&eacute;rent)</td>
+            <td><code>glpi_get_user_profile</code></td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Extraire les informations du nouveau compte</td>
+            <td>Raisonnement LLM</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Identifier le serveur AD cible ({ENTITE}-DC01)</td>
+            <td>Raisonnement LLM</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Pr&eacute;parer les param&egrave;tres du script</td>
+            <td>Raisonnement LLM</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Demander validation Safeguard (L3)</td>
+            <td><code>ad_create_user</code></td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>Ex&eacute;cuter la cr&eacute;ation de compte</td>
+            <td>Script Alexis via RDM</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td>Ajouter suivi et cl&ocirc;turer ticket</td>
+            <td><code>glpi_add_followup</code></td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>8</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3.2 : VERIFICATION PROFIL -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section3-2">3.2. V&eacute;rification du profil demandeur</h2>
+
+    <p>C'est la <strong>premi&egrave;re v&eacute;rification critique</strong> de l'agent. Un utilisateur "lambda" ne peut PAS demander une cr&eacute;ation de compte.</p>
+
+    <div class="important">
+        <strong>R&egrave;gle m&eacute;tier absolue :</strong> Seuls les profils <span class="profile-authorized">Directeur</span> et <span class="profile-authorized">R&eacute;f&eacute;rent</span> peuvent demander une cr&eacute;ation ou suppression de compte AD.
+    </div>
+
+    <div class="agent-box">
+        <h4>Raisonnement de l'agent</h4>
+        <pre style="background: #1e1e1e; color: #d4d4d4; border: none; font-size: 9pt;">
+<span style="color: #6a9955;">// Contexte re&ccedil;u</span>
+demandeur_id = 142
+demandeur_name = "Marie MARTIN"
+
+<span style="color: #6a9955;">// &Eacute;tape 1 - R&eacute;cup&eacute;rer le profil</span>
+Agent: glpi_get_user_profile(user_id=142)
+R&eacute;sultat: {
+    "user_id": 142,
+    "name": "Marie MARTIN",
+    "profile": "Directeur",   <span style="color: #4ec9b0;">// &larr; PROFIL CL&Eacute;</span>
+    "entity": "MFI - Maison Familiale"
+}
+
+<span style="color: #6a9955;">// &Eacute;tape 2 - V&eacute;rification</span>
+Agent: "Le profil est 'Directeur'. C'est un profil autoris&eacute;.
+        Je peux continuer le traitement."
+
+<span style="color: #4ec9b0;">PROFILS_AUTORISES = ["Directeur", "R&eacute;f&eacute;rent"]</span>
+<span style="color: #4ec9b0;">if profile in PROFILS_AUTORISES: CONTINUE</span>
+<span style="color: #f44747;">else: REJECT</span>
+        </pre>
+    </div>
+
+    <h3>Cas de rejet</h3>
+
+    <div class="agent-box">
+        <h4>Si le demandeur n'est pas autoris&eacute;</h4>
+        <pre style="background: #1e1e1e; color: #d4d4d4; border: none; font-size: 9pt;">
+R&eacute;sultat: {
+    "profile": "Utilisateur",    <span style="color: #f44747;">// &larr; NON AUTORIS&Eacute;</span>
+}
+
+Agent: "Le profil 'Utilisateur' n'est pas autoris&eacute; &agrave; demander
+        une cr&eacute;ation de compte. Je dois rejeter la demande."
+
+<span style="color: #6a9955;">// Action: Ajouter un suivi explicatif</span>
+glpi_add_followup(ticket_id=5234, content="""
+Bonjour,
+
+Votre demande de cr&eacute;ation de compte ne peut pas &ecirc;tre trait&eacute;e.
+
+Seuls les Directeurs ou R&eacute;f&eacute;rents sont habilit&eacute;s &agrave; demander
+la cr&eacute;ation d'un compte utilisateur.
+
+Veuillez contacter votre responsable pour qu'il fasse la demande.
+
+Cordialement,
+Assistant WIDIP
+""")
+        </pre>
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>9</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3.3 : EXTRACTION INFORMATIONS -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section3-3">3.3. Extraction des informations du ticket</h2>
+
+    <p>L'agent extrait les informations n&eacute;cessaires depuis le contenu du ticket ou le formulaire MyWidip.</p>
+
+    <div class="agent-box">
+        <h4>Exemple de contenu ticket</h4>
+        <pre style="background: #f8f9fa; border: 1px solid #ddd;">
+Bonjour,
+
+Je voudrais cr&eacute;er un compte pour M. Jean DUPONT qui arrive
+le 1er f&eacute;vrier 2026 au poste d'&eacute;ducateur sp&eacute;cialis&eacute;.
+
+Informations :
+- Nom : DUPONT
+- Pr&eacute;nom : Jean
+- Email personnel : jean.dupont@gmail.com
+- Poste : &Eacute;ducateur sp&eacute;cialis&eacute;
+- Date d'arriv&eacute;e : 01/02/2026
+
+Merci d'avance.
+        </pre>
+    </div>
+
+    <div class="agent-box">
+        <h4>Extraction par l'agent (LLM)</h4>
+        <pre style="background: #1e1e1e; color: #d4d4d4; border: none; font-size: 9pt;">
+Agent: "J'analyse le contenu du ticket pour extraire les informations..."
+
+<span style="color: #6a9955;">// Extraction structur&eacute;e</span>
+{
+    "nom": "DUPONT",
+    "prenom": "Jean",
+    "email_personnel": "jean.dupont@gmail.com",
+    "poste": "&Eacute;ducateur sp&eacute;cialis&eacute;",
+    "date_arrivee": "2026-02-01",
+    "entite": "MFI - Maison Familiale Is&egrave;re"  <span style="color: #6a9955;">// depuis contexte</span>
+}
+
+<span style="color: #6a9955;">// G&eacute;n&eacute;ration du login (convention WIDIP)</span>
+login_genere = "j.dupont"  <span style="color: #6a9955;">// premi&egrave;re lettre pr&eacute;nom + nom</span>
+email_genere = "j.dupont@mfi.fr"  <span style="color: #6a9955;">// login + domaine client</span>
+        </pre>
+    </div>
+
+    <h3>Informations requises</h3>
+
+    <table class="table-small">
+        <tr>
+            <th>Champ</th>
+            <th>Obligatoire</th>
+            <th>Source</th>
+        </tr>
+        <tr>
+            <td>Nom</td>
+            <td style="color: #dc3545; font-weight: bold;">Oui</td>
+            <td>Ticket ou formulaire</td>
+        </tr>
+        <tr>
+            <td>Pr&eacute;nom</td>
+            <td style="color: #dc3545; font-weight: bold;">Oui</td>
+            <td>Ticket ou formulaire</td>
+        </tr>
+        <tr>
+            <td>Poste / Fonction</td>
+            <td>Non</td>
+            <td>Ticket (optionnel)</td>
+        </tr>
+        <tr>
+            <td>Date d'arriv&eacute;e</td>
+            <td>Non</td>
+            <td>Ticket (optionnel)</td>
+        </tr>
+        <tr>
+            <td>Entit&eacute; / Association</td>
+            <td style="color: #dc3545; font-weight: bold;">Oui</td>
+            <td>Contexte orchestrateur</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>10</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3.4 : IDENTIFICATION SERVEUR AD -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section3-4">3.4. Identification du serveur AD</h2>
+
+    <p>L'agent d&eacute;termine le serveur Active Directory cible &agrave; partir du nom de l'entit&eacute;.</p>
+
+    <div class="workflow-box">
+        <h4>Convention de nommage des serveurs AD</h4>
+        <pre style="text-align: center; font-size: 14pt;">
+{NOM_CLIENT}-DC01
+
+Exemples:
+  MFI     &rarr; MFI-DC01
+  ODYNEO  &rarr; ODYNEO-DC01
+  ADAPEI  &rarr; ADAPEI-DC01
+        </pre>
+    </div>
+
+    <div class="agent-box">
+        <h4>Raisonnement de l'agent</h4>
+        <pre style="background: #1e1e1e; color: #d4d4d4; border: none; font-size: 9pt;">
+<span style="color: #6a9955;">// Contexte</span>
+entite_name = "MFI - Maison Familiale Is&egrave;re"
+
+<span style="color: #6a9955;">// Extraction du code client</span>
+Agent: "L'entit&eacute; est 'MFI - Maison Familiale Is&egrave;re'.
+        Le code client est le premier mot avant le tiret: 'MFI'"
+
+client_code = "MFI"
+
+<span style="color: #6a9955;">// Construction du nom du serveur AD</span>
+serveur_ad = f"{client_code}-DC01"  <span style="color: #6a9955;">// = "MFI-DC01"</span>
+
+<span style="color: #6a9955;">// V&eacute;rification de l'existence (optionnel)</span>
+Agent: ad_check_server(server="MFI-DC01")
+R&eacute;sultat: {exists: true, ip: "192.168.10.1"}
+
+Agent: "Le serveur MFI-DC01 existe. Je vais ex&eacute;cuter le script dessus."
+        </pre>
+    </div>
+
+    <div class="info">
+        <strong>Rappel architecture AD :</strong> L'Active Directory est au niveau de l'<strong>ASSOCIATION</strong> (client), pas de l'&eacute;tablissement. Tous les &eacute;tablissements d'une m&ecirc;me association partagent le m&ecirc;me AD.
+        <br><br>
+        <em>Exemple : Odyneo (15 &eacute;tablissements) &rarr; 1 seul AD : ODYNEO-DC01</em>
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>11</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4 : PROCEDURE CREATION COMPTE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section4">4. Proc&eacute;dure : Cr&eacute;ation de compte AD</h1>
+
+    <h2 id="section4-1">4.1. R&egrave;gles m&eacute;tier</h2>
+
+    <div class="workflow-box">
+        <h4>Qui peut demander une cr&eacute;ation de compte ?</h4>
+        <table>
+            <tr>
+                <th>Profil</th>
+                <th>Autoris&eacute;</th>
+                <th>Commentaire</th>
+            </tr>
+            <tr>
+                <td><span class="profile-authorized">Directeur</span></td>
+                <td style="color: #28a745; font-weight: bold;">OUI</td>
+                <td>Directeur d'&eacute;tablissement</td>
+            </tr>
+            <tr>
+                <td><span class="profile-authorized">R&eacute;f&eacute;rent</span></td>
+                <td style="color: #28a745; font-weight: bold;">OUI</td>
+                <td>R&eacute;f&eacute;rent informatique</td>
+            </tr>
+            <tr>
+                <td><span class="profile-denied">Utilisateur</span></td>
+                <td style="color: #dc3545; font-weight: bold;">NON</td>
+                <td>Un utilisateur standard ne peut pas demander</td>
+            </tr>
+        </table>
+    </div>
+
+    <h2 id="section4-2">4.2. Architecture Active Directory WIDIP</h2>
+
+    <div class="workflow-box">
+        <pre>
++-------------------------------------------------------------------------+
+|                    ARCHITECTURE AD WIDIP                                 |
++-------------------------------------------------------------------------+
+|                                                                          |
+|   1 CLIENT (Association) = 1 Active Directory                           |
+|                                                                          |
+|   +------------------+        +------------------+                       |
+|   |    ODYNEO        |        |      MFI         |                       |
+|   | (15 &eacute;tablissements)|        | (8 &eacute;tablissements) |                       |
+|   +--------+---------+        +--------+---------+                       |
+|            |                           |                                 |
+|            v                           v                                 |
+|   +------------------+        +------------------+                       |
+|   |   ODYNEO-DC01    |        |    MFI-DC01      |                       |
+|   |  (Serveur AD)    |        |  (Serveur AD)    |                       |
+|   +------------------+        +------------------+                       |
+|                                                                          |
+|   Il n'y a PAS 600 AD pour 600 &eacute;tablissements !                         |
+|   Il y en a ~40 (1 par client/association)                              |
+|                                                                          |
++-------------------------------------------------------------------------+
+        </pre>
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>12</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4.3 : SCRIPT ALEXIS -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section4-3">4.3. Le script d'Alexis</h2>
+
+    <p>La cr&eacute;ation de compte utilise un script PowerShell existant, d&eacute;velopp&eacute; par Alexis, qui automatise toutes les &eacute;tapes de cr&eacute;ation.</p>
+
+    <div class="workflow-box">
+        <h4>Caract&eacute;ristiques du script</h4>
+        <table class="table-small">
+            <tr>
+                <th style="width:150px;">Propri&eacute;t&eacute;</th>
+                <th>Valeur</th>
+            </tr>
+            <tr>
+                <td>Langage</td>
+                <td>PowerShell</td>
+            </tr>
+            <tr>
+                <td>Emplacement</td>
+                <td>Sur chaque serveur AD ({CLIENT}-DC01)</td>
+            </tr>
+            <tr>
+                <td>Acc&egrave;s</td>
+                <td>Via RDM (Remote Desktop Manager)</td>
+            </tr>
+            <tr>
+                <td>Param&egrave;tres</td>
+                <td>Nom, Pr&eacute;nom, (optionnel: Poste, Groupes)</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="agent-box">
+        <h4>Appel du script par l'agent</h4>
+        <pre style="background: #1e1e1e; color: #d4d4d4; border: none; font-size: 9pt;">
+<span style="color: #6a9955;">// Param&egrave;tres pr&eacute;par&eacute;s par l'agent</span>
+params = {
+    "server": "MFI-DC01",
+    "nom": "DUPONT",
+    "prenom": "Jean",
+    "login": "j.dupont",
+    "email": "j.dupont@mfi.fr",
+    "poste": "&Eacute;ducateur sp&eacute;cialis&eacute;"
+}
+
+<span style="color: #6a9955;">// Appel MCP (niveau L3 - validation requise)</span>
+Agent: ad_create_user(params)
+
+<span style="color: #6a9955;">// Le MCP encapsule l'appel au script</span>
+<span style="color: #569cd6;">// Connexion RDM &rarr; MFI-DC01 &rarr; Ex&eacute;cution script Alexis</span>
+
+R&eacute;sultat: {
+    "status": "success",
+    "login_created": "j.dupont",
+    "password_temp": "MFI2026!Temp",  <span style="color: #6a9955;">// G&eacute;n&eacute;r&eacute; par le script</span>
+    "must_change_password": true
+}
+        </pre>
+    </div>
+
+    <div class="note">
+        <strong>S&eacute;curit&eacute; :</strong> Le mot de passe temporaire g&eacute;n&eacute;r&eacute; est transmis au demandeur (Directeur/R&eacute;f&eacute;rent) qui le communiquera au nouvel utilisateur. L'utilisateur devra le changer &agrave; la premi&egrave;re connexion.
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>13</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4.4 : FLUX COMPLET -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section4-4">4.4. Flux complet de traitement</h2>
+
+    <pre>
++-------------------------------------------------------------------------+
+|  TICKET #5234 - Cr&eacute;ation de compte pour Jean DUPONT                     |
+|  Demandeur: Marie MARTIN (Directeur) | Entit&eacute;: MFI - Maison Familiale   |
++-------------------------------------------------------------------------+
+
+ORCHESTRATEUR (Python)
+======================
+[1] Polling GLPI &rarr; Ticket #5234 d&eacute;tect&eacute;
+[2] Check Redis &rarr; Non trait&eacute;
+[3] Cat&eacute;gorie OK &rarr; "creation_compte"
+[4] Mots-cl&eacute;s OK &rarr; "cr&eacute;er un compte"
+[5] D&Eacute;CLENCHEMENT AGENT avec contexte JSON
+
+AGENT (Devstral2)
+=================
+[6]  glpi_get_user_profile(142) &rarr; Profil: "Directeur" &#10003;
+[7]  Extraction LLM &rarr; {nom: "DUPONT", prenom: "Jean", ...}
+[8]  Identification serveur &rarr; "MFI-DC01"
+[9]  Pr&eacute;paration param&egrave;tres script
+[10] ad_create_user(...) &rarr; L3 BLOQU&Eacute; (attente validation)
+
+SAFEGUARD
+=========
+[11] Notification technicien dans WIBOT
+[12] Technicien v&eacute;rifie et clique [APPROUVER]
+
+AGENT (suite)
+=============
+[13] Script Alexis ex&eacute;cut&eacute; sur MFI-DC01
+[14] Compte "j.dupont" cr&eacute;&eacute; avec MDP temporaire
+[15] glpi_add_followup(5234, "Compte cr&eacute;&eacute;...")
+[16] Email au demandeur avec login + MDP temporaire
+[17] glpi_close_ticket(5234)
+
+ORCHESTRATEUR
+=============
+[18] Redis: assistant:processed:5234 = 1 (TTL 7j)
+    </pre>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>14</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4.5 : SUPPRESSION DE COMPTE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section4-5">4.5. Proc&eacute;dure : Suppression de compte AD (L4)</h2>
+
+    <p>La suppression de compte est une action <strong>critique et irr&eacute;versible</strong>. Elle b&eacute;n&eacute;ficie donc du niveau <strong>L4 (CRITICAL)</strong> avec une ex&eacute;cution diff&eacute;r&eacute;e.</p>
+
+    <div class="important">
+        <strong>Niveau L4 - Ex&eacute;cution diff&eacute;r&eacute;e :</strong> Contrairement au L3 (validation imm&eacute;diate), le L4 permet au technicien de choisir un d&eacute;lai avant l'ex&eacute;cution effective (1h &agrave; 48h). Cela offre une fen&ecirc;tre de r&eacute;tractation en cas d'erreur.
+    </div>
+
+    <h3>Diff&eacute;rence L3 vs L4</h3>
+
+    <table>
+        <tr>
+            <th style="width:100px;">Niveau</th>
+            <th>Cr&eacute;ation compte (L3)</th>
+            <th>Suppression compte (L4)</th>
+        </tr>
+        <tr>
+            <td><strong>Validation</strong></td>
+            <td>Imm&eacute;diate par technicien</td>
+            <td>Imm&eacute;diate par technicien</td>
+        </tr>
+        <tr>
+            <td><strong>Ex&eacute;cution</strong></td>
+            <td>Imm&eacute;diate apr&egrave;s validation</td>
+            <td><strong>Diff&eacute;r&eacute;e</strong> (1h &agrave; 48h)</td>
+        </tr>
+        <tr>
+            <td><strong>Annulation</strong></td>
+            <td>Impossible (sauf suppression)</td>
+            <td>Possible pendant le d&eacute;lai</td>
+        </tr>
+        <tr>
+            <td><strong>R&eacute;versibilit&eacute;</strong></td>
+            <td>&Eacute;lev&eacute;e (on peut supprimer)</td>
+            <td>Nulle (donn&eacute;es perdues)</td>
+        </tr>
+    </table>
+
+    <div class="agent-box">
+        <h4>Flux de suppression avec d&eacute;lai</h4>
+        <pre>
+AGENT
+=====
+[1] V&eacute;rification profil demandeur (Directeur/R&eacute;f&eacute;rent)
+[2] Identification du compte &agrave; supprimer
+[3] Appel ad_delete_user(...) &rarr; L4
+
+SAFEGUARD L4
+============
+[4] Notification technicien dans WIBOT
+[5] Technicien voit la demande + d&eacute;tails du compte
+[6] Technicien choisit le d&eacute;lai:
+    - 1h  (minimum - suppression rapide souhait&eacute;e)
+    - 4h  (d&eacute;lai par d&eacute;faut)
+    - 24h (fin de journ&eacute;e)
+    - 48h (d&eacute;lai maximum)
+[7] Confirmation avec d&eacute;lai choisi
+
+PENDANT LE D&Eacute;LAI
+=================
+[8] Action planifi&eacute;e visible dans WIBOT
+[9] Possibilit&eacute; d'ANNULER &agrave; tout moment
+[10] Rappel automatique 30 min avant ex&eacute;cution
+
+EX&Eacute;CUTION
+==========
+[11] Si non annul&eacute;e &rarr; Suppression effective du compte
+[12] Notification de suppression &rarr; demandeur + technicien
+[13] Cl&ocirc;ture du ticket GLPI
+        </pre>
+    </div>
+
+    <div class="success">
+        <strong>Avantage du L4 :</strong> Si le demandeur r&eacute;alise une erreur ("Non, pas ce compte !"), le technicien peut annuler l'action pendant le d&eacute;lai. Une fois le d&eacute;lai &eacute;coul&eacute;, la suppression est d&eacute;finitive.
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>15</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 5 : OUTILS MCP ET SAFEGUARD -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section5">5. Outils MCP et Safeguard</h1>
+
+    <h2 id="section5-1">5.1. Outils utilis&eacute;s par l'agent</h2>
+
+    <h3>GLPI - Ticketing et utilisateurs</h3>
+
+    <table class="table-small">
+        <tr>
+            <th style="width:220px;">Outil</th>
+            <th>Description</th>
+            <th style="width:60px;">Niveau</th>
+        </tr>
+        <tr>
+            <td><code>glpi_get_ticket_details</code></td>
+            <td>D&eacute;tails complets d'un ticket</td>
+            <td class="level-l0">L0</td>
+        </tr>
+        <tr>
+            <td><code>glpi_get_user_profile</code></td>
+            <td>R&eacute;cup&egrave;re le profil d'un utilisateur (Directeur, R&eacute;f&eacute;rent, etc.)</td>
+            <td class="level-l0">L0</td>
+        </tr>
+        <tr>
+            <td><code>glpi_add_followup</code></td>
+            <td>Ajoute un suivi au ticket</td>
+            <td class="level-l1">L1</td>
+        </tr>
+        <tr>
+            <td><code>glpi_close_ticket</code></td>
+            <td>Cl&ocirc;ture le ticket</td>
+            <td class="level-l2">L2</td>
+        </tr>
+    </table>
+
+    <h3>Active Directory</h3>
+
+    <table class="table-small">
+        <tr>
+            <th style="width:220px;">Outil</th>
+            <th>Description</th>
+            <th style="width:60px;">Niveau</th>
+        </tr>
+        <tr>
+            <td><code>ad_check_server</code></td>
+            <td>V&eacute;rifie l'existence d'un serveur AD</td>
+            <td class="level-l0">L0</td>
+        </tr>
+        <tr style="background: #f8d7da;">
+            <td><code>ad_create_user</code></td>
+            <td>Cr&eacute;e un compte AD (script Alexis) - <strong>VALIDATION REQUISE</strong></td>
+            <td class="level-l3">L3</td>
+        </tr>
+        <tr style="background: #e2e3e5;">
+            <td><code>ad_delete_user</code></td>
+            <td>Supprime un compte AD - <strong>EX&Eacute;CUTION DIFF&Eacute;R&Eacute;E (1h-48h)</strong></td>
+            <td class="level-l4">L4</td>
+        </tr>
+    </table>
+
+    <h3>Notifications</h3>
+
+    <table class="table-small">
+        <tr>
+            <th style="width:220px;">Outil</th>
+            <th>Description</th>
+            <th style="width:60px;">Niveau</th>
+        </tr>
+        <tr>
+            <td><code>send_email</code></td>
+            <td>Envoie email au demandeur (login + MDP)</td>
+            <td class="level-l2">L2</td>
+        </tr>
+        <tr>
+            <td><code>notify_technician</code></td>
+            <td>Notifie un technicien (escalade)</td>
+            <td class="level-l2">L2</td>
+        </tr>
+    </table>
+
+    <h2 id="section5-2">5.2. Niveaux Safeguard</h2>
+
+    <table>
+        <tr>
+            <th style="width:60px;">Niveau</th>
+            <th style="width:100px;">Nom</th>
+            <th>Comportement</th>
+        </tr>
+        <tr class="level-l0">
+            <td><strong>L0</strong></td>
+            <td>READ_ONLY</td>
+            <td>Ex&eacute;cution automatique imm&eacute;diate</td>
+        </tr>
+        <tr class="level-l1">
+            <td><strong>L1</strong></td>
+            <td>MINOR</td>
+            <td>Auto si confiance &ge; 80%</td>
+        </tr>
+        <tr class="level-l2">
+            <td><strong>L2</strong></td>
+            <td>MODERATE</td>
+            <td>Ex&eacute;cution auto + notification technicien</td>
+        </tr>
+        <tr class="level-l3">
+            <td><strong>L3</strong></td>
+            <td>SENSITIVE</td>
+            <td><strong>BLOQU&Eacute;</strong> - Validation humaine obligatoire</td>
+        </tr>
+        <tr class="level-l4">
+            <td><strong>L4</strong></td>
+            <td>CRITICAL</td>
+            <td><strong>DIFF&Eacute;R&Eacute;</strong> - Validation + d&eacute;lai configurable (1h &agrave; 48h)</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>16</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 6 : ENRICHISSEUR -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section6">6. Interaction avec l'Enrichisseur</h1>
+
+    <p>Quand l'agent ne peut pas traiter un ticket, il le flag pour que l'<strong>Enrichisseur</strong> puisse apprendre de la r&eacute;solution manuelle.</p>
+
+    <div class="workflow-box">
+        <h4>Flux d'enrichissement</h4>
+        <pre>
+Ticket non trait&eacute; par l'agent
+(profil non autoris&eacute;, infos manquantes, erreur technique...)
+            |
+            v
++------------------------------------------+
+| 1. Stockage dans Redis                   |
+|    Key: assistant:unresolved:{ticket_id} |
+|    - ticket_id                           |
+|    - reason_code                         |
+|    - extracted_data (partiel)            |
+|    - timestamp                           |
++------------------------------------------+
+            |
+            v
++------------------------------------------+
+| 2. Ticket reste en file normale          |
+|    pour traitement technicien            |
++------------------------------------------+
+            |
+            | (Quand technicien r&eacute;sout)
+            v
++------------------------------------------+
+| 3. ENRICHISSEUR analyse la r&eacute;solution    |
+|    - Compare avec tentative IA           |
+|    - Identifie les &eacute;l&eacute;ments manquants     |
+|    - Cr&eacute;e/am&eacute;liore la proc&eacute;dure RAG       |
++------------------------------------------+
+            |
+            v
++------------------------------------------+
+| 4. Prochaine demande similaire           |
+|    sera mieux trait&eacute;e par l'agent        |
++------------------------------------------+
+        </pre>
+    </div>
+
+    <h3>Codes de raison (non-r&eacute;solution)</h3>
+
+    <table class="table-small">
+        <tr>
+            <th>Code</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>UNAUTHORIZED_PROFILE</code></td>
+            <td>Demandeur non autoris&eacute; (pas Directeur/R&eacute;f&eacute;rent)</td>
+        </tr>
+        <tr>
+            <td><code>MISSING_INFO</code></td>
+            <td>Informations insuffisantes (nom/pr&eacute;nom manquants)</td>
+        </tr>
+        <tr>
+            <td><code>VALIDATION_REJECTED</code></td>
+            <td>Technicien a refus&eacute; la validation Safeguard</td>
+        </tr>
+        <tr>
+            <td><code>EXECUTION_ERROR</code></td>
+            <td>Erreur lors de l'ex&eacute;cution du script</td>
+        </tr>
+        <tr>
+            <td><code>SERVER_NOT_FOUND</code></td>
+            <td>Serveur AD non trouv&eacute;</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>17</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 7 : PROMPT SYSTEME -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section7">7. Prompt syst&egrave;me de l'agent</h1>
+
+    <p>Voici le prompt syst&egrave;me inject&eacute; &agrave; l'agent Devstral2 :</p>
+
+    <div class="workflow-box">
+        <pre style="background: #1e1e1e; color: #d4d4d4; border: none; font-size: 8pt; line-height: 1.35;">
+<span style="color: #569cd6;">## IDENTIT&Eacute;</span>
+Tu es l'ASSISTANT TICKET de WIDIP, sp&eacute;cialis&eacute; dans le traitement
+automatique des demandes de cr&eacute;ation de compte Active Directory.
+Mod&egrave;le: Devstral2 (Mistral) | Mode: Agent avec acc&egrave;s MCP
+
+<span style="color: #569cd6;">## CONTEXTE</span>
+Tu re&ccedil;ois un contexte JSON de l'orchestrateur contenant:
+- ticket_id: ID du ticket GLPI
+- ticket_title, ticket_content: Contenu du ticket
+- demandeur_id, demandeur_name: Demandeur
+- entite_id, entite_name: Entit&eacute;/Association
+
+<span style="color: #569cd6;">## TA MISSION</span>
+1. V&eacute;rifier le profil du demandeur (CRITIQUE)
+   <span style="color: #f44747;">SEULS LES PROFILS Directeur, R&eacute;f&eacute;rent SONT AUTORIS&Eacute;S</span>
+   <span style="color: #f44747;">Si profil non autoris&eacute; &rarr; REJETER avec message explicatif</span>
+
+2. Extraire les informations du nouveau compte
+   - Nom (obligatoire)
+   - Pr&eacute;nom (obligatoire)
+   - Poste (optionnel)
+   <span style="color: #f44747;">Si nom/pr&eacute;nom manquants &rarr; Demander compl&eacute;ment via suivi</span>
+
+3. Identifier le serveur AD cible
+   - Extraire le code client de entite_name (premier mot avant "-")
+   - Construire: {CODE_CLIENT}-DC01
+   - Exemple: "MFI - Maison Familiale" &rarr; MFI-DC01
+
+4. Ex&eacute;cuter la cr&eacute;ation (L3 - validation requise)
+   - Appeler ad_create_user avec les param&egrave;tres
+   - Attendre validation Safeguard
+
+5. Documenter et notifier
+   - Ajouter suivi GLPI avec login cr&eacute;&eacute;
+   - Envoyer email au demandeur (login + MDP temporaire)
+   - Cl&ocirc;turer le ticket
+
+<span style="color: #569cd6;">## OUTILS MCP DISPONIBLES</span>
+<span style="color: #6a9955;">GLPI (L0-L2):</span>
+  - glpi_get_user_profile(user_id) &rarr; Profil du demandeur [L0]
+  - glpi_add_followup(ticket_id, content) &rarr; Ajouter suivi [L1]
+  - glpi_close_ticket(ticket_id) &rarr; Cl&ocirc;turer [L2]
+
+<span style="color: #6a9955;">Active Directory (L0-L4):</span>
+  - ad_check_server(server) &rarr; V&eacute;rifier serveur AD [L0]
+  - ad_create_user(server, nom, prenom, login, email) &rarr; Cr&eacute;er compte [L3]
+  - ad_delete_user(server, login) &rarr; Supprimer compte [L4 - diff&eacute;r&eacute;]
+
+<span style="color: #6a9955;">Notifications (L2):</span>
+  - send_email(to, subject, body) &rarr; Email [L2]
+
+<span style="color: #569cd6;">## PROFILS AUTORIS&Eacute;S</span>
+<span style="color: #4ec9b0;">AUTORIS&Eacute;S: ["Directeur", "R&eacute;f&eacute;rent"]</span>
+<span style="color: #f44747;">NON AUTORIS&Eacute;S: ["Utilisateur", "Technicien", autres]</span>
+
+<span style="color: #569cd6;">## R&Egrave;GLES CRITIQUES</span>
+<span style="color: #f44747;">- TOUJOURS v&eacute;rifier le profil AVANT toute action</span>
+<span style="color: #f44747;">- TOUJOURS extraire nom ET pr&eacute;nom avant cr&eacute;ation</span>
+<span style="color: #f44747;">- Le serveur AD = {CODE_CLIENT}-DC01 (depuis entite_name)</span>
+<span style="color: #f44747;">- Si profil non autoris&eacute; &rarr; Suivi explicatif + NE PAS TRAITER</span>
+        </pre>
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>18</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 8 : CONFIGURATION -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section8">8. Configuration</h1>
+
+    <h2>8.1. Param&egrave;tres orchestrateur</h2>
+
+    <table>
+        <tr>
+            <th>Param&egrave;tre</th>
+            <th>Valeur</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>POLLING_INTERVAL_SECONDS</code></td>
+            <td>180</td>
+            <td>Intervalle de polling GLPI (3 minutes)</td>
+        </tr>
+        <tr>
+            <td><code>TICKET_AGE_MAX_HOURS</code></td>
+            <td>24</td>
+            <td>Anciennet&eacute; max des tickets &agrave; traiter</td>
+        </tr>
+        <tr>
+            <td><code>CACHE_TTL_DAYS</code></td>
+            <td>7</td>
+            <td>TTL du cache Redis (tickets trait&eacute;s)</td>
+        </tr>
+        <tr>
+            <td><code>CATEGORIES_ENABLED</code></td>
+            <td>["creation_compte"]</td>
+            <td>Cat&eacute;gories de tickets trait&eacute;es</td>
+        </tr>
+    </table>
+
+    <h2>8.2. Variables d'environnement</h2>
+
+    <pre>
+# Orchestrateur
+POLLING_INTERVAL_SECONDS=180
+TICKET_AGE_MAX_HOURS=24
+REDIS_URL=redis://localhost:6379/2
+GLPI_API_URL=https://glpi.widip.local/apirest.php
+
+# Agent
+LLM_MODEL=devstral2
+MCP_SERVER_URL=http://localhost:3001
+MCP_API_KEY=your_api_key
+    </pre>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>19</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 9 : CERCLE VERTUEUX ENRICHISSEUR -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section9">9. Cercle vertueux avec l'Enrichisseur</h1>
+
+    <h2>9.1. Principe d'extension progressive</h2>
+
+    <p>La cr&eacute;ation de compte AD est la <strong>premi&egrave;re proc&eacute;dure</strong> impl&eacute;ment&eacute;e. &Agrave; terme, le catalogue de proc&eacute;dures s'enrichira automatiquement gr&acirc;ce au workflow <strong>ENRICHISSEUR</strong>.</p>
+
+    <div class="workflow-box">
+        <h4>Cercle vertueux d'apprentissage</h4>
+        <pre>
++-------------------------------------------------------------------------+
+|                     CERCLE VERTUEUX ASSISTANT + ENRICHISSEUR             |
++-------------------------------------------------------------------------+
+|                                                                          |
+|   +-----------------+                      +-----------------+           |
+|   |  ASSISTANT      |                      |   ENRICHISSEUR  |           |
+|   |  TICKET         |                      |                 |           |
+|   +-----------------+                      +-----------------+           |
+|          |                                        ^                      |
+|          | Ticket non trait&eacute;                      |                      |
+|          | (proc&eacute;dure absente)                   |                      |
+|          v                                        |                      |
+|   +-----------------+                             |                      |
+|   |  Flag Redis     |                             |                      |
+|   |  + Escalade     |                             |                      |
+|   +-----------------+                             |                      |
+|          |                                        |                      |
+|          | Technicien r&eacute;sout                      |                      |
+|          | manuellement                           |                      |
+|          v                                        |                      |
+|   +-----------------+      Nouvelle proc&eacute;dure     |                      |
+|   |  Ticket r&eacute;solu  | ----------------------&gt;-----+                      |
+|   |  + Suivi GLPI   |       ajout&eacute;e au RAG                              |
+|   +-----------------+                                                    |
+|          |                                                               |
+|          | Prochain ticket similaire                                     |
+|          v                                                               |
+|   +-----------------+                                                    |
+|   |  ASSISTANT      |  &larr; Proc&eacute;dure disponible !                        |
+|   |  traite seul    |     Traitement automatique                         |
+|   +-----------------+                                                    |
+|                                                                          |
++-------------------------------------------------------------------------+
+        </pre>
+    </div>
+
+    <div class="success">
+        <strong>Vision &agrave; terme :</strong> Plus les techniciens r&eacute;solvent des tickets, plus l'Enrichisseur cr&eacute;e de proc&eacute;dures, plus l'Assistant Ticket peut traiter de types de demandes automatiquement.
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>20</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 9.2 : CATALOGUE EVOLUTIF -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2>9.2. Catalogue de proc&eacute;dures &eacute;volutif</h2>
+
+    <p>Le catalogue des proc&eacute;dures traitables par l'Assistant Ticket s'enrichira progressivement :</p>
+
+    <table>
+        <tr>
+            <th>Phase</th>
+            <th>Proc&eacute;dures</th>
+            <th>Source</th>
+        </tr>
+        <tr style="background: #d4edda;">
+            <td><strong>Phase 1</strong><br><em>(Actuelle)</em></td>
+            <td>
+                <ul style="margin: 5px 0 5px 15px;">
+                    <li>Cr&eacute;ation de compte AD</li>
+                </ul>
+            </td>
+            <td>Impl&eacute;mentation manuelle<br>(interview + script Alexis)</td>
+        </tr>
+        <tr style="background: #d1ecf1;">
+            <td><strong>Phase 2</strong><br><em>(Court terme)</em></td>
+            <td>
+                <ul style="margin: 5px 0 5px 15px;">
+                    <li>Modification groupes AD</li>
+                    <li>D&eacute;sactivation compte</li>
+                    <li>Cr&eacute;ation bo&icirc;te mail</li>
+                </ul>
+            </td>
+            <td>Enrichisseur +<br>proc&eacute;dures existantes</td>
+        </tr>
+        <tr style="background: #fff3cd;">
+            <td><strong>Phase 3</strong><br><em>(Moyen terme)</em></td>
+            <td>
+                <ul style="margin: 5px 0 5px 15px;">
+                    <li>Configuration VPN</li>
+                    <li>Ajout imprimante r&eacute;seau</li>
+                    <li>Demandes d'acc&egrave;s logiciels</li>
+                    <li>+ proc&eacute;dures d&eacute;couvertes par l'Enrichisseur</li>
+                </ul>
+            </td>
+            <td>Apprentissage automatique<br>via Enrichisseur</td>
+        </tr>
+        <tr style="background: #f3f0ff;">
+            <td><strong>Phase N</strong><br><em>(Long terme)</em></td>
+            <td>
+                <ul style="margin: 5px 0 5px 15px;">
+                    <li>Toutes les proc&eacute;dures r&eacute;currentes</li>
+                    <li>identifi&eacute;es et document&eacute;es</li>
+                    <li>par le syst&egrave;me</li>
+                </ul>
+            </td>
+            <td>Catalogue RAG complet<br>auto-aliment&eacute;</td>
+        </tr>
+    </table>
+
+    <h2>9.3. M&eacute;canisme d'ajout de proc&eacute;dure</h2>
+
+    <div class="workflow-box">
+        <h4>Quand l'Enrichisseur cr&eacute;e une nouvelle proc&eacute;dure</h4>
+        <pre>
+1. L'Enrichisseur d&eacute;tecte un pattern r&eacute;current dans les tickets r&eacute;solus
+
+2. Il g&eacute;n&egrave;re une proc&eacute;dure structur&eacute;e :
+   {
+     "id": "proc-ad-group-001",
+     "titre": "Ajout utilisateur &agrave; un groupe AD",
+     "mots_cles": ["ajouter groupe", "acc&egrave;s dossier", "permissions"],
+     "profils_autorises": ["Directeur", "R&eacute;f&eacute;rent"],
+     "etapes": [
+       "V&eacute;rifier profil demandeur",
+       "Identifier utilisateur et groupe cible",
+       "Ex&eacute;cuter ad_add_user_to_group()",
+       "Documenter dans GLPI"
+     ],
+     "outils_mcp": ["ad_add_user_to_group"],
+     "niveau_safeguard": "L2"
+   }
+
+3. La proc&eacute;dure est index&eacute;e dans le RAG
+
+4. L'Assistant Ticket peut d&eacute;sormais traiter ce type de demande
+        </pre>
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>21</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 10 : INDICATEURS ET OBJECTIFS -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#127915;</span>
+            <span>ASSISTANT TICKET - Traitement Automatique</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section10">10. Indicateurs et objectifs</h1>
+
+    <h2>10.1. KPIs de succ&egrave;s</h2>
+
+    <table>
+        <tr>
+            <th>Indicateur</th>
+            <th>Phase 1</th>
+            <th>Phase 2</th>
+            <th>Cible finale</th>
+        </tr>
+        <tr>
+            <td><strong>Taux de traitement auto</strong></td>
+            <td>5-10%</td>
+            <td>20-30%</td>
+            <td>&gt; 50%</td>
+        </tr>
+        <tr>
+            <td><strong>Proc&eacute;dures disponibles</strong></td>
+            <td>1</td>
+            <td>5-10</td>
+            <td>&gt; 30</td>
+        </tr>
+        <tr>
+            <td><strong>Temps moyen r&eacute;solution</strong></td>
+            <td>&lt; 5 min</td>
+            <td>&lt; 5 min</td>
+            <td>&lt; 3 min</td>
+        </tr>
+        <tr>
+            <td><strong>Taux validation Safeguard</strong></td>
+            <td>&gt; 90%</td>
+            <td>&gt; 95%</td>
+            <td>&gt; 98%</td>
+        </tr>
+        <tr>
+            <td><strong>Erreurs de s&eacute;curit&eacute;</strong></td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+        </tr>
+    </table>
+
+    <h2>10.2. Am&eacute;liorations futures</h2>
+
+    <table class="table-small">
+        <tr>
+            <th>Am&eacute;lioration</th>
+            <th>Description</th>
+            <th>Impact</th>
+        </tr>
+        <tr>
+            <td><strong>Assouplissement Safeguard</strong></td>
+            <td>R&eacute;duire le niveau de certaines actions apr&egrave;s validation du syst&egrave;me</td>
+            <td>Rapidit&eacute; ++</td>
+        </tr>
+        <tr>
+            <td><strong>Multi-proc&eacute;dures par ticket</strong></td>
+            <td>Traiter des tickets n&eacute;cessitant plusieurs actions</td>
+            <td>Couverture ++</td>
+        </tr>
+        <tr>
+            <td><strong>Apprentissage des rejets</strong></td>
+            <td>Analyser pourquoi certaines demandes Safeguard sont refus&eacute;es</td>
+            <td>Qualit&eacute; ++</td>
+        </tr>
+        <tr>
+            <td><strong>Priorisation intelligente</strong></td>
+            <td>Traiter en priorit&eacute; les tickets urgents/VIP</td>
+            <td>Satisfaction ++</td>
+        </tr>
+        <tr>
+            <td><strong>Statistiques temps r&eacute;el</strong></td>
+            <td>Dashboard de suivi dans WIBOT</td>
+            <td>Visibilit&eacute; ++</td>
+        </tr>
+    </table>
+
+    <div class="success">
+        <strong>Objectif final :</strong> L'Assistant Ticket traite automatiquement la majorit&eacute; des tickets de niveau 1, ne laissant aux techniciens que les cas complexes &agrave; forte valeur ajout&eacute;e. Le catalogue de proc&eacute;dures s'enrichit continuellement gr&acirc;ce &agrave; l'Enrichisseur, cr&eacute;ant un cercle vertueux d'am&eacute;lioration continue.
+    </div>
+
+    <div class="footer">
+        <span>Workflow ASSISTANT TICKET</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>22</span>
+    </div>
+</div>
+
+</body>
+</html>

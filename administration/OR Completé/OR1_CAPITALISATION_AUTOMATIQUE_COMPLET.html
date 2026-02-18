@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OR1 - Capitalisation automatique des connaissances IT</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2c5282;
+            --accent-color: #3182ce;
+            --success-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --text-color: #2d3748;
+            --light-bg: #f7fafc;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #fff;
+            font-size: 11pt;
+        }
+
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        @media print {
+            body { font-size: 10pt; }
+            .page-break { page-break-before: always; }
+            .no-break { page-break-inside: avoid; }
+        }
+
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20px 40px;
+        }
+
+        .document-header {
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .document-header .or-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12pt;
+            margin-bottom: 10px;
+        }
+
+        .document-header .status-badge {
+            display: inline-block;
+            background: var(--warning-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 10pt;
+            margin-left: 10px;
+        }
+
+        .document-header h1 {
+            color: var(--primary-color);
+            font-size: 20pt;
+            margin-bottom: 10px;
+        }
+
+        .document-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 10pt;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        .document-meta span {
+            background: var(--light-bg);
+            padding: 5px 12px;
+            border-radius: 4px;
+        }
+
+        .potentiel-badge {
+            background: #c6f6d5 !important;
+            color: #22543d !important;
+            font-weight: 600;
+        }
+
+        section {
+            margin-bottom: 35px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 14pt;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 12pt;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: var(--text-color);
+            font-size: 11pt;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        .problematique {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 12pt;
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        .verrou {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .verrou-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .verrou-number {
+            background: var(--accent-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14pt;
+            margin-right: 15px;
+        }
+
+        .verrou-title {
+            font-weight: 600;
+            font-size: 12pt;
+            color: var(--primary-color);
+        }
+
+        .incertitudes {
+            background: #faf5ff;
+            border-left: 3px solid #805ad5;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .incertitudes h5 {
+            color: #553c9a;
+            font-size: 10pt;
+            margin-bottom: 10px;
+        }
+
+        .incertitudes ul {
+            margin: 0 0 0 20px;
+            font-size: 10pt;
+        }
+
+        .incertitudes li {
+            margin-bottom: 6px;
+        }
+
+        .hypotheses-table {
+            background: #fffaf0;
+            border: 1px solid #ed8936;
+        }
+
+        .hypotheses-table th {
+            background: #ed8936;
+        }
+
+        .info-box {
+            padding: 18px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box.etat-art {
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+        }
+
+        .info-box.resultats {
+            background: #f0fff4;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .info-box.warning {
+            background: #fffaf0;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .info-box.en-cours {
+            background: #ebf8ff;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .info-box h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .diagram {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+            margin: 20px 0;
+        }
+
+        .frascati-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .frascati-item {
+            text-align: center;
+            padding: 15px 8px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .frascati-item .criterion {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .frascati-item .evaluation {
+            font-weight: 700;
+            font-size: 11pt;
+        }
+
+        .frascati-item .evaluation.fort {
+            color: #22543d;
+        }
+
+        .frascati-item .evaluation.moyen {
+            color: #744210;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 9pt;
+            font-weight: 600;
+        }
+
+        .badge.fort {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge.moyen {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .badge.en-cours {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+
+        .badge.valide {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge.echec {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .badge.partiel {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        ul, ol {
+            margin: 12px 0 12px 25px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .checklist li:before {
+            content: "☐ ";
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .checklist li.done:before {
+            content: "☑ ";
+            color: var(--success-color);
+        }
+
+        .document-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 9pt;
+            color: #666;
+            text-align: center;
+        }
+
+        .timeline {
+            border-left: 3px solid var(--accent-color);
+            padding-left: 20px;
+            margin: 20px 0;
+        }
+
+        .timeline-item {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-item:before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            position: absolute;
+            left: -26px;
+            top: 5px;
+        }
+
+        .timeline-date {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="document-header">
+            <span class="or-badge">OPERATION DE RECHERCHE 1</span>
+            <span class="status-badge">EN COURS</span>
+            <h1>Capitalisation automatique des connaissances IT par IA</h1>
+            <div class="document-meta">
+                <span><strong>Projet :</strong> WIDIP / WIBOT</span>
+                <span><strong>Composants :</strong> Enrichisseur + RAG evolutif</span>
+                <span><strong>Periode :</strong> Novembre 2025 - Fevrier 2026</span>
+                <span class="potentiel-badge">Potentiel CIR : FORT</span>
+            </div>
+        </header>
+
+        <section>
+            <h2>1. Problematique scientifique</h2>
+            <div class="problematique">
+                Comment transformer automatiquement l'historique operationnel non structure d'une PME (tickets, conversations, resolutions) en une base de connaissances fiable, evolutive et exploitable par des agents IA — sans degradation de qualite dans le temps ?
+            </div>
+
+            <div class="info-box en-cours">
+                <h4>Statut actuel : En cours de developpement</h4>
+                <p>L'Enrichisseur est en phase de conception et de prototypage. Les premiers tests d'extraction de procedures ont ete realises mais le systeme complet n'est pas encore operationnel. La boucle de feedback RAG est en cours d'implementation.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>2. Etat de l'art</h2>
+
+            <div class="info-box etat-art">
+                <h4>Contexte scientifique</h4>
+                <p>La capitalisation automatique de connaissances a partir de donnees non structurees est un domaine actif de recherche en NLP et Knowledge Management. Les approches LLM recentes (2023-2025) ont ouvert de nouvelles possibilites mais l'application specifique au support IT avec boucle de feedback continue presente des defis non resolus dans la litterature.</p>
+            </div>
+
+            <h3>2.1 Solutions existantes et leurs limites</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Solution / Approche</th>
+                        <th>Description</th>
+                        <th>Limites identifiees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bases de connaissances manuelles (Confluence, Wiki)</td>
+                        <td>Documentation redigee manuellement par les techniciens</td>
+                        <td>Effort de maintenance eleve, obsolescence rapide, adoption faible par les equipes</td>
+                    </tr>
+                    <tr>
+                        <td>Systemes RAG statiques</td>
+                        <td>Indexation de documentation existante pour recherche semantique</td>
+                        <td>Pas d'enrichissement automatique, qualite dependante des sources initiales, pas d'evolution</td>
+                    </tr>
+                    <tr>
+                        <td>Extraction d'information classique (NER, RE)</td>
+                        <td>Extraction d'entites et relations avec modeles supervises</td>
+                        <td>Necessite annotations manuelles massives, peu adapte au langage IT informel des tickets</td>
+                    </tr>
+                    <tr>
+                        <td>Summarization par LLM</td>
+                        <td>Resume automatique de documents</td>
+                        <td>Perte d'information procedurale, pas de structuration en etapes actionnables</td>
+                    </tr>
+                    <tr>
+                        <td>Chatbots FAQ classiques</td>
+                        <td>Reponses pre-definies basees sur mots-cles</td>
+                        <td>Rigide, ne s'adapte pas aux nouveaux problemes, maintenance manuelle</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.2 Positionnement du projet WIDIP</h3>
+            <p>L'approche WIDIP se distingue des solutions existantes par plusieurs innovations :</p>
+            <ul>
+                <li><strong>Extraction procedurale</strong> : identification de patterns de resolution generalisables a partir de cas individuels (pas de simple resume)</li>
+                <li><strong>Boucle de feedback continue</strong> : le systeme s'enrichit automatiquement a partir des tickets resolus, creant un cercle vertueux</li>
+                <li><strong>Validation humaine integree</strong> : les procedures proposees sont soumises a validation SAFEGUARD avant integration au RAG</li>
+                <li><strong>Mesure de qualite RAG</strong> : mecanismes de detection d'obsolescence et de contradictions pour maintenir la fiabilite</li>
+                <li><strong>Contexte IT operationnel</strong> : adaptation au vocabulaire et aux patterns specifiques du support informatique PME</li>
+            </ul>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>3. Verrous techniques identifies</h2>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">1</span>
+                    <span class="verrou-title">Extraction de procedures a partir de texte libre</span>
+                </div>
+                <p>Les tickets GLPI sont rediges en langage naturel non standardise par des techniciens et des utilisateurs finaux. L'information utile est noyee dans du bruit (formules de politesse, descriptions imprecises, fautes d'orthographe). Le LLM doit identifier un <strong>pattern de resolution generalisable</strong> a partir de cas individuels, ce qui depasse la simple synthese de texte.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment distinguer une resolution reellement transposable d'un cas trop specifique au contexte client ?</li>
+                        <li>Comment extraire des etapes de procedure quand le technicien n'a pas documente toutes ses actions ?</li>
+                        <li>Quel seuil de recurrence (nombre de tickets similaires) est necessaire pour justifier la creation d'une procedure ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Extraction directe par prompt LLM sur ticket individuel</td>
+                            <td><span class="badge partiel">Partiel</span> - Fonctionne pour tickets bien documentes, echec sur tickets succincts</td>
+                            <td>Dec. 2025</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Agregation de plusieurs tickets similaires avant extraction</td>
+                            <td><span class="badge en-cours">En cours</span> - Tests en cours sur clustering semantique</td>
+                            <td>Jan. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Seuil de recurrence a 3 tickets minimum pour generer une procedure</td>
+                            <td><span class="badge en-cours">En cours</span> - A valider empiriquement</td>
+                            <td>Fev. 2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">2</span>
+                    <span class="verrou-title">Maintien de la qualite d'une base RAG auto-alimentee</span>
+                </div>
+                <p>La base de connaissances s'enrichit en continu via l'Enrichisseur. Cela cree un risque de <strong>data drift</strong> : procedures obsoletes, contradictions entre anciennes et nouvelles procedures, redondances qui polluent les resultats de recherche semantique.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment detecter qu'une procedure existante est rendue obsolete par une nouvelle ?</li>
+                        <li>Comment mesurer la qualite globale du RAG au fil de son enrichissement ?</li>
+                        <li>Comment eviter que l'accumulation de documents degrade la precision de retrieval plutot que de l'ameliorer ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Detection d'obsolescence par similarite cosinus > 0.85 avec nouvelle procedure</td>
+                            <td><span class="badge en-cours">En cours</span> - Implementation pgvector en place, seuil a calibrer</td>
+                            <td>Jan. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Score de fraicheur base sur date de derniere utilisation</td>
+                            <td><span class="badge en-cours">En cours</span> - Mecanisme de tracking a implementer</td>
+                            <td>Fev. 2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">3</span>
+                    <span class="verrou-title">Boucle de feedback et cercle vertueux</span>
+                </div>
+                <p>Le systeme repose sur un cercle : tickets resolus → procedures generees → RAG enrichi → IA plus performante → meilleure resolution → plus de matiere pour l'Enrichisseur. La convergence de cette boucle n'est pas garantie.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>La boucle converge-t-elle reellement (amelioration mesurable) ou diverge-t-elle (accumulation de bruit) ?</li>
+                        <li>Comment mesurer l'impact de chaque procedure ajoutee sur la performance globale du systeme ?</li>
+                        <li>Quel est le ratio optimal entre procedures generees automatiquement et procedures validees humainement ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Validation humaine obligatoire (100%) pour les premieres procedures</td>
+                            <td><span class="badge valide">Retenu</span> - Integration avec SAFEGUARD L2 implementee</td>
+                            <td>Jan. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Mesure du taux de retrieval reussi comme indicateur de qualite</td>
+                            <td><span class="badge en-cours">En cours</span> - Metriques a definir</td>
+                            <td>Fev. 2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>4. Architecture et flux de capitalisation</h2>
+
+            <svg viewBox="0 0 650 550" style="width: 100%; max-width: 650px; height: auto; display: block; margin: 20px auto;">
+                <defs>
+                    <linearGradient id="gradStepOR1" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#9f7aea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#805ad5;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradApproveOR1" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#48bb78;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#38a169;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradRejectOR1" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#fc8181;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#e53e3e;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="shadowOR1" x="-10%" y="-10%" width="120%" height="120%">
+                        <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.15"/>
+                    </filter>
+                    <marker id="arrowOR1" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#718096"/>
+                    </marker>
+                </defs>
+
+                <!-- Source -->
+                <rect x="175" y="10" width="300" height="35" rx="17" fill="#e2e8f0" filter="url(#shadowOR1)"/>
+                <text x="325" y="33" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="600" fill="#4a5568">📋 Tickets clotures (GLPI)</text>
+
+                <line x1="325" y1="45" x2="325" y2="60" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1)"/>
+
+                <!-- Etape 1 -->
+                <g filter="url(#shadowOR1)">
+                    <rect x="100" y="65" width="450" height="70" rx="8" fill="url(#gradStepOR1)"/>
+                    <circle cx="130" cy="85" r="12" fill="white"/>
+                    <text x="130" y="90" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="700" fill="#805ad5">1</text>
+                    <text x="160" y="88" font-family="Segoe UI" font-size="12" font-weight="600" fill="white">Filtrage et selection</text>
+                    <text x="130" y="108" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9">• Tickets avec resolution documentee</text>
+                    <text x="130" y="122" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9">• Tickets recurrents (clustering) • Exclusion cas trop specifiques</text>
+                </g>
+
+                <line x1="325" y1="135" x2="325" y2="150" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1)"/>
+
+                <!-- Etape 2 -->
+                <g filter="url(#shadowOR1)">
+                    <rect x="100" y="155" width="450" height="70" rx="8" fill="url(#gradStepOR1)"/>
+                    <circle cx="130" cy="175" r="12" fill="white"/>
+                    <text x="130" y="180" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="700" fill="#805ad5">2</text>
+                    <text x="160" y="178" font-family="Segoe UI" font-size="12" font-weight="600" fill="white">Analyse par le LLM (Mistral Large)</text>
+                    <text x="130" y="198" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9">• Extraction etapes de resolution • Identification du pattern</text>
+                    <text x="130" y="212" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9">• Detection generalisabilite • Redaction procedure structuree</text>
+                </g>
+
+                <line x1="325" y1="225" x2="325" y2="240" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1)"/>
+
+                <!-- Etape 3 -->
+                <g filter="url(#shadowOR1)">
+                    <rect x="100" y="245" width="450" height="65" rx="8" fill="#38b2ac"/>
+                    <circle cx="130" cy="265" r="12" fill="white"/>
+                    <text x="130" y="270" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="700" fill="#38b2ac">3</text>
+                    <text x="160" y="268" font-family="Segoe UI" font-size="12" font-weight="600" fill="white">Verification de coherence</text>
+                    <text x="130" y="290" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9">• Recherche procedures similaires • Detection contradictions • Identification obsolescence</text>
+                </g>
+
+                <line x1="325" y1="310" x2="325" y2="325" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1)"/>
+
+                <!-- Etape 4 - SAFEGUARD -->
+                <g filter="url(#shadowOR1)">
+                    <rect x="100" y="330" width="450" height="65" rx="8" fill="#e53e3e"/>
+                    <circle cx="130" cy="350" r="12" fill="white"/>
+                    <text x="130" y="355" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="700" fill="#e53e3e">4</text>
+                    <text x="160" y="353" font-family="Segoe UI" font-size="12" font-weight="600" fill="white">🛡️ Validation SAFEGUARD (L2)</text>
+                    <text x="325" y="378" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="white" fill-opacity="0.9" font-style="italic">"Nouvelle procedure detectee basee sur X tickets. Valider ?"</text>
+                </g>
+
+                <!-- Branches decision -->
+                <line x1="325" y1="395" x2="325" y2="415" stroke="#718096" stroke-width="2"/>
+                <line x1="325" y1="415" x2="200" y2="415" stroke="#718096" stroke-width="2"/>
+                <line x1="325" y1="415" x2="450" y2="415" stroke="#718096" stroke-width="2"/>
+                <line x1="200" y1="415" x2="200" y2="430" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1)"/>
+                <line x1="450" y1="415" x2="450" y2="430" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1)"/>
+
+                <!-- Approuve -->
+                <g filter="url(#shadowOR1)">
+                    <rect x="115" y="435" width="170" height="40" rx="20" fill="url(#gradApproveOR1)"/>
+                    <text x="200" y="460" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="600" fill="white">✓ APPROUVE</text>
+                </g>
+
+                <!-- Refuse -->
+                <g filter="url(#shadowOR1)">
+                    <rect x="365" y="435" width="170" height="40" rx="20" fill="url(#gradRejectOR1)"/>
+                    <text x="450" y="460" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="600" fill="white">✗ REFUSE</text>
+                </g>
+
+                <line x1="200" y1="475" x2="200" y2="490" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1)"/>
+                <line x1="450" y1="475" x2="450" y2="490" stroke="#718096" stroke-width="2" marker-end="url(#arrowOR1)"/>
+
+                <!-- Etape 5 - Stockage -->
+                <g filter="url(#shadowOR1)">
+                    <rect x="100" y="495" width="200" height="50" rx="8" fill="#4fd1c5"/>
+                    <circle cx="125" cy="515" r="10" fill="white"/>
+                    <text x="125" y="519" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="#38b2ac">5</text>
+                    <text x="200" y="513" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">Stockage RAG</text>
+                    <text x="200" y="530" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9">Vectorisation + Indexation</text>
+                </g>
+
+                <!-- Feedback -->
+                <g filter="url(#shadowOR1)">
+                    <rect x="350" y="495" width="200" height="50" rx="8" fill="#a0aec0"/>
+                    <text x="450" y="518" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">Feedback negatif</text>
+                    <text x="450" y="535" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9">Amelioration filtrage</text>
+                </g>
+            </svg>
+        </section>
+
+        <section>
+            <h2>5. Experimentations et resultats</h2>
+
+            <h3>5.1 Protocole de test</h3>
+            <p>Les experimentations sont realisees sur un echantillon de tickets GLPI reels (anonymises) issus de l'historique WIDIP :</p>
+            <ul>
+                <li><strong>Echantillon</strong> : 150 tickets clotures (novembre-janvier 2025-2026)</li>
+                <li><strong>Criteres d'evaluation</strong> : pertinence de la procedure extraite, generalisabilite, coherence des etapes</li>
+                <li><strong>Validation</strong> : revue manuelle par un technicien senior</li>
+            </ul>
+
+            <h3>5.2 Metriques collectees</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metrique</th>
+                        <th>Description</th>
+                        <th>Valeur initiale (N8N)</th>
+                        <th>Valeur actuelle (Python)</th>
+                        <th>Objectif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Taux de validation</strong></td>
+                        <td>% de procedures proposees validees par un humain</td>
+                        <td>~40%</td>
+                        <td>Non mesure (en dev)</td>
+                        <td>> 70%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Precision RAG</strong></td>
+                        <td>Pertinence des documents retrouves (top 5)</td>
+                        <td>Non mesure</td>
+                        <td>Non mesure (en dev)</td>
+                        <td>> 80%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Procedures actives</strong></td>
+                        <td>Nombre de procedures dans le RAG</td>
+                        <td>0 (pas de RAG)</td>
+                        <td>12 (manuelles)</td>
+                        <td>> 50</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>5.3 Resultats preliminaires</h3>
+            <div class="info-box resultats">
+                <h4>Observations phase N8N (Nov-Dec 2025)</h4>
+                <ul>
+                    <li>L'extraction de procedures par LLM est fonctionnelle pour les tickets bien documentes</li>
+                    <li>Difficulte majeure : tickets avec resolutions implicites ("j'ai regle le probleme")</li>
+                    <li>Le clustering semantique de tickets similaires ameliore la qualite de l'extraction</li>
+                    <li>Limite N8N : orchestration complexe difficile a maintenir, pas de gestion fine des erreurs</li>
+                </ul>
+            </div>
+
+            <div class="info-box en-cours">
+                <h4>Travaux en cours (Jan-Fev 2026)</h4>
+                <ul>
+                    <li>Reimplementation complete en Python avec architecture modulaire</li>
+                    <li>Integration avec le RAG pgvector existant</li>
+                    <li>Mise en place des metriques de qualite automatiques</li>
+                    <li>Tests sur echantillon elargi de tickets</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>6. Iterations et historique des travaux</h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">Fin novembre 2025</div>
+                    <p><strong>Phase 1 - Prototype N8N</strong></p>
+                    <p>Premier prototype d'extraction de procedures avec N8N. Workflow basique : ticket → LLM → procedure. Resultats encourageants mais qualite variable.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Decembre 2025</div>
+                    <p><strong>Phase 2 - Amelioration N8N</strong></p>
+                    <p>Ajout du clustering de tickets similaires avant extraction. Amelioration notable mais limites de N8N pour l'orchestration complexe.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Janvier 2026</div>
+                    <p><strong>Phase 3 - Migration Python</strong></p>
+                    <p>Decision de migration vers Python pour beneficier d'une architecture plus robuste. Reimplementation de la logique d'extraction avec meilleure gestion des erreurs.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Fevrier 2026</div>
+                    <p><strong>Phase 4 - Integration RAG (en cours)</strong></p>
+                    <p>Integration avec le RAG pgvector. Implementation de la detection d'obsolescence. Tests de la boucle de feedback complete.</p>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 12%">Version</th>
+                        <th style="width: 15%">Date</th>
+                        <th style="width: 45%">Modifications / Hypothese testee</th>
+                        <th style="width: 28%">Resultat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>N8N v1</td>
+                        <td>Nov. 2025</td>
+                        <td>Extraction directe ticket → LLM → procedure</td>
+                        <td><span class="badge partiel">Partiel</span> - Qualite variable</td>
+                    </tr>
+                    <tr>
+                        <td>N8N v2</td>
+                        <td>Dec. 2025</td>
+                        <td>Ajout clustering semantique pre-extraction</td>
+                        <td><span class="badge partiel">Ameliore</span> - Mais limites N8N</td>
+                    </tr>
+                    <tr>
+                        <td>Python v1</td>
+                        <td>Jan. 2026</td>
+                        <td>Reimplementation complete en Python</td>
+                        <td><span class="badge valide">OK</span> - Base solide</td>
+                    </tr>
+                    <tr>
+                        <td>Python v2</td>
+                        <td>Fev. 2026</td>
+                        <td>Integration RAG + detection obsolescence</td>
+                        <td><span class="badge en-cours">En cours</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>7. Preuves materielles disponibles</h2>
+
+            <ul class="checklist">
+                <li class="done">Workflows N8N exports (versions v1 et v2)</li>
+                <li class="done">Code source Python (versions datees)</li>
+                <li class="done">Echantillon de tickets GLPI utilises pour les tests</li>
+                <li class="done">Exemples de procedures extraites (phase N8N)</li>
+                <li>Logs de l'Enrichisseur (a collecter en production)</li>
+                <li>Metriques RAG avant/apres enrichissement (a mesurer)</li>
+                <li>Cas de procedures contradictoires detectees (a documenter)</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>8. Evaluation selon les criteres de Frascati</h2>
+
+            <div class="frascati-grid">
+                <div class="frascati-item">
+                    <div class="criterion">Nouveaute</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Creativite</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Incertitude</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Systematisation</div>
+                    <div class="evaluation moyen">EN COURS</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Transferabilite</div>
+                    <div class="evaluation moyen">MOYEN</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Critere</th>
+                        <th>Evaluation</th>
+                        <th>Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nouveaute</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>L'etat de l'art ne propose pas de solution etablie pour la capitalisation automatique continue de connaissances IT operationnelles via LLM avec boucle de feedback</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creativite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>La chaine complete ticket → analyse LLM → extraction pattern → generation procedure → validation humaine → vectorisation → reutilisation est une architecture originale</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incertitude</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Trois verrous identifies sans solution connue. Les resultats de la phase N8N montrent que le probleme n'est pas trivial (taux de validation ~40%)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Systematisation</strong></td>
+                        <td><span class="badge moyen">En cours</span></td>
+                        <td>Protocoles de test definis, metriques identifiees. La collecte systematique des resultats est en cours avec la version Python</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transferabilite</strong></td>
+                        <td><span class="badge moyen">Moyen</span></td>
+                        <td>La methodologie est generalisable a tout contexte de support IT, voire au-dela (support client, maintenance industrielle)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <footer class="document-footer">
+            <p>Operation de Recherche 1 - Capitalisation automatique des connaissances IT</p>
+            <p>Projet WIDIP - Dossier Credit d'Impot Recherche</p>
+            <p>Periode : Novembre 2025 - Fevrier 2026 | Statut : EN COURS</p>
+        </footer>
+    </div>
+</body>
+</html>

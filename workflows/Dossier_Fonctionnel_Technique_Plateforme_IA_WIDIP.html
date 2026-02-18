@@ -1,0 +1,2284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plateforme IA Support WIDIP - Dossier Fonctionnel et Technique</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #333;
+            background: #fff;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm 25mm;
+            margin: 0 auto;
+            background: #fff;
+            position: relative;
+        }
+
+        .header {
+            background: #4a4a4a;
+            color: #fff;
+            padding: 8px 15px;
+            text-align: right;
+            font-weight: bold;
+            font-size: 12pt;
+            margin-bottom: 30px;
+        }
+
+        .cover-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 250mm;
+            text-align: center;
+        }
+
+        .cover-title {
+            font-size: 32pt;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 40px;
+        }
+
+        .cover-subtitle {
+            font-size: 20pt;
+            color: #666;
+            margin-bottom: 80px;
+        }
+
+        .cover-date {
+            font-size: 12pt;
+            color: #888;
+            font-style: italic;
+        }
+
+        h1 {
+            font-size: 18pt;
+            color: #333;
+            border-bottom: 2px solid #4a4a4a;
+            padding-bottom: 8px;
+            margin: 30px 0 20px 0;
+        }
+
+        h2 {
+            font-size: 14pt;
+            color: #333;
+            margin: 25px 0 15px 0;
+        }
+
+        h3 {
+            font-size: 12pt;
+            color: #333;
+            margin: 20px 0 10px 0;
+            text-decoration: underline;
+        }
+
+        h4 {
+            font-size: 11pt;
+            color: #333;
+            margin: 15px 0 8px 0;
+            font-style: italic;
+        }
+
+        p {
+            margin: 10px 0;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin: 10px 0 10px 25px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid #999;
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #e8e8e8;
+            font-weight: bold;
+        }
+
+        .table-small {
+            font-size: 9pt;
+        }
+
+        .table-small th, .table-small td {
+            padding: 5px 8px;
+        }
+
+        pre {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            margin: 15px 0;
+            line-height: 1.3;
+        }
+
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .important {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 15mm;
+            left: 25mm;
+            right: 25mm;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9pt;
+            color: #666;
+            border-top: 1px solid #ccc;
+            padding-top: 8px;
+        }
+
+        .footer-left {
+            text-align: left;
+        }
+
+        .footer-center {
+            text-align: center;
+        }
+
+        .footer-right {
+            text-align: right;
+        }
+
+        .toc {
+            margin: 20px 0;
+        }
+
+        .toc a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .toc-h1 {
+            font-weight: bold;
+            margin: 10px 0 5px 0;
+        }
+
+        .toc-h2 {
+            margin: 3px 0 3px 20px;
+        }
+
+        .toc-h3 {
+            margin: 2px 0 2px 40px;
+            font-size: 10pt;
+        }
+
+        .toc-dots {
+            border-bottom: 1px dotted #999;
+            flex-grow: 1;
+            margin: 0 10px;
+        }
+
+        .toc-line {
+            display: flex;
+            align-items: baseline;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .historique-table {
+            width: 100%;
+        }
+
+        .schema-box {
+            border: 2px solid #4a4a4a;
+            padding: 15px;
+            margin: 15px 0;
+            background: #fafafa;
+        }
+
+        .level-l0 { background: #d4edda; }
+        .level-l1 { background: #d1ecf1; }
+        .level-l2 { background: #fff3cd; }
+        .level-l3 { background: #f8d7da; }
+        .level-l4 { background: #e2e3e5; }
+
+        @media print {
+            .page {
+                margin: 0;
+                padding: 15mm 20mm;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- PAGE DE GARDE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="cover-page">
+        <div class="cover-title">Plateforme IA Support WIDIP</div>
+        <div class="cover-subtitle">Dossier fonctionnel et technique</div>
+        <div class="cover-date">Mise à jour janvier 2026</div>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SOMMAIRE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h1>Sommaire</h1>
+
+    <div class="toc">
+        <div class="toc-h1"><a href="#section1">1. OBJECTIF ET VUE GLOBALE</a></div>
+        <div class="toc-h2"><a href="#section1-1">1.1. Objectifs de la plateforme</a></div>
+        <div class="toc-h2"><a href="#section1-2">1.2. Périmètre et composants principaux</a></div>
+        <div class="toc-h2"><a href="#section1-3">1.3. Schéma d'architecture globale</a></div>
+
+        <div class="toc-h1"><a href="#section2">2. DOSSIER FONCTIONNEL - WIBOT</a></div>
+        <div class="toc-h2"><a href="#section2-1">2.1. Vue d'ensemble de l'interface</a></div>
+        <div class="toc-h2"><a href="#section2-2">2.2. Les 4 modes de chat</a></div>
+        <div class="toc-h3"><a href="#section2-2-1">2.2.1. Mode Flash</a></div>
+        <div class="toc-h3"><a href="#section2-2-2">2.2.2. Mode Pro</a></div>
+        <div class="toc-h3"><a href="#section2-2-3">2.2.3. Mode Code</a></div>
+        <div class="toc-h3"><a href="#section2-2-4">2.2.4. Mode Agent</a></div>
+        <div class="toc-h2"><a href="#section2-3">2.3. Accès à la base de connaissances</a></div>
+        <div class="toc-h2"><a href="#section2-4">2.4. Matrice des droits d'accès</a></div>
+
+        <div class="toc-h1"><a href="#section3">3. DOSSIER FONCTIONNEL - WORKFLOWS AUTONOMES</a></div>
+        <div class="toc-h2"><a href="#section3-1">3.1. Workflow SENTINEL</a></div>
+        <div class="toc-h3"><a href="#section3-1-1">3.1.1. Objectif et principe</a></div>
+        <div class="toc-h3"><a href="#section3-1-2">3.1.2. Cycle de fonctionnement</a></div>
+        <div class="toc-h3"><a href="#section3-1-3">3.1.3. Règles métier</a></div>
+        <div class="toc-h2"><a href="#section3-2">3.2. Workflow ASSISTANT TICKET</a></div>
+        <div class="toc-h3"><a href="#section3-2-1">3.2.1. Objectif et principe</a></div>
+        <div class="toc-h3"><a href="#section3-2-2">3.2.2. Qualification des tickets</a></div>
+        <div class="toc-h3"><a href="#section3-2-3">3.2.3. Résolution automatique</a></div>
+        <div class="toc-h3"><a href="#section3-2-4">3.2.4. Gestion des tickets non résolus</a></div>
+        <div class="toc-h2"><a href="#section3-3">3.3. Workflow ENRICHISSEUR</a></div>
+        <div class="toc-h3"><a href="#section3-3-1">3.3.1. Objectif et principe</a></div>
+        <div class="toc-h3"><a href="#section3-3-2">3.3.2. Sources de données</a></div>
+        <div class="toc-h3"><a href="#section3-3-3">3.3.3. Génération de procédures</a></div>
+
+        <div class="toc-h1"><a href="#section4">4. DOSSIER FONCTIONNEL - SAFEGUARD</a></div>
+        <div class="toc-h2"><a href="#section4-1">4.1. Principe et objectifs</a></div>
+        <div class="toc-h2"><a href="#section4-2">4.2. Niveaux d'action (L0 à L4)</a></div>
+        <div class="toc-h2"><a href="#section4-3">4.3. Niveaux d'accréditation (N0 à N4)</a></div>
+        <div class="toc-h2"><a href="#section4-4">4.4. Interface et processus de validation</a></div>
+
+        <div class="toc-h1"><a href="#section5">5. DOSSIER FONCTIONNEL - BASE DE CONNAISSANCES</a></div>
+        <div class="toc-h2"><a href="#section5-1">5.1. Sources de connaissances</a></div>
+        <div class="toc-h2"><a href="#section5-2">5.2. Fonctionnement technique</a></div>
+
+        <div class="toc-h1"><a href="#section6">6. DOSSIER TECHNIQUE</a></div>
+        <div class="toc-h2"><a href="#section6-1">6.1. Architecture générale</a></div>
+        <div class="toc-h2"><a href="#section6-2">6.2. Couche MCP (Outils)</a></div>
+        <div class="toc-h2"><a href="#section6-3">6.3. Modèles LLM utilisés</a></div>
+        <div class="toc-h2"><a href="#section6-4">6.4. Modèle de données</a></div>
+
+        <div class="toc-h1"><a href="#section7">7. ÉVOLUTIONS PRÉVUES</a></div>
+        <div class="toc-h2"><a href="#section7-1">7.1. Priorité haute</a></div>
+        <div class="toc-h2"><a href="#section7-2">7.2. Priorité moyenne</a></div>
+        <div class="toc-h2"><a href="#section7-3">7.3. Priorité basse</a></div>
+
+        <div class="toc-h1"><a href="#section8">8. ANNEXES</a></div>
+        <div class="toc-h2"><a href="#section8-1">8.1. Glossaire</a></div>
+    </div>
+
+    <h1>Historique</h1>
+
+    <table class="historique-table">
+        <tr>
+            <th style="width: 80px;">Version</th>
+            <th style="width: 100px;">Date</th>
+            <th style="width: 120px;">Auteur</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td>1.0</td>
+            <td>19/01/2026</td>
+            <td>Maxime RIPOUETAU</td>
+            <td>Création du document - Architecture initiale</td>
+        </tr>
+    </table>
+
+    <h1>Préambule</h1>
+
+    <p>Ce document constitue le <strong>dossier fonctionnel et technique</strong> de la plateforme IA Support conçue pour WIDIP.</p>
+
+    <p>Cette plateforme vise à transformer le support informatique réactif en support proactif, en s'appuyant sur l'intelligence artificielle pour :</p>
+    <ul>
+        <li>Assister les techniciens dans leurs tâches quotidiennes</li>
+        <li>Automatiser la surveillance des infrastructures clientes</li>
+        <li>Capitaliser sur les connaissances et l'expertise de l'entreprise</li>
+    </ul>
+
+    <div class="note">
+        <strong>Note :</strong> WIDIP est l'entreprise pour laquelle cette architecture a été conçue. La plateforme elle-même (WIBOT + Workflows) n'a pas de nom spécifique à ce jour.
+    </div>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">2</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 1 : OBJECTIF ET VUE GLOBALE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h1 id="section1">1. Objectif et vue globale</h1>
+
+    <h2 id="section1-1">1.1. Objectifs de la plateforme</h2>
+
+    <p>La plateforme IA Support répond aux objectifs suivants :</p>
+
+    <ul>
+        <li><strong>Proactivité :</strong> Détecter et signaler les incidents avant que les clients n'appellent</li>
+        <li><strong>Efficacité :</strong> Automatiser le traitement des tickets simples et répétitifs</li>
+        <li><strong>Capitalisation :</strong> Centraliser et enrichir continuellement la base de connaissances</li>
+        <li><strong>Assistance :</strong> Fournir aux techniciens un accès instantané à l'information</li>
+        <li><strong>Sécurité :</strong> Garantir un contrôle humain sur toutes les actions critiques</li>
+    </ul>
+
+    <p>A contrario, les objectifs <u>ne sont pas</u> :</p>
+    <ul>
+        <li>De remplacer les techniciens par l'IA</li>
+        <li>D'exécuter des actions critiques sans validation humaine</li>
+        <li>De se substituer aux outils existants (GLPI, Observium, AD)</li>
+    </ul>
+
+    <h2 id="section1-2">1.2. Périmètre et composants principaux</h2>
+
+    <p>La plateforme se compose de cinq éléments principaux :</p>
+
+    <table>
+        <tr>
+            <th style="width: 150px;">Composant</th>
+            <th>Description</th>
+            <th style="width: 100px;">Type</th>
+        </tr>
+        <tr>
+            <td><strong>WIBOT</strong></td>
+            <td>Interface conversationnelle principale pour les techniciens, avec 4 modes de chat (Flash, Pro, Code, Agent)</td>
+            <td>Interface</td>
+        </tr>
+        <tr>
+            <td><strong>SENTINEL</strong></td>
+            <td>Workflow autonome de surveillance proactive des infrastructures clientes via Observium</td>
+            <td>Workflow</td>
+        </tr>
+        <tr>
+            <td><strong>ASSISTANT TICKET</strong></td>
+            <td>Workflow autonome de qualification et résolution automatique des tickets GLPI</td>
+            <td>Workflow</td>
+        </tr>
+        <tr>
+            <td><strong>ENRICHISSEUR</strong></td>
+            <td>Workflow batch de capitalisation des connaissances à partir des tickets résolus</td>
+            <td>Workflow</td>
+        </tr>
+        <tr>
+            <td><strong>SAFEGUARD</strong></td>
+            <td>Système de sécurité contrôlant toutes les actions critiques avant exécution</td>
+            <td>Sécurité</td>
+        </tr>
+    </table>
+
+    <p>Ces composants s'appuient sur :</p>
+    <ul>
+        <li><strong>RAG (Base de connaissances) :</strong> Stockage vectoriel des procédures et documentation</li>
+        <li><strong>MCP (Model Context Protocol) :</strong> Connecteurs vers les systèmes externes (GLPI, Observium, AD)</li>
+        <li><strong>LLM Mistral :</strong> Modèles d'intelligence artificielle pour le traitement du langage</li>
+    </ul>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">3</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 1.3 : SCHEMA ARCHITECTURE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h2 id="section1-3">1.3. Schéma d'architecture globale</h2>
+
+    <pre>
+                                    UTILISATEURS
+                                         |
+                                         v
++====================================================================================+
+|                                                                                    |
+|                              WIBOT (Interface Utilisateur)                         |
+|                                                                                    |
+|    +----------+    +----------+    +----------+    +----------+                    |
+|    |  FLASH   |    |   PRO    |    |   CODE   |    |  AGENT   |                    |
+|    | Questions|    | Requêtes |    | Scripts  |    |Résolution|                    |
+|    | Rapides  |    | Complexes|    | & Code   |    | Problèmes|                    |
+|    +----------+    +----------+    +----------+    +----+-----+                    |
+|                                                        |                           |
+|                                                        v                           |
+|                                              +------------------+                   |
+|                                              | Appel aux outils |                   |
+|                                              | RAG, MCP GLPI,   |                   |
+|                                              | MCP Observium    |                   |
+|                                              +------------------+                   |
++====================================================================================+
+                                         |
+             +---------------------------+---------------------------+
+             |                           |                           |
+             v                           v                           v
++========================+  +========================+  +========================+
+|       SENTINEL         |  |   ASSISTANT TICKET     |  |     ENRICHISSEUR       |
+|  (Surveillance Réseau) |  |  (Gestion Tickets)     |  | (Capitalisation)       |
+|                        |  |                        |  |                        |
+|  - Détection pannes    |  |  - Qualification       |  |  - Analyse tickets     |
+|  - Identification      |  |  - Résolution auto     |  |  - Création procédures |
+|    clients impactés    |  |  - Escalade si besoin  |  |  - Enrichissement RAG  |
+|  - Notification techs  |  |                        |  |                        |
+|  - Alerte clients SMS  |  |                        |  |                        |
++========================+  +========================+  +========================+
+             |                           |                           |
+             +---------------------------+---------------------------+
+                                         |
+                                         v
++====================================================================================+
+|                              COUCHE MCP (Outils)                                   |
+|    +---------------+    +---------------+    +---------------+    +------------+   |
+|    |   MCP GLPI    |    |MCP OBSERVIUM  |    |    MCP AD     |    |  MCP SMS   |   |
+|    |   Ticketing   |    |  Monitoring   |    |Active Directory   | Notifications  |
+|    +---------------+    +---------------+    +---------------+    +------------+   |
++====================================================================================+
+                                         |
+                                         v
++====================================================================================+
+|                              SAFEGUARD (Sécurité)                                  |
+|    Contrôle de TOUTES les actions critiques avant exécution                        |
+|    Validation humaine obligatoire pour les niveaux L2, L3, L4                      |
++====================================================================================+
+                                         |
+                                         v
++====================================================================================+
+|                         BASE DE CONNAISSANCES (RAG)                                |
+|    +---------------+    +---------------+    +---------------+                     |
+|    |  Procédures   |    |   Tickets     |    | Documentation |                     |
+|    |  Techniques   |    |   Résolus     |    |   Interne     |                     |
+|    +---------------+    +---------------+    +---------------+                     |
++====================================================================================+
+                                         |
+                                         v
+                    +----------------------------------------+
+                    |           SYSTEMES EXTERNES            |
+                    |   GLPI    |   Observium   |    AD      |
+                    +----------------------------------------+
+    </pre>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">4</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 2 : DOSSIER FONCTIONNEL WIBOT -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h1 id="section2">2. Dossier fonctionnel - WIBOT</h1>
+
+    <h2 id="section2-1">2.1. Vue d'ensemble de l'interface</h2>
+
+    <p>WIBOT est l'interface conversationnelle principale de la plateforme. C'est le point d'entrée pour tous les techniciens de WIDIP. Il permet d'interagir avec l'ensemble du système via une conversation naturelle.</p>
+
+    <p>L'interface se compose de :</p>
+    <ul>
+        <li><strong>Chat :</strong> Zone de conversation avec l'IA (modes Flash, Pro, Code, Agent)</li>
+        <li><strong>Safeguard :</strong> Tableau de bord des demandes de validation en attente</li>
+        <li><strong>Knowledge :</strong> Gestion de la base de connaissances RAG</li>
+        <li><strong>Supervision :</strong> Statistiques d'utilisation et analytics</li>
+        <li><strong>Administration :</strong> Gestion des utilisateurs et configuration (réservé aux admins)</li>
+    </ul>
+
+    <h2 id="section2-2">2.2. Les 4 modes de chat</h2>
+
+    <p>WIBOT propose 4 modes de chat adaptés à différents cas d'usage :</p>
+
+    <h3 id="section2-2-1">2.2.1. Mode Flash</h3>
+
+    <table>
+        <tr>
+            <th style="width: 150px;">Caractéristique</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><strong>Objectif</strong></td>
+            <td>Réponses rapides aux questions simples</td>
+        </tr>
+        <tr>
+            <td><strong>Modèle LLM</strong></td>
+            <td>Devstral Small (rapide, économique)</td>
+        </tr>
+        <tr>
+            <td><strong>Cas d'usage</strong></td>
+            <td>"C'est quoi le VLAN pour le site X ?", "Quel est le contact du client Y ?"</td>
+        </tr>
+        <tr>
+            <td><strong>Accès RAG</strong></td>
+            <td>Oui, pour enrichir les réponses</td>
+        </tr>
+        <tr>
+            <td><strong>Accès MCP</strong></td>
+            <td>Non</td>
+        </tr>
+    </table>
+
+    <h3 id="section2-2-2">2.2.2. Mode Pro</h3>
+
+    <table>
+        <tr>
+            <th style="width: 150px;">Caractéristique</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><strong>Objectif</strong></td>
+            <td>Requêtes complexes nécessitant une analyse approfondie</td>
+        </tr>
+        <tr>
+            <td><strong>Modèle LLM</strong></td>
+            <td>Mistral Large (haute qualité)</td>
+        </tr>
+        <tr>
+            <td><strong>Cas d'usage</strong></td>
+            <td>"Explique-moi l'architecture réseau du client Z", "Quelle est la procédure complète pour migrer un serveur ?"</td>
+        </tr>
+        <tr>
+            <td><strong>Accès RAG</strong></td>
+            <td>Oui, recherche approfondie dans la base de connaissances</td>
+        </tr>
+        <tr>
+            <td><strong>Accès MCP</strong></td>
+            <td>Non</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">5</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 2 SUITE : MODES CODE ET AGENT -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h3 id="section2-2-3">2.2.3. Mode Code</h3>
+
+    <table>
+        <tr>
+            <th style="width: 150px;">Caractéristique</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><strong>Objectif</strong></td>
+            <td>Conception et optimisation de scripts</td>
+        </tr>
+        <tr>
+            <td><strong>Modèle LLM</strong></td>
+            <td>Devstral (spécialisé code)</td>
+        </tr>
+        <tr>
+            <td><strong>Cas d'usage</strong></td>
+            <td>"Écris un script PowerShell pour lister les users AD inactifs", "Optimise ce script Python"</td>
+        </tr>
+        <tr>
+            <td><strong>Accès RAG</strong></td>
+            <td>Oui, pour les exemples et bonnes pratiques</td>
+        </tr>
+        <tr>
+            <td><strong>Accès MCP</strong></td>
+            <td>Non</td>
+        </tr>
+    </table>
+
+    <h3 id="section2-2-4">2.2.4. Mode Agent</h3>
+
+    <table>
+        <tr>
+            <th style="width: 150px;">Caractéristique</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><strong>Objectif</strong></td>
+            <td>Résolution de problèmes complexes nécessitant des actions</td>
+        </tr>
+        <tr>
+            <td><strong>Modèle LLM</strong></td>
+            <td>Mistral Large (raisonnement avancé)</td>
+        </tr>
+        <tr>
+            <td><strong>Cas d'usage</strong></td>
+            <td>"Diagnostique pourquoi le client X a des lenteurs", "Trouve tous les tickets ouverts pour le site Y et résume la situation"</td>
+        </tr>
+        <tr>
+            <td><strong>Accès RAG</strong></td>
+            <td>Oui, comme outil de recherche</td>
+        </tr>
+        <tr>
+            <td><strong>Accès MCP</strong></td>
+            <td><strong>Oui</strong> - GLPI, Observium, AD, etc.</td>
+        </tr>
+    </table>
+
+    <h4>Fonctionnement du Mode Agent</h4>
+
+    <p>L'Agent peut simultanément interroger plusieurs sources :</p>
+    <ul>
+        <li><strong>RAG :</strong> Procédures, documentation interne</li>
+        <li><strong>GLPI :</strong> Tickets, clients, historique</li>
+        <li><strong>Observium :</strong> Métriques, alertes, état des équipements</li>
+    </ul>
+
+    <p>Il croise les informations pour fournir une vision globale et suggère des procédures adaptées au problème détecté.</p>
+
+    <div class="info">
+        <strong>Évolution prévue :</strong> À terme, l'Agent pourra exécuter les procédures suggérées (toujours avec validation Safeguard pour les actions sensibles).
+    </div>
+
+    <h2 id="section2-3">2.3. Accès à la base de connaissances</h2>
+
+    <p>Dans tous les modes, WIBOT peut accéder à la base de connaissances RAG pour :</p>
+    <ul>
+        <li>Enrichir ses réponses avec des informations contextuelles</li>
+        <li>Fournir des procédures documentées</li>
+        <li>Citer des cas similaires déjà résolus</li>
+    </ul>
+
+    <p>L'accès au RAG est transparent pour l'utilisateur : l'IA recherche automatiquement les informations pertinentes.</p>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">6</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 2.4 : MATRICE DES DROITS -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h2 id="section2-4">2.4. Matrice des droits d'accès</h2>
+
+    <p>L'accès aux fonctionnalités de WIBOT dépend du rôle et du niveau d'accréditation de l'utilisateur.</p>
+
+    <table class="table-small">
+        <tr>
+            <th>Fonctionnalité</th>
+            <th>N0<br>(Lecture)</th>
+            <th>N1<br>(Tech)</th>
+            <th>N2<br>(Senior)</th>
+            <th>N3<br>(Admin)</th>
+            <th>N4<br>(Super Admin)</th>
+        </tr>
+        <tr>
+            <td>Chat - Mode Flash</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Chat - Mode Pro</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Chat - Mode Code</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Chat - Mode Agent</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Safeguard - Voir les demandes</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Safeguard - Valider L1</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Safeguard - Valider L2</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Safeguard - Valider L3</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Knowledge - Consultation</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Knowledge - Ajout documents</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Supervision - Analytics</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Administration - Utilisateurs</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Administration - Configuration</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+    </table>
+
+    <div class="note">
+        <strong>Note :</strong> Les niveaux d'accréditation (N0 à N4) sont synchronisés avec la matrice d'autorisation WIDIP (fichier Excel).
+    </div>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">7</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3 : WORKFLOWS AUTONOMES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h1 id="section3">3. Dossier fonctionnel - Workflows autonomes</h1>
+
+    <p>La plateforme dispose de trois workflows autonomes qui fonctionnent en arrière-plan, avec une semi-autonomie contrôlée par le système Safeguard.</p>
+
+    <h2 id="section3-1">3.1. Workflow SENTINEL</h2>
+
+    <h3 id="section3-1-1">3.1.1. Objectif et principe</h3>
+
+    <p>Sentinel est un workflow autonome qui surveille en continu les infrastructures clientes via Observium. Son objectif est de détecter les pannes <strong>AVANT</strong> que les clients n'appellent, permettant une gestion proactive du support.</p>
+
+    <table>
+        <tr>
+            <th style="width: 150px;">Aspect</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><strong>Fréquence</strong></td>
+            <td>Interrogation toutes les 1 minute</td>
+        </tr>
+        <tr>
+            <td><strong>Cache Redis</strong></td>
+            <td>Stocke l'état des équipements pour détecter les pannes persistantes (seuil : 20 min)</td>
+        </tr>
+        <tr>
+            <td><strong>Vérification FAI</strong></td>
+            <td>Le technicien humain vérifie manuellement si la panne vient du FAI ou de l'infrastructure gérée par WIDIP</td>
+        </tr>
+        <tr>
+            <td><strong>Notifications</strong></td>
+            <td>SMS aux clients (via Safeguard L3), notification technicien</td>
+        </tr>
+        <tr>
+            <td><strong>Intégration</strong></td>
+            <td>Peut déclencher l'Assistant Ticket pour créer automatiquement un ticket</td>
+        </tr>
+    </table>
+
+    <h3 id="section3-1-2">3.1.2. Cycle de fonctionnement</h3>
+
+    <pre>
++------------------------------------------+
+|        BOUCLE CONTINUE (1 min)           |
++------------------------------------------+
+                   |
+                   v
++------------------------------------------+
+| 1. Interrogation Observium (MCP)         |
+|    -> Liste des équipements DOWN         |
++------------------------------------------+
+                   |
+                   v
++------------------------------------------+
+| 2. Vérification Cache Redis              |
+|    -> Équipement déjà DOWN > 20 min ?    |
++------------------------------------------+
+                   |
+       +-----------+-----------+
+       |                       |
+       v                       v
++-------------+         +-------------+
+| NON         |         | OUI         |
+| Nouvelle    |         | Panne       |
+| panne       |         | persistante |
++-------------+         +-------------+
+       |                       |
+       v                       v
++-------------+    +------------------------------------------+
+| Enregistrer |    | 3. Identification clients impactés       |
+| dans Redis  |    |    (MCP GLPI)                            |
++-------------+    +------------------------------------------+
+                              |
+                              v
+                   +------------------------------------------+
+                   | 4. Notification Technicien (Safeguard)   |
+                   |    "Infra X down depuis 20min,           |
+                   |     clients Y et Z impactés.             |
+                   |     Vérifiez si FAI ou infra WIDIP"      |
+                   +------------------------------------------+
+    </pre>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">8</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3.1 SUITE : SENTINEL -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <pre>
+                   +------------------------------------------+
+                   | 5. Technicien vérifie et répond          |
+                   |    via Safeguard :                       |
+                   |    [ ] Panne FAI                         |
+                   |    [ ] Panne infra WIDIP                 |
+                   +------------------------------------------+
+                              |
+                              v
+                   +------------------------------------------+
+                   | 6. Demande d'alerte client (Safeguard L3)|
+                   |    "Autoriser l'envoi SMS aux clients    |
+                   |     X, Y, Z pour les informer ?"         |
+                   +------------------------------------------+
+                              |
+                   +----------+----------+
+                   |                     |
+                   v                     v
+             +-----------+         +-----------+
+             | APPROUVÉ  |         | REFUSÉ    |
+             +-----------+         +-----------+
+                   |
+                   v
+             +------------------------------------------+
+             | 7. Envoi SMS aux clients                 |
+             |    "Bonjour, nous avons détecté une      |
+             |     panne sur votre liaison. Ticket      |
+             |     #12345 ouvert. Nous travaillons      |
+             |     à la résolution."                    |
+             +------------------------------------------+
+                   |
+                   v
+             +------------------------------------------+
+             | 8. Demande ouverture ticket              |
+             |    -> Appel API Assistant Ticket         |
+             +------------------------------------------+
+    </pre>
+
+    <h3 id="section3-1-3">3.1.3. Règles métier</h3>
+
+    <ul>
+        <li><strong>Seuil de persistance :</strong> Une panne n'est considérée comme critique qu'après 20 minutes de DOWN continu</li>
+        <li><strong>Vérification FAI :</strong> Le technicien doit vérifier manuellement si la panne provient du FAI ou de l'infrastructure WIDIP</li>
+        <li><strong>SMS clients :</strong> L'envoi de SMS nécessite une validation Safeguard L3 (admin requis)</li>
+        <li><strong>Ticket automatique :</strong> Le ticket est créé après validation, avec le numéro communiqué au client</li>
+    </ul>
+
+    <h4>Bénéfices</h4>
+
+    <ul>
+        <li><strong>Proactivité :</strong> Les clients sont informés avant même qu'ils n'appellent</li>
+        <li><strong>Réduction charge support :</strong> Moins d'appels entrants car les clients sont déjà au courant</li>
+        <li><strong>Traçabilité :</strong> Toutes les pannes sont documentées avec timeline précise</li>
+        <li><strong>Qualification :</strong> Distinction claire entre panne FAI et panne infrastructure WIDIP</li>
+    </ul>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">9</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3.2 : ASSISTANT TICKET -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h2 id="section3-2">3.2. Workflow ASSISTANT TICKET</h2>
+
+    <h3 id="section3-2-1">3.2.1. Objectif et principe</h3>
+
+    <p>L'Assistant Ticket est un workflow autonome qui surveille les nouveaux tickets GLPI toutes les 3 minutes. Il qualifie chaque ticket en niveau de difficulté et peut résoudre automatiquement les tickets simples.</p>
+
+    <h3 id="section3-2-2">3.2.2. Qualification des tickets</h3>
+
+    <p>Pour chaque nouveau ticket, l'Assistant Ticket effectue une analyse comprenant :</p>
+    <ul>
+        <li>Titre et description du ticket</li>
+        <li>Catégorie</li>
+        <li>Client concerné</li>
+        <li>Historique des tickets similaires (via RAG)</li>
+    </ul>
+
+    <p>Il attribue ensuite un niveau de difficulté :</p>
+
+    <table>
+        <tr>
+            <th>Niveau</th>
+            <th>Description</th>
+            <th>Traitement</th>
+        </tr>
+        <tr>
+            <td><strong>SIMPLE</strong></td>
+            <td>Ticket dans l'éventail de compétences de l'IA</td>
+            <td>L'IA peut résoudre (avec Safeguard)</td>
+        </tr>
+        <tr>
+            <td><strong>MOYEN</strong></td>
+            <td>Ticket nécessitant une analyse plus poussée</td>
+            <td>L'IA peut tenter (avec Safeguard)</td>
+        </tr>
+        <tr>
+            <td><strong>COMPLEXE</strong></td>
+            <td>Ticket dépassant les compétences de l'IA</td>
+            <td>Escalade technicien N1</td>
+        </tr>
+        <tr>
+            <td><strong>EXPERT</strong></td>
+            <td>Ticket nécessitant une expertise avancée</td>
+            <td>Escalade technicien N2+</td>
+        </tr>
+    </table>
+
+    <h3 id="section3-2-3">3.2.3. Résolution automatique</h3>
+
+    <p>L'Assistant Ticket peut résoudre automatiquement les types de demandes suivants :</p>
+
+    <table>
+        <tr>
+            <th>Type de demande</th>
+            <th>Actions de l'IA</th>
+            <th>Niveau Safeguard</th>
+        </tr>
+        <tr>
+            <td>Création compte AD</td>
+            <td>Créer l'utilisateur selon template</td>
+            <td class="level-l3">L3 (validation requise)</td>
+        </tr>
+        <tr>
+            <td>Reset mot de passe</td>
+            <td>Générer nouveau MDP, envoyer au user</td>
+            <td class="level-l3">L3 (validation requise)</td>
+        </tr>
+        <tr>
+            <td>Déblocage compte</td>
+            <td>Unlock dans AD</td>
+            <td class="level-l2">L2 (notification tech)</td>
+        </tr>
+        <tr>
+            <td>Ajout groupe AD</td>
+            <td>Ajouter user au groupe demandé</td>
+            <td class="level-l2">L2 (notification tech)</td>
+        </tr>
+        <tr>
+            <td>Info procédure</td>
+            <td>Fournir la procédure depuis RAG</td>
+            <td class="level-l0">L0 (auto)</td>
+        </tr>
+    </table>
+
+    <div class="important">
+        <strong>Phase de test :</strong> Durant la phase de rodage, la majorité des actions seront en L3 (validation humaine obligatoire) pour garantir la fiabilité du système.
+    </div>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">10</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3.2 SUITE : ASSISTANT TICKET -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h4>Flux de résolution automatique</h4>
+
+    <pre>
+    Ticket SIMPLE détecté
+            |
+            v
+    +------------------------------------------+
+    | 1. Recherche procédure dans RAG          |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 2. Préparation des actions               |
+    |    (ex: paramètres création compte)      |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 3. Demande Safeguard                     |
+    |    "Ticket #123 - Création compte AD     |
+    |     pour Jean Dupont.                    |
+    |     Paramètres: OU=Users, Groups=...     |
+    |     Autoriser ?"                         |
+    +------------------------------------------+
+            |
+            +----------+----------+
+            |                     |
+            v                     v
+      +-----------+         +-----------+
+      | APPROUVÉ  |         | REFUSÉ    |
+      +-----------+         +-----------+
+            |                     |
+            v                     v
+    +------------------+  +------------------+
+    | Exécution action |  | Ticket reste     |
+    | (MCP AD)         |  | en attente       |
+    +------------------+  | technicien       |
+            |             +------------------+
+            v
+    +------------------------------------------+
+    | 4. Mise à jour ticket GLPI               |
+    |    - Ajout suivi avec actions réalisées  |
+    |    - Demande clôture (Safeguard)         |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 5. Notification demandeur                |
+    |    (email avec nouveau MDP si applicable)|
+    +------------------------------------------+
+    </pre>
+
+    <h3 id="section3-2-4">3.2.4. Gestion des tickets non résolus</h3>
+
+    <p>Les tickets que l'IA ne peut pas résoudre (COMPLEXE ou EXPERT) sont :</p>
+    <ul>
+        <li><strong>Flaggés :</strong> Stockage de l'ID dans Redis avec tag "IA_NON_RESOLU"</li>
+        <li><strong>Conservés :</strong> Pour analyse ultérieure par l'Enrichisseur</li>
+        <li><strong>Escaladés :</strong> Restent en attente pour le technicien approprié</li>
+    </ul>
+
+    <p>Quand un technicien résout un ticket flaggé, l'Enrichisseur analyse la solution pour potentiellement créer une nouvelle procédure.</p>
+
+    <h4>Bénéfices</h4>
+
+    <ul>
+        <li><strong>Réduction temps résolution :</strong> Les tickets simples sont traités en minutes</li>
+        <li><strong>Disponibilité 24/7 :</strong> L'IA traite même hors heures ouvrées</li>
+        <li><strong>Cohérence :</strong> Mêmes procédures appliquées systématiquement</li>
+        <li><strong>Libération techniciens :</strong> Se concentrent sur les cas complexes</li>
+        <li><strong>Apprentissage :</strong> Les tickets non résolus alimentent l'Enrichisseur</li>
+    </ul>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">11</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3.3 : ENRICHISSEUR -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h2 id="section3-3">3.3. Workflow ENRICHISSEUR</h2>
+
+    <h3 id="section3-3-1">3.3.1. Objectif et principe</h3>
+
+    <p>L'Enrichisseur est un workflow batch (quotidien ou hebdomadaire) qui analyse les tickets résolus pour en extraire des procédures. Il transforme l'expérience des techniciens en connaissances réutilisables.</p>
+
+    <h3 id="section3-3-2">3.3.2. Sources de données</h3>
+
+    <p>L'Enrichisseur analyse :</p>
+    <ul>
+        <li><strong>Tickets clôturés :</strong> Du jour ou de la semaine, bien documentés</li>
+        <li><strong>Tickets flaggés "IA_NON_RESOLU" :</strong> Maintenant résolus par un technicien</li>
+        <li><strong>Tickets récurrents :</strong> Même type de problème résolu de la même manière</li>
+    </ul>
+
+    <h3 id="section3-3-3">3.3.3. Génération de procédures</h3>
+
+    <pre>
++------------------------------------------+
+|     DÉCLENCHEMENT (Fin de journée)       |
+|     ou HEBDOMADAIRE selon config         |
++------------------------------------------+
+                   |
+                   v
++------------------------------------------+
+| 1. Collecte des données                  |
+|    - Tickets clôturés du jour/semaine    |
+|    - Tickets flags "IA_NON_RESOLU"       |
+|      maintenant résolus                  |
++------------------------------------------+
+                   |
+                   v
++------------------------------------------+
+| 2. Filtrage et sélection                 |
+|    - Tickets bien documentés             |
+|    - Tickets récurrents (même type)      |
+|    - Résolutions réussies                |
++------------------------------------------+
+                   |
+                   v
++------------------------------------------+
+| 3. Analyse par le LLM                    |
+|    - Extraction des étapes de résolution |
+|    - Identification du pattern           |
+|    - Rédaction procédure structurée      |
++------------------------------------------+
+                   |
+                   v
++------------------------------------------+
+| 4. Génération proposition procédure      |
+|    - Titre                               |
+|    - Contexte / Symptômes                |
+|    - Étapes détaillées                   |
+|    - Vérification                        |
++------------------------------------------+
+                   |
+                   v
++------------------------------------------+
+| 5. Soumission pour validation (Safeguard)|
+|    "Nouvelle procédure détectée :        |
+|     [Titre]                              |
+|     Basée sur X tickets similaires       |
+|     Valider et ajouter à la base ?"      |
++------------------------------------------+
+    </pre>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">12</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3.3 SUITE : ENRICHISSEUR -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h4>Types de procédures générées</h4>
+
+    <table>
+        <tr>
+            <th>Source</th>
+            <th>Type de procédure</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td>Tickets simples récurrents</td>
+            <td>Procédure standard</td>
+            <td>"Reset mot de passe Office 365"</td>
+        </tr>
+        <tr>
+            <td>Tickets flags résolus par tech</td>
+            <td>Procédure avancée</td>
+            <td>"Diagnostic lenteur VPN site distant"</td>
+        </tr>
+        <tr>
+            <td>Conversations Agent complexes</td>
+            <td>Procédure R&D</td>
+            <td>"Migration Exchange vers O365"</td>
+        </tr>
+    </table>
+
+    <h4>Cercle vertueux de l'apprentissage</h4>
+
+    <pre>
+    +------------------+
+    |   Tickets du     |
+    |   jour           |
+    +--------+---------+
+             |
+             v
+    +------------------+
+    |  Enrichisseur    |
+    |  analyse et      |
+    |  propose         |
+    +--------+---------+
+             |
+             v
+    +------------------+
+    |  Validation      |
+    |  humaine         |
+    +--------+---------+
+             |
+             v
+    +------------------+
+    |  RAG enrichi     |
+    |  + procédures    |
+    +--------+---------+
+             |
+             v
+    +------------------+         +------------------+
+    |  Agent WIBOT     |         |  Assistant       |
+    |  plus performant |         |  Ticket plus     |
+    |  (mode Agent)    |         |  autonome        |
+    +--------+---------+         +--------+---------+
+             |                            |
+             +------------+---------------+
+                          |
+                          v
+                 +------------------+
+                 |  Meilleure       |
+                 |  résolution      |
+                 |  tickets         |
+                 +--------+---------+
+                          |
+                          v
+                 +------------------+
+                 |  Plus de tickets |
+                 |  bien résolus    |
+                 +--------+---------+
+                          |
+                          +-----> Retour au début
+    </pre>
+
+    <h4>Bénéfices</h4>
+
+    <ul>
+        <li><strong>Capitalisation :</strong> L'expertise ne part pas avec les employés</li>
+        <li><strong>Intégration nouveaux :</strong> Documentation riche et à jour</li>
+        <li><strong>Autonomie croissante :</strong> L'IA devient plus compétente avec le temps</li>
+        <li><strong>Qualité :</strong> Validation humaine garantit la pertinence des procédures</li>
+    </ul>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">13</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4 : SAFEGUARD -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h1 id="section4">4. Dossier fonctionnel - SAFEGUARD</h1>
+
+    <h2 id="section4-1">4.1. Principe et objectifs</h2>
+
+    <p>Safeguard est le verrou de sécurité qui contrôle <strong>TOUTES</strong> les actions critiques avant leur exécution. Il garantit qu'aucune action sensible n'est réalisée sans validation humaine appropriée.</p>
+
+    <p>Objectifs :</p>
+    <ul>
+        <li>Prévenir les erreurs automatisées irréversibles</li>
+        <li>Garantir la traçabilité de toutes les actions</li>
+        <li>Permettre une semi-autonomie contrôlée des workflows</li>
+        <li>Adapter le niveau de contrôle à la criticité de l'action</li>
+    </ul>
+
+    <h2 id="section4-2">4.2. Niveaux d'action (L0 à L4)</h2>
+
+    <table>
+        <tr>
+            <th style="width:60px;">Niveau</th>
+            <th style="width:100px;">Nom</th>
+            <th>Description</th>
+            <th style="width:180px;">Comportement</th>
+        </tr>
+        <tr class="level-l0">
+            <td><strong>L0</strong></td>
+            <td>READ_ONLY</td>
+            <td>Lecture seule, aucune modification</td>
+            <td>Exécution automatique</td>
+        </tr>
+        <tr class="level-l1">
+            <td><strong>L1</strong></td>
+            <td>MINOR</td>
+            <td>Modification mineure, réversible</td>
+            <td>Auto si confiance > 80%</td>
+        </tr>
+        <tr class="level-l2">
+            <td><strong>L2</strong></td>
+            <td>MODERATE</td>
+            <td>Impact modéré</td>
+            <td>Notification tech requise</td>
+        </tr>
+        <tr class="level-l3">
+            <td><strong>L3</strong></td>
+            <td>SENSITIVE</td>
+            <td>Action sensible</td>
+            <td><strong>Validation humaine OBLIGATOIRE</strong></td>
+        </tr>
+        <tr class="level-l4">
+            <td><strong>L4</strong></td>
+            <td>FORBIDDEN</td>
+            <td>Action interdite</td>
+            <td><strong>L'IA ne peut JAMAIS exécuter</strong></td>
+        </tr>
+    </table>
+
+    <h4>Exemples par niveau</h4>
+
+    <table class="table-small">
+        <tr>
+            <th>Niveau</th>
+            <th>Actions</th>
+        </tr>
+        <tr class="level-l0">
+            <td><strong>L0</strong></td>
+            <td>Rechercher un ticket, Voir les métriques Observium, Consulter le RAG</td>
+        </tr>
+        <tr class="level-l1">
+            <td><strong>L1</strong></td>
+            <td>Créer un ticket, Ajouter un suivi</td>
+        </tr>
+        <tr class="level-l2">
+            <td><strong>L2</strong></td>
+            <td>Débloquer un compte AD, Notifier un technicien, Changer statut ticket</td>
+        </tr>
+        <tr class="level-l3">
+            <td><strong>L3</strong></td>
+            <td>Reset mot de passe, Clôturer ticket, Envoyer SMS client, Créer compte AD</td>
+        </tr>
+        <tr class="level-l4">
+            <td><strong>L4</strong></td>
+            <td>Supprimer compte AD, Actions irréversibles sur production</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">14</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4.3 : ACCREDITATIONS -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h2 id="section4-3">4.3. Niveaux d'accréditation utilisateur (N0 à N4)</h2>
+
+    <p>Chaque utilisateur possède un niveau d'accréditation qui détermine les actions qu'il peut valider :</p>
+
+    <table>
+        <tr>
+            <th style="width:60px;">Niveau</th>
+            <th style="width:150px;">Rôle</th>
+            <th>Peut valider</th>
+        </tr>
+        <tr>
+            <td><strong>N0</strong></td>
+            <td>Lecture seule</td>
+            <td>Aucune validation</td>
+        </tr>
+        <tr>
+            <td><strong>N1</strong></td>
+            <td>Technicien</td>
+            <td>L1</td>
+        </tr>
+        <tr>
+            <td><strong>N2</strong></td>
+            <td>Technicien senior</td>
+            <td>L1, L2</td>
+        </tr>
+        <tr>
+            <td><strong>N3</strong></td>
+            <td>Administrateur</td>
+            <td>L1, L2, L3</td>
+        </tr>
+        <tr>
+            <td><strong>N4</strong></td>
+            <td>Super administrateur</td>
+            <td>L1, L2, L3 + configuration système</td>
+        </tr>
+    </table>
+
+    <div class="note">
+        <strong>Synchronisation :</strong> Les niveaux d'accréditation peuvent être synchronisés avec la matrice d'autorisation WIDIP (fichier Excel) pour une gestion centralisée.
+    </div>
+
+    <h2 id="section4-4">4.4. Interface et processus de validation</h2>
+
+    <p>L'interface Safeguard présente les demandes de validation avec :</p>
+    <ul>
+        <li><strong>Workflow source :</strong> Quel workflow a généré la demande (Sentinel, Assistant Ticket, Agent...)</li>
+        <li><strong>Niveau requis :</strong> L1, L2 ou L3</li>
+        <li><strong>Contexte :</strong> Informations détaillées sur la situation</li>
+        <li><strong>Action demandée :</strong> Ce que l'IA souhaite faire</li>
+        <li><strong>Justification :</strong> Pourquoi l'IA a besoin de faire cette action</li>
+    </ul>
+
+    <h4>Exemple d'interface de validation</h4>
+
+    <pre>
++------------------------------------------------------------------+
+|                    SAFEGUARD - Demande en attente                 |
++------------------------------------------------------------------+
+|                                                                   |
+|  [WORKFLOW: Sentinel]                    [NIVEAU: L3 - SENSITIVE] |
+|                                                                   |
+|  CONTEXTE:                                                        |
+|  -----------------------------------------------------------------|
+|  Infrastructure "Switch-Client-ABC" détectée DOWN depuis 25 min.  |
+|  Clients impactés: Entreprise ABC (3 sites), Société XYZ          |
+|  Vérification FAI: En attente de votre diagnostic                 |
+|                                                                   |
+|  ACTION DEMANDÉE:                                                 |
+|  -----------------------------------------------------------------|
+|  Envoyer SMS d'information aux contacts suivants :                |
+|  - Jean Dupont (ABC) : 06 12 34 56 78                             |
+|  - Marie Martin (XYZ) : 06 98 76 54 32                            |
+|                                                                   |
+|  JUSTIFICATION:                                                   |
+|  -----------------------------------------------------------------|
+|  Panne persistante > 20min. Information proactive des clients     |
+|  pour éviter saturation du support.                               |
+|                                                                   |
+|  +------------------+  +------------------+  +------------------+  |
+|  |    APPROUVER     |  |     REFUSER      |  |    MODIFIER      |  |
+|  +------------------+  +------------------+  +------------------+  |
+|                                                                   |
+|  [ ] Panne FAI confirmée                                          |
+|  [ ] Panne infra WIDIP confirmée                                  |
++------------------------------------------------------------------+
+    </pre>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">15</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 5 : BASE DE CONNAISSANCES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h1 id="section5">5. Dossier fonctionnel - Base de connaissances (RAG)</h1>
+
+    <h2 id="section5-1">5.1. Sources de connaissances</h2>
+
+    <p>Le RAG (Retrieval-Augmented Generation) est le cerveau documentaire de la plateforme. Il stocke et permet de rechercher toutes les connaissances de l'entreprise WIDIP.</p>
+
+    <table>
+        <tr>
+            <th>Source</th>
+            <th>Type</th>
+            <th>Alimentation</th>
+        </tr>
+        <tr>
+            <td>Documentation interne</td>
+            <td>Manuels, guides WIDIP</td>
+            <td>Upload manuel</td>
+        </tr>
+        <tr>
+            <td>Procédures techniques</td>
+            <td>How-to, troubleshooting</td>
+            <td>Enrichisseur (auto)</td>
+        </tr>
+        <tr>
+            <td>Tickets résolus</td>
+            <td>Cas concrets</td>
+            <td>Enrichisseur (auto)</td>
+        </tr>
+        <tr>
+            <td>Conversations Agent</td>
+            <td>R&D, cas complexes</td>
+            <td>Semi-auto après validation</td>
+        </tr>
+    </table>
+
+    <h2 id="section5-2">5.2. Fonctionnement technique</h2>
+
+    <pre>
+    Document/Procédure
+            |
+            v
+    +------------------------------------------+
+    | 1. Découpage en chunks                   |
+    |    (500 caractères, 50 overlap)          |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 2. Vectorisation                         |
+    |    (Mistral Embed -> 1024 dimensions)    |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 3. Stockage PostgreSQL + pgvector        |
+    |    (index HNSW pour recherche rapide)    |
+    +------------------------------------------+
+
+
+    Requête utilisateur
+            |
+            v
+    +------------------------------------------+
+    | 1. Vectorisation de la question          |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 2. Recherche similarité cosinus          |
+    |    (top 5-10 chunks pertinents)          |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 3. Injection dans le contexte LLM        |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 4. Réponse enrichie et sourcée           |
+    +------------------------------------------+
+    </pre>
+
+    <h4>Bénéfices</h4>
+
+    <ul>
+        <li><strong>Centralisation :</strong> Une seule source de vérité</li>
+        <li><strong>Recherche sémantique :</strong> Trouve par le sens, pas les mots-clés</li>
+        <li><strong>Évolutif :</strong> S'enrichit automatiquement avec le temps</li>
+        <li><strong>Traçable :</strong> Sources citées dans les réponses</li>
+    </ul>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">16</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 6 : DOSSIER TECHNIQUE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h1 id="section6">6. Dossier technique</h1>
+
+    <h2 id="section6-1">6.1. Architecture générale</h2>
+
+    <h4>Services Docker</h4>
+
+    <pre>
++------------------------------------------------------------------+
+|                         NGINX (Port 8080)                         |
+|                        Reverse Proxy / Entry Point                |
++------------------------------------------------------------------+
+         |                    |                    |
+         v                    v                    v
++----------------+  +------------------+  +------------------+
+|    FRONTEND    |  |     BACKEND      |  |   MCP SERVER     |
+|    (React)     |  |    (FastAPI)     |  |   (FastAPI)      |
+|                |  |    Port 8000     |  |   Port 3001      |
++----------------+  +------------------+  +------------------+
+                             |                    |
+                             v                    v
+                    +------------------+  +------------------+
+                    |   PostgreSQL     |  |      Redis       |
+                    |   + pgvector     |  |     (Cache)      |
+                    |   Port 5433      |  |   Port 6379      |
+                    +------------------+  +------------------+
+    </pre>
+
+    <h4>Communication entre workflows</h4>
+
+    <pre>
+    +------------------+
+    |    SENTINEL      |
+    +--------+---------+
+             |
+             | API REST (FastAPI)
+             v
+    +------------------+
+    | ASSISTANT TICKET |
+    +--------+---------+
+             |
+             | Partage Redis (IDs tickets)
+             v
+    +------------------+
+    |   ENRICHISSEUR   |
+    +------------------+
+    </pre>
+
+    <h4>Stack technologique</h4>
+
+    <table class="table-small">
+        <tr>
+            <th>Composant</th>
+            <th>Technologies</th>
+        </tr>
+        <tr>
+            <td>Frontend</td>
+            <td>React 19, Vite, TypeScript, TailwindCSS, Zustand</td>
+        </tr>
+        <tr>
+            <td>Backend</td>
+            <td>FastAPI, asyncpg, Pydantic, PyJWT, passlib</td>
+        </tr>
+        <tr>
+            <td>MCP Server</td>
+            <td>FastAPI, httpx/aiohttp, Mistral AI SDK</td>
+        </tr>
+        <tr>
+            <td>Base de données</td>
+            <td>PostgreSQL 14 + pgvector</td>
+        </tr>
+        <tr>
+            <td>Cache</td>
+            <td>Redis</td>
+        </tr>
+        <tr>
+            <td>Reverse proxy</td>
+            <td>Nginx</td>
+        </tr>
+        <tr>
+            <td>Conteneurisation</td>
+            <td>Docker + Docker Compose</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">17</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 6.2 : COUCHE MCP -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h2 id="section6-2">6.2. Couche MCP (Outils)</h2>
+
+    <p>Le MCP (Model Context Protocol) fournit les connecteurs vers les systèmes externes. Chaque outil est associé à un niveau Safeguard.</p>
+
+    <h4>MCP GLPI (Ticketing)</h4>
+
+    <table class="table-small">
+        <tr>
+            <th>Outil</th>
+            <th style="width:60px;">Niveau</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>glpi_search_client</code></td>
+            <td class="level-l0">L0</td>
+            <td>Rechercher un client</td>
+        </tr>
+        <tr>
+            <td><code>glpi_search_new_tickets</code></td>
+            <td class="level-l0">L0</td>
+            <td>Lister les nouveaux tickets</td>
+        </tr>
+        <tr>
+            <td><code>glpi_get_ticket_details</code></td>
+            <td class="level-l0">L0</td>
+            <td>Détails d'un ticket</td>
+        </tr>
+        <tr>
+            <td><code>glpi_get_ticket_history</code></td>
+            <td class="level-l0">L0</td>
+            <td>Historique d'un ticket</td>
+        </tr>
+        <tr>
+            <td><code>glpi_search_procedure</code></td>
+            <td class="level-l0">L0</td>
+            <td>Chercher une procédure</td>
+        </tr>
+        <tr>
+            <td><code>glpi_create_ticket</code></td>
+            <td class="level-l1">L1</td>
+            <td>Créer un ticket</td>
+        </tr>
+        <tr>
+            <td><code>glpi_add_ticket_followup</code></td>
+            <td class="level-l1">L1</td>
+            <td>Ajouter un suivi</td>
+        </tr>
+        <tr>
+            <td><code>glpi_update_ticket_status</code></td>
+            <td class="level-l2">L2</td>
+            <td>Changer le statut</td>
+        </tr>
+        <tr>
+            <td><code>glpi_assign_ticket</code></td>
+            <td class="level-l2">L2</td>
+            <td>Assigner à un tech</td>
+        </tr>
+        <tr>
+            <td><code>glpi_close_ticket</code></td>
+            <td class="level-l3">L3</td>
+            <td>Clôturer un ticket</td>
+        </tr>
+    </table>
+
+    <h4>MCP Observium (Monitoring)</h4>
+
+    <table class="table-small">
+        <tr>
+            <th>Outil</th>
+            <th style="width:60px;">Niveau</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>observium_search_devices</code></td>
+            <td class="level-l0">L0</td>
+            <td>Rechercher un équipement</td>
+        </tr>
+        <tr>
+            <td><code>observium_list_devices</code></td>
+            <td class="level-l0">L0</td>
+            <td>Lister les équipements</td>
+        </tr>
+        <tr>
+            <td><code>observium_get_device_status</code></td>
+            <td class="level-l0">L0</td>
+            <td>État d'un équipement (UP/DOWN)</td>
+        </tr>
+        <tr>
+            <td><code>observium_get_device_metrics</code></td>
+            <td class="level-l0">L0</td>
+            <td>Métriques (CPU, RAM, bande passante)</td>
+        </tr>
+        <tr>
+            <td><code>observium_get_device_alerts</code></td>
+            <td class="level-l0">L0</td>
+            <td>Alertes actives</td>
+        </tr>
+        <tr>
+            <td><code>observium_get_device_history</code></td>
+            <td class="level-l0">L0</td>
+            <td>Historique de performance</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">18</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 6.2 SUITE : MCP AD ET NOTIFICATIONS -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h4>MCP Active Directory</h4>
+
+    <table class="table-small">
+        <tr>
+            <th>Outil</th>
+            <th style="width:60px;">Niveau</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>ad_check_user</code></td>
+            <td class="level-l0">L0</td>
+            <td>Vérifier si un user existe</td>
+        </tr>
+        <tr>
+            <td><code>ad_get_user_info</code></td>
+            <td class="level-l0">L0</td>
+            <td>Informations d'un user</td>
+        </tr>
+        <tr>
+            <td><code>ad_unlock_account</code></td>
+            <td class="level-l2">L2</td>
+            <td>Débloquer un compte</td>
+        </tr>
+        <tr>
+            <td><code>ad_enable_account</code></td>
+            <td class="level-l2">L2</td>
+            <td>Activer un compte</td>
+        </tr>
+        <tr>
+            <td><code>ad_move_to_ou</code></td>
+            <td class="level-l2">L2</td>
+            <td>Déplacer vers une OU</td>
+        </tr>
+        <tr>
+            <td><code>ad_reset_password</code></td>
+            <td class="level-l3">L3</td>
+            <td>Réinitialiser mot de passe</td>
+        </tr>
+        <tr>
+            <td><code>ad_disable_account</code></td>
+            <td class="level-l3">L3</td>
+            <td>Désactiver un compte</td>
+        </tr>
+        <tr>
+            <td><code>ad_copy_groups_from</code></td>
+            <td class="level-l3">L3</td>
+            <td>Copier les groupes d'un autre user</td>
+        </tr>
+        <tr>
+            <td><code>ad_create_user</code></td>
+            <td class="level-l4">L4</td>
+            <td>Créer un utilisateur <strong>(INTERDIT IA)</strong></td>
+        </tr>
+    </table>
+
+    <h4>MCP Notifications</h4>
+
+    <table class="table-small">
+        <tr>
+            <th>Outil</th>
+            <th style="width:60px;">Niveau</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>notify_technician</code></td>
+            <td class="level-l2">L2</td>
+            <td>Notifier un technicien</td>
+        </tr>
+        <tr>
+            <td><code>request_human_validation</code></td>
+            <td class="level-l1">L1</td>
+            <td>Demander une validation humaine</td>
+        </tr>
+        <tr>
+            <td><code>send_sms</code></td>
+            <td class="level-l3">L3</td>
+            <td>Envoyer un SMS</td>
+        </tr>
+        <tr>
+            <td><code>notify_client</code></td>
+            <td class="level-l4">L4</td>
+            <td>Notifier un client <strong>(Phase test: INTERDIT)</strong></td>
+        </tr>
+    </table>
+
+    <h2 id="section6-3">6.3. Modèles LLM utilisés</h2>
+
+    <table>
+        <tr>
+            <th>Composant</th>
+            <th>Modèle</th>
+            <th>Usage</th>
+        </tr>
+        <tr>
+            <td>WIBOT Flash</td>
+            <td>Devstral Small</td>
+            <td>Réponses rapides</td>
+        </tr>
+        <tr>
+            <td>WIBOT Pro</td>
+            <td>Mistral Large</td>
+            <td>Réponses complexes</td>
+        </tr>
+        <tr>
+            <td>WIBOT Code</td>
+            <td>Devstral</td>
+            <td>Génération code</td>
+        </tr>
+        <tr>
+            <td>WIBOT Agent</td>
+            <td>Mistral Large</td>
+            <td>Raisonnement + outils</td>
+        </tr>
+        <tr>
+            <td>Sentinel</td>
+            <td>Devstral 2 / Mistral Large</td>
+            <td>Analyse pannes</td>
+        </tr>
+        <tr>
+            <td>Assistant Ticket</td>
+            <td>Devstral 2 / Mistral Large</td>
+            <td>Qualification + résolution</td>
+        </tr>
+        <tr>
+            <td>Enrichisseur</td>
+            <td>Mistral Large</td>
+            <td>Génération procédures</td>
+        </tr>
+        <tr>
+            <td>Embeddings</td>
+            <td>Mistral Embed</td>
+            <td>Vectorisation RAG</td>
+        </tr>
+    </table>
+
+    <h2 id="section6-4">6.4. Modèle de données</h2>
+
+    <p><em>À compléter</em></p>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">19</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 7 : EVOLUTIONS PREVUES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h1 id="section7">7. Évolutions prévues</h1>
+
+    <h2 id="section7-1">7.1. Priorité haute</h2>
+
+    <table>
+        <tr>
+            <th>Feature</th>
+            <th>Description</th>
+            <th style="width:120px;">Composant</th>
+        </tr>
+        <tr>
+            <td><strong>MCP Code Mode</strong></td>
+            <td>Optimiser les calls MCP Observium pour Sentinel (1 call/min actuellement)</td>
+            <td>MCP Observium</td>
+        </tr>
+        <tr>
+            <td><strong>Vérification FAI autonome</strong></td>
+            <td>Sentinel détecte automatiquement si panne FAI ou infra WIDIP</td>
+            <td>Sentinel</td>
+        </tr>
+        <tr>
+            <td><strong>Stockage tickets non résolus</strong></td>
+            <td>Système de flagging Redis pour tickets que l'IA n'a pas pu résoudre</td>
+            <td>Assistant Ticket</td>
+        </tr>
+        <tr>
+            <td><strong>Synchronisation matrice WIDIP</strong></td>
+            <td>Import automatique des accréditations depuis Excel</td>
+            <td>Backend</td>
+        </tr>
+    </table>
+
+    <h2 id="section7-2">7.2. Priorité moyenne</h2>
+
+    <table>
+        <tr>
+            <th>Feature</th>
+            <th>Description</th>
+            <th style="width:120px;">Composant</th>
+        </tr>
+        <tr>
+            <td><strong>Exécution procédure par Agent</strong></td>
+            <td>L'Agent peut exécuter une procédure (avec Safeguard)</td>
+            <td>WIBOT Agent</td>
+        </tr>
+        <tr>
+            <td><strong>Choix destinataires SMS</strong></td>
+            <td>Interface pour définir qui alerter selon le type de panne</td>
+            <td>Sentinel</td>
+        </tr>
+        <tr>
+            <td><strong>Double stockage procédures</strong></td>
+            <td>RAG + GLPI pour les procédures validées</td>
+            <td>Enrichisseur</td>
+        </tr>
+        <tr>
+            <td><strong>Fréquence Enrichisseur configurable</strong></td>
+            <td>Quotidien ou hebdomadaire selon volume</td>
+            <td>Enrichisseur</td>
+        </tr>
+    </table>
+
+    <h2 id="section7-3">7.3. Priorité basse</h2>
+
+    <table>
+        <tr>
+            <th>Feature</th>
+            <th>Description</th>
+            <th style="width:120px;">Composant</th>
+        </tr>
+        <tr>
+            <td><strong>SSO/LDAP WIDIP</strong></td>
+            <td>Authentification via AD WIDIP</td>
+            <td>Backend</td>
+        </tr>
+        <tr>
+            <td><strong>Procédures depuis conversations</strong></td>
+            <td>Extraire procédures des conversations Agent complexes</td>
+            <td>Enrichisseur</td>
+        </tr>
+        <tr>
+            <td><strong>Dashboard analytics avancé</strong></td>
+            <td>Métriques détaillées des workflows</td>
+            <td>WIBOT</td>
+        </tr>
+        <tr>
+            <td><strong>Notification Teams</strong></td>
+            <td>Alternative aux SMS pour certains cas</td>
+            <td>Sentinel</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">20</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 8 : ANNEXES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">Plateforme IA Support WIDIP</div>
+
+    <h1 id="section8">8. Annexes</h1>
+
+    <h2 id="section8-1">8.1. Glossaire</h2>
+
+    <table>
+        <tr>
+            <th style="width:150px;">Terme</th>
+            <th>Définition</th>
+        </tr>
+        <tr>
+            <td><strong>AD</strong></td>
+            <td>Active Directory - Annuaire Microsoft pour la gestion des utilisateurs et des ressources</td>
+        </tr>
+        <tr>
+            <td><strong>FAI</strong></td>
+            <td>Fournisseur d'Accès Internet</td>
+        </tr>
+        <tr>
+            <td><strong>GLPI</strong></td>
+            <td>Gestionnaire Libre de Parc Informatique - Outil de ticketing et gestion de parc</td>
+        </tr>
+        <tr>
+            <td><strong>LLM</strong></td>
+            <td>Large Language Model - Modèle de langage de grande taille (IA générative)</td>
+        </tr>
+        <tr>
+            <td><strong>MCP</strong></td>
+            <td>Model Context Protocol - Protocole de connexion entre l'IA et les outils externes</td>
+        </tr>
+        <tr>
+            <td><strong>Observium</strong></td>
+            <td>Plateforme de monitoring réseau pour superviser les équipements</td>
+        </tr>
+        <tr>
+            <td><strong>RAG</strong></td>
+            <td>Retrieval-Augmented Generation - Technique enrichissant les réponses IA avec des documents</td>
+        </tr>
+        <tr>
+            <td><strong>Redis</strong></td>
+            <td>Base de données clé-valeur en mémoire, utilisée pour le cache</td>
+        </tr>
+        <tr>
+            <td><strong>Safeguard</strong></td>
+            <td>Système de sécurité contrôlant les actions critiques de l'IA</td>
+        </tr>
+        <tr>
+            <td><strong>SMS</strong></td>
+            <td>Short Message Service - Message texte envoyé par téléphone</td>
+        </tr>
+        <tr>
+            <td><strong>SSE</strong></td>
+            <td>Server-Sent Events - Technologie de streaming serveur vers client</td>
+        </tr>
+        <tr>
+            <td><strong>WIBOT</strong></td>
+            <td>Interface conversationnelle principale de la plateforme IA Support</td>
+        </tr>
+        <tr>
+            <td><strong>WIDIP</strong></td>
+            <td>Entreprise pour laquelle cette plateforme a été conçue</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span class="footer-left">Dernière mise à jour : janvier 2026</span>
+        <span class="footer-center">Dossier fonctionnel et technique</span>
+        <span class="footer-right">21</span>
+    </div>
+</div>
+
+</body>
+</html>

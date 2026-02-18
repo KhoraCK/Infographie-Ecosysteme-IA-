@@ -1,0 +1,2014 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossier CIR - Plateforme IA WIDIP</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2c5282;
+            --accent-color: #3182ce;
+            --success-color: #38a169;
+            --warning-color: #d69e2e;
+            --text-color: #2d3748;
+            --light-bg: #f7fafc;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #fff;
+            font-size: 11pt;
+        }
+
+        /* Page setup for PDF */
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        @media print {
+            body {
+                font-size: 10pt;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .no-break {
+                page-break-inside: avoid;
+            }
+        }
+
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20px 40px;
+        }
+
+        /* Header */
+        .document-header {
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .document-header h1 {
+            color: var(--primary-color);
+            font-size: 24pt;
+            margin-bottom: 10px;
+        }
+
+        .document-header .subtitle {
+            color: var(--secondary-color);
+            font-size: 14pt;
+            margin-bottom: 15px;
+        }
+
+        .document-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            font-size: 10pt;
+            color: #666;
+        }
+
+        .document-meta span {
+            background: var(--light-bg);
+            padding: 5px 12px;
+            border-radius: 4px;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: var(--light-bg);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .toc h2 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 14pt;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            padding: 8px 0;
+            border-bottom: 1px dotted var(--border-color);
+        }
+
+        .toc li:last-child {
+            border-bottom: none;
+        }
+
+        .toc a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            color: var(--accent-color);
+        }
+
+        .toc .toc-number {
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-right: 10px;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 16pt;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 13pt;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: var(--text-color);
+            font-size: 11pt;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        /* Info boxes */
+        .info-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box.scientific {
+            background: #ebf8ff;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .info-box.warning {
+            background: #fffaf0;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .info-box.success {
+            background: #f0fff4;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .info-box h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        /* Architecture diagrams */
+        .diagram {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+            margin: 20px 0;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Evaluation badges */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 9pt;
+            font-weight: 600;
+        }
+
+        .badge.fort {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge.moyen {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .badge.faible {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        /* Frascati criteria */
+        .frascati-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .frascati-item {
+            text-align: center;
+            padding: 15px 10px;
+            background: var(--light-bg);
+            border-radius: 8px;
+        }
+
+        .frascati-item .criterion {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .frascati-item .evaluation {
+            font-weight: 600;
+            font-size: 10pt;
+        }
+
+        /* Verrou technique */
+        .verrou {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .verrou-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .verrou-number {
+            background: var(--accent-color);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 10pt;
+            margin-right: 12px;
+        }
+
+        .verrou-title {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .incertitudes {
+            background: #faf5ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .incertitudes h5 {
+            color: #553c9a;
+            font-size: 10pt;
+            margin-bottom: 8px;
+        }
+
+        .incertitudes ul {
+            margin: 0 0 0 20px;
+            font-size: 10pt;
+        }
+
+        /* Footer */
+        .document-footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 9pt;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Summary box */
+        .summary-box {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .summary-box h3 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24pt;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 9pt;
+            opacity: 0.9;
+        }
+
+        /* Blockquote for scientific questions */
+        blockquote {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            font-style: italic;
+            color: var(--secondary-color);
+        }
+
+        /* Component cards */
+        .component-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .component-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .component-name {
+            font-weight: 600;
+            font-size: 12pt;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tete du document -->
+        <header class="document-header">
+            <h1>Dossier Justificatif Credit d'Impot Recherche</h1>
+            <div class="subtitle">Plateforme IA WIDIP - Systeme multi-agents pour le support informatique</div>
+            <div class="document-meta">
+                <span><strong>Projet :</strong> WIBOT / WIDIP_ARCHI</span>
+                <span><strong>Periode :</strong> Novembre 2025 - Fevrier 2026</span>
+                <span><strong>Date du document :</strong> 3 fevrier 2026</span>
+                <span><strong>Referentiel :</strong> Manuel de Frascati (OCDE) + Guide CIR 2025 (MESR)</span>
+            </div>
+        </header>
+
+        <!-- Table des matieres -->
+        <nav class="toc">
+            <h2>Table des matieres</h2>
+            <ul>
+                <li><span class="toc-number">1.</span><a href="#section1">Presentation du projet et contexte</a></li>
+                <li><span class="toc-number">2.</span><a href="#section2">Architecture technique globale</a></li>
+                <li><span class="toc-number">3.</span><a href="#section3">Operation R&D 1 : Capitalisation automatique des connaissances IT</a></li>
+                <li><span class="toc-number">4.</span><a href="#section4">Operation R&D 2 : Qualification et resolution autonome de tickets IT</a></li>
+                <li><span class="toc-number">5.</span><a href="#section5">Operation R&D 3 : Gouvernance de securite multi-agents</a></li>
+                <li><span class="toc-number">6.</span><a href="#section6">Synthese et evaluation selon les criteres de Frascati</a></li>
+                <li><span class="toc-number">7.</span><a href="#section7">Preuves materielles et documentation</a></li>
+                <li><span class="toc-number">8.</span><a href="#section8">Conclusion et verdict d'eligibilite</a></li>
+            </ul>
+        </nav>
+
+        <!-- Resume executif -->
+        <div class="summary-box">
+            <h3>Resume executif</h3>
+            <p>La plateforme WIDIP est un systeme multi-agents IA concu pour le support informatique. Elle combine une interface conversationnelle (WIBOT), trois workflows autonomes (Sentinel, Assistant Ticket, Enrichisseur), un framework de securite (SAFEGUARD) et une base de connaissances evolutive (RAG).</p>
+            <p>Le projet a debute fin novembre 2025 avec une approche low-code (N8N), puis a ete migre vers une architecture Python en janvier 2026 suite a l'identification des limites de l'approche initiale. Cette evolution technologique constitue une preuve de la demarche experimentale et de l'incertitude technique du projet.</p>
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Operations R&D</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">11</div>
+                    <div class="stat-label">Verrous techniques</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Pivots technologiques</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5/5</div>
+                    <div class="stat-label">Criteres Frascati</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1 : Presentation -->
+        <section id="section1">
+            <h2>1. Presentation du projet et contexte</h2>
+
+            <h3>1.1 Contexte et enjeux</h3>
+            <p>WIDIP est une entreprise de services informatiques gerant le support technique pour un portefeuille de PME clientes. Le support traditionnel fait face a plusieurs defis structurels :</p>
+            <ul>
+                <li><strong>Perte de connaissances</strong> : l'expertise des techniciens n'est pas capitalisee et disparait lors des departs</li>
+                <li><strong>Traitement reactif</strong> : les clients signalent les pannes, les techniciens ne les detectent pas en amont</li>
+                <li><strong>Taches repetitives</strong> : une part significative des tickets concerne des operations simples (reset mot de passe, deblocage compte)</li>
+                <li><strong>Risque d'erreur</strong> : les actions sur les systemes critiques (Active Directory, infrastructure reseau) necessitent un controle rigoureux</li>
+            </ul>
+
+            <h3>1.2 Objectifs du projet</h3>
+            <p>Le projet vise a concevoir et developper une plateforme IA repondant a ces defis par :</p>
+            <ol>
+                <li>La <strong>capitalisation automatique</strong> des connaissances issues de la resolution de tickets</li>
+                <li>La <strong>detection proactive</strong> des pannes avant signalement client</li>
+                <li>La <strong>resolution autonome</strong> des tickets simples avec validation humaine appropriee</li>
+                <li>Un <strong>framework de securite</strong> garantissant le controle humain sur les actions critiques</li>
+            </ol>
+
+            <h3>1.3 Historique et evolution du projet</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Periode</th>
+                        <th>Phase</th>
+                        <th>Approche</th>
+                        <th>Resultat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nov. 2025</strong></td>
+                        <td>Prototypage</td>
+                        <td>Architecture N8N (low-code)</td>
+                        <td>Validation du concept, premiers workflows fonctionnels</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dec. 2025</strong></td>
+                        <td>Limites identifiees</td>
+                        <td>N8N ameliore</td>
+                        <td>Orchestration multi-agents trop complexe, SAFEGUARD impossible a implementer proprement</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Jan. 2026</strong></td>
+                        <td>Pivot technologique</td>
+                        <td>Migration Python</td>
+                        <td>Architecture modulaire, SAFEGUARD operationnel, meilleure maintenabilite</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fev. 2026</strong></td>
+                        <td>Stabilisation</td>
+                        <td>Python v2+</td>
+                        <td>OR3 quasi finalise, OR1 et OR2 en cours</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>1.4 Positionnement R&D</h3>
+            <div class="info-box scientific">
+                <h4>Problematique centrale</h4>
+                <p>Le projet ne consiste pas simplement a assembler des composants existants (LLM, base vectorielle, API). Les verrous de recherche resident dans <strong>l'orchestration, la fiabilite et les boucles d'apprentissage</strong> d'un systeme multi-agents operant sur des systemes de production IT avec des actions pouvant etre irreversibles.</p>
+                <p>Le pivot N8N → Python illustre cette incertitude : l'approche initiale, bien que fonctionnelle pour des cas simples, s'est averee inadaptee pour resoudre les verrous identifies (notamment la gouvernance SAFEGUARD).</p>
+            </div>
+
+            <p>Les travaux de recherche portent specifiquement sur :</p>
+            <ul>
+                <li>Comment un LLM peut-il extraire des procedures generalisables a partir de texte non structure ?</li>
+                <li>Comment calibrer la confiance d'un LLM pour autoriser des actions IT avec consequences reelles ?</li>
+                <li>Comment concevoir un framework de securite pour un systeme multi-agents distribue ?</li>
+            </ul>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Section 2 : Architecture -->
+        <section id="section2">
+            <h2>2. Architecture technique globale</h2>
+
+            <h3>2.1 Vue d'ensemble</h3>
+            <p>La plateforme est composee de plusieurs couches fonctionnelles interconnectees :</p>
+
+            <svg viewBox="0 0 800 520" style="width: 100%; max-width: 800px; height: auto; display: block; margin: 20px auto;">
+                <defs>
+                    <linearGradient id="gradBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#3182ce;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#2c5282;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradGreen" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#48bb78;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#38a169;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradOrange" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ed8936;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#dd6b20;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradPurple" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#9f7aea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#805ad5;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradTeal" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#4fd1c5;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#38b2ac;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.2"/>
+                    </filter>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#718096"/>
+                    </marker>
+                </defs>
+
+                <!-- Utilisateurs -->
+                <g filter="url(#shadow)">
+                    <ellipse cx="400" cy="25" rx="80" ry="20" fill="#e2e8f0" stroke="#a0aec0" stroke-width="2"/>
+                    <text x="400" y="30" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="600" fill="#2d3748">UTILISATEURS</text>
+                </g>
+
+                <!-- Fleche vers WIBOT -->
+                <line x1="400" y1="45" x2="400" y2="65" stroke="#718096" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                <!-- WIBOT -->
+                <g filter="url(#shadow)">
+                    <rect x="50" y="70" width="700" height="90" rx="8" fill="url(#gradBlue)"/>
+                    <text x="400" y="95" text-anchor="middle" font-family="Segoe UI" font-size="14" font-weight="700" fill="white">WIBOT - Interface Utilisateur</text>
+
+                    <!-- 4 modes -->
+                    <rect x="80" y="105" width="140" height="45" rx="5" fill="white" fill-opacity="0.9"/>
+                    <text x="150" y="125" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#2c5282">FLASH</text>
+                    <text x="150" y="140" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="#4a5568">Questions rapides</text>
+
+                    <rect x="240" y="105" width="140" height="45" rx="5" fill="white" fill-opacity="0.9"/>
+                    <text x="310" y="125" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#2c5282">PRO</text>
+                    <text x="310" y="140" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="#4a5568">Requetes complexes</text>
+
+                    <rect x="400" y="105" width="140" height="45" rx="5" fill="white" fill-opacity="0.9"/>
+                    <text x="470" y="125" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#2c5282">CODE</text>
+                    <text x="470" y="140" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="#4a5568">Scripts &amp; Code</text>
+
+                    <rect x="560" y="105" width="140" height="45" rx="5" fill="white" fill-opacity="0.9"/>
+                    <text x="630" y="125" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#2c5282">AGENT</text>
+                    <text x="630" y="140" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="#4a5568">Resolution problemes</text>
+                </g>
+
+                <!-- Fleches vers workflows -->
+                <line x1="200" y1="160" x2="150" y2="195" stroke="#718096" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="400" y1="160" x2="400" y2="195" stroke="#718096" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="600" y1="160" x2="650" y2="195" stroke="#718096" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                <!-- SENTINEL -->
+                <g filter="url(#shadow)">
+                    <rect x="30" y="200" width="220" height="100" rx="8" fill="url(#gradGreen)"/>
+                    <text x="140" y="225" text-anchor="middle" font-family="Segoe UI" font-size="13" font-weight="700" fill="white">SENTINEL</text>
+                    <text x="140" y="245" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="white" fill-opacity="0.9">Surveillance Reseau</text>
+                    <line x1="60" y1="255" x2="220" y2="255" stroke="white" stroke-opacity="0.3"/>
+                    <text x="140" y="272" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.85">• Detection pannes</text>
+                    <text x="140" y="287" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.85">• Identification clients</text>
+                </g>
+
+                <!-- ASSISTANT TICKET -->
+                <g filter="url(#shadow)">
+                    <rect x="290" y="200" width="220" height="100" rx="8" fill="url(#gradOrange)"/>
+                    <text x="400" y="225" text-anchor="middle" font-family="Segoe UI" font-size="13" font-weight="700" fill="white">ASSISTANT TICKET</text>
+                    <text x="400" y="245" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="white" fill-opacity="0.9">Gestion Tickets</text>
+                    <line x1="320" y1="255" x2="480" y2="255" stroke="white" stroke-opacity="0.3"/>
+                    <text x="400" y="272" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.85">• Qualification auto</text>
+                    <text x="400" y="287" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.85">• Resolution autonome</text>
+                </g>
+
+                <!-- ENRICHISSEUR -->
+                <g filter="url(#shadow)">
+                    <rect x="550" y="200" width="220" height="100" rx="8" fill="url(#gradPurple)"/>
+                    <text x="660" y="225" text-anchor="middle" font-family="Segoe UI" font-size="13" font-weight="700" fill="white">ENRICHISSEUR</text>
+                    <text x="660" y="245" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="white" fill-opacity="0.9">Capitalisation</text>
+                    <line x1="580" y1="255" x2="740" y2="255" stroke="white" stroke-opacity="0.3"/>
+                    <text x="660" y="272" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.85">• Analyse tickets</text>
+                    <text x="660" y="287" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.85">• Creation procedures</text>
+                </g>
+
+                <!-- Fleches vers SAFEGUARD -->
+                <line x1="140" y1="300" x2="250" y2="335" stroke="#718096" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="400" y1="300" x2="400" y2="335" stroke="#718096" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="660" y1="300" x2="550" y2="335" stroke="#718096" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                <!-- SAFEGUARD -->
+                <g filter="url(#shadow)">
+                    <rect x="100" y="340" width="600" height="70" rx="8" fill="#e53e3e"/>
+                    <text x="400" y="365" text-anchor="middle" font-family="Segoe UI" font-size="14" font-weight="700" fill="white">🛡️ SAFEGUARD - Framework de Securite</text>
+                    <text x="400" y="385" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="white" fill-opacity="0.9">Controle de TOUTES les actions critiques • Validation humaine L2/L3/L4</text>
+                    <text x="400" y="400" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.8">6 niveaux : L0 (Read) → L1 (Minor) → L2 (Moderate) → L3 (Sensitive) → L4 (Deferred) → L4_SMS</text>
+                </g>
+
+                <!-- Fleche vers RAG -->
+                <line x1="400" y1="410" x2="400" y2="435" stroke="#718096" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                <!-- RAG -->
+                <g filter="url(#shadow)">
+                    <rect x="100" y="440" width="600" height="70" rx="8" fill="url(#gradTeal)"/>
+                    <text x="400" y="465" text-anchor="middle" font-family="Segoe UI" font-size="14" font-weight="700" fill="white">📚 BASE DE CONNAISSANCES (RAG)</text>
+
+                    <rect x="140" y="475" width="150" height="28" rx="4" fill="white" fill-opacity="0.9"/>
+                    <text x="215" y="493" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="#38b2ac">Procedures Techniques</text>
+
+                    <rect x="325" y="475" width="150" height="28" rx="4" fill="white" fill-opacity="0.9"/>
+                    <text x="400" y="493" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="#38b2ac">Tickets Resolus</text>
+
+                    <rect x="510" y="475" width="150" height="28" rx="4" fill="white" fill-opacity="0.9"/>
+                    <text x="585" y="493" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="#38b2ac">Documentation</text>
+                </g>
+            </svg>
+
+            <h3>2.2 Composants principaux</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Composant</th>
+                        <th>Role</th>
+                        <th>Potentiel R&D</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>WIBOT</strong></td>
+                        <td>Interface conversationnelle avec 4 modes (Flash, Pro, Code, Agent)</td>
+                        <td><span class="badge moyen">Moyen</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sentinel</strong></td>
+                        <td>Workflow de surveillance proactive des infrastructures clientes</td>
+                        <td><span class="badge moyen">Moyen</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Assistant Ticket</strong></td>
+                        <td>Qualification et resolution automatique des tickets IT</td>
+                        <td><span class="badge fort">Fort</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Enrichisseur</strong></td>
+                        <td>Extraction de procedures a partir des tickets resolus</td>
+                        <td><span class="badge fort">Fort</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>SAFEGUARD</strong></td>
+                        <td>Framework de gouvernance et securite multi-agents</td>
+                        <td><span class="badge fort">Fort</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>RAG</strong></td>
+                        <td>Base de connaissances vectorielle evolutive</td>
+                        <td><span class="badge moyen">Moyen</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.3 Stack technique</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Couche</th>
+                        <th>Technologies</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>LLM</td>
+                        <td>Mistral Large, Devstral</td>
+                        <td>Raisonnement, generation, analyse</td>
+                    </tr>
+                    <tr>
+                        <td>Embeddings</td>
+                        <td>Mistral Embed (1024 dim)</td>
+                        <td>Vectorisation pour RAG</td>
+                    </tr>
+                    <tr>
+                        <td>Base vectorielle</td>
+                        <td>PostgreSQL + pgvector (HNSW)</td>
+                        <td>Recherche semantique</td>
+                    </tr>
+                    <tr>
+                        <td>Cache</td>
+                        <td>Redis</td>
+                        <td>Etat workflows, cache referents</td>
+                    </tr>
+                    <tr>
+                        <td>Backend</td>
+                        <td>FastAPI + MCP Protocol</td>
+                        <td>API REST, outils agents</td>
+                    </tr>
+                    <tr>
+                        <td>Frontend</td>
+                        <td>React + TypeScript</td>
+                        <td>Interface utilisateur</td>
+                    </tr>
+                    <tr>
+                        <td>Orchestration</td>
+                        <td>Docker Compose</td>
+                        <td>Deploiement services</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Section 3 : OR1 -->
+        <section id="section3">
+            <h2>3. Operation R&D 1 : Capitalisation automatique des connaissances IT</h2>
+
+            <div class="component-card">
+                <div class="component-header">
+                    <span class="component-name">Composants concernes : Enrichisseur + RAG evolutif</span>
+                    <span class="badge fort">Potentiel CIR : Fort</span>
+                </div>
+                <p style="margin-top: 10px;"><strong>Statut :</strong> <span class="badge moyen">EN COURS</span> - L'Enrichisseur est en phase de prototypage. Les premiers tests d'extraction de procedures ont ete realises mais le systeme complet n'est pas encore operationnel.</p>
+            </div>
+
+            <h3>3.1 Problematique scientifique</h3>
+            <blockquote>
+                Comment transformer automatiquement l'historique operationnel non structure d'une PME (tickets, conversations, resolutions) en une base de connaissances fiable, evolutive et exploitable par des agents IA - sans degradation de qualite dans le temps ?
+            </blockquote>
+
+            <h3>3.2 Verrous techniques identifies</h3>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">1</span>
+                    <span class="verrou-title">Extraction de procedures a partir de texte libre</span>
+                </div>
+                <p>Les tickets GLPI sont rediges en langage naturel non standardise par des techniciens et des utilisateurs finaux. L'information utile est noyee dans du bruit (formules de politesse, descriptions imprecises, fautes). Le LLM doit identifier un <strong>pattern de resolution generalisable</strong> a partir de cas individuels, ce qui depasse la simple synthese de texte.</p>
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment distinguer une resolution reellement transposable d'un cas trop specifique ?</li>
+                        <li>Comment extraire des etapes de procedure quand le technicien n'a pas documente toutes ses actions ?</li>
+                        <li>Quel seuil de recurrence (nombre de tickets similaires) est necessaire pour justifier la creation d'une procedure ?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">2</span>
+                    <span class="verrou-title">Maintien de la qualite d'une base RAG auto-alimentee</span>
+                </div>
+                <p>La base de connaissances s'enrichit en continu via l'Enrichisseur. Cela cree un risque de <strong>data drift</strong> : procedures obsoletes, contradictions entre anciennes et nouvelles procedures, redondances qui polluent les resultats de recherche semantique.</p>
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment detecter qu'une procedure existante est rendue obsolete par une nouvelle ?</li>
+                        <li>Comment mesurer la qualite globale du RAG au fil de son enrichissement ?</li>
+                        <li>Comment eviter que l'accumulation de documents degrade la precision de retrieval plutot que de l'ameliorer ?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">3</span>
+                    <span class="verrou-title">Boucle de feedback et cercle vertueux</span>
+                </div>
+                <p>Le systeme repose sur un cercle : tickets resolus -> procedures generees -> RAG enrichi -> IA plus performante -> meilleure resolution -> plus de matiere pour l'Enrichisseur. La convergence de cette boucle n'est pas garantie.</p>
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>La boucle converge-t-elle reellement (amelioration mesurable) ou diverge-t-elle (accumulation de bruit) ?</li>
+                        <li>Comment mesurer l'impact de chaque procedure ajoutee sur la performance globale du systeme ?</li>
+                        <li>Quel est le ratio optimal entre procedures generees automatiquement et procedures validees humainement ?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>3.3 Flux de capitalisation</h3>
+            <svg viewBox="0 0 600 480" style="width: 100%; max-width: 600px; height: auto; display: block; margin: 20px auto;">
+                <defs>
+                    <linearGradient id="gradStep" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#5a67d8;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradApprove" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#48bb78;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#38a169;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradReject" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#fc8181;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#e53e3e;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="shadowFlow" x="-10%" y="-10%" width="120%" height="120%">
+                        <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.15"/>
+                    </filter>
+                    <marker id="arrowFlow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#718096"/>
+                    </marker>
+                </defs>
+
+                <!-- Titre source -->
+                <rect x="150" y="10" width="300" height="35" rx="17" fill="#e2e8f0" filter="url(#shadowFlow)"/>
+                <text x="300" y="33" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="600" fill="#4a5568">📋 Tickets clotures du jour/semaine</text>
+
+                <line x1="300" y1="45" x2="300" y2="60" stroke="#718096" stroke-width="2" marker-end="url(#arrowFlow)"/>
+
+                <!-- Etape 1 -->
+                <g filter="url(#shadowFlow)">
+                    <rect x="100" y="65" width="400" height="75" rx="8" fill="url(#gradStep)"/>
+                    <circle cx="130" cy="85" r="12" fill="white"/>
+                    <text x="130" y="90" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="700" fill="#5a67d8">1</text>
+                    <text x="160" y="88" font-family="Segoe UI" font-size="12" font-weight="600" fill="white">Filtrage et selection</text>
+                    <text x="130" y="110" font-family="Segoe UI" font-size="10" fill="white" fill-opacity="0.9">• Tickets bien documentes</text>
+                    <text x="130" y="125" font-family="Segoe UI" font-size="10" fill="white" fill-opacity="0.9">• Tickets recurrents (meme type) • Resolutions reussies</text>
+                </g>
+
+                <line x1="300" y1="140" x2="300" y2="155" stroke="#718096" stroke-width="2" marker-end="url(#arrowFlow)"/>
+
+                <!-- Etape 2 -->
+                <g filter="url(#shadowFlow)">
+                    <rect x="100" y="160" width="400" height="75" rx="8" fill="url(#gradStep)"/>
+                    <circle cx="130" cy="180" r="12" fill="white"/>
+                    <text x="130" y="185" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="700" fill="#5a67d8">2</text>
+                    <text x="160" y="183" font-family="Segoe UI" font-size="12" font-weight="600" fill="white">Analyse par le LLM (Mistral Large)</text>
+                    <text x="130" y="205" font-family="Segoe UI" font-size="10" fill="white" fill-opacity="0.9">• Extraction des etapes de resolution</text>
+                    <text x="130" y="220" font-family="Segoe UI" font-size="10" fill="white" fill-opacity="0.9">• Identification du pattern • Redaction procedure structuree</text>
+                </g>
+
+                <line x1="300" y1="235" x2="300" y2="250" stroke="#718096" stroke-width="2" marker-end="url(#arrowFlow)"/>
+
+                <!-- Etape 3 - SAFEGUARD -->
+                <g filter="url(#shadowFlow)">
+                    <rect x="100" y="255" width="400" height="70" rx="8" fill="#e53e3e"/>
+                    <circle cx="130" cy="275" r="12" fill="white"/>
+                    <text x="130" y="280" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="700" fill="#e53e3e">3</text>
+                    <text x="160" y="278" font-family="Segoe UI" font-size="12" font-weight="600" fill="white">🛡️ Validation SAFEGUARD (L2)</text>
+                    <text x="300" y="300" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="white" fill-opacity="0.9" font-style="italic">"Nouvelle procedure detectee basee sur X tickets similaires"</text>
+                    <text x="300" y="315" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="white" fill-opacity="0.9" font-style="italic">"Valider et ajouter a la base ?"</text>
+                </g>
+
+                <!-- Branches decision -->
+                <line x1="300" y1="325" x2="300" y2="345" stroke="#718096" stroke-width="2"/>
+                <line x1="300" y1="345" x2="200" y2="345" stroke="#718096" stroke-width="2"/>
+                <line x1="300" y1="345" x2="400" y2="345" stroke="#718096" stroke-width="2"/>
+                <line x1="200" y1="345" x2="200" y2="360" stroke="#718096" stroke-width="2" marker-end="url(#arrowFlow)"/>
+                <line x1="400" y1="345" x2="400" y2="360" stroke="#718096" stroke-width="2" marker-end="url(#arrowFlow)"/>
+
+                <!-- Approuve -->
+                <g filter="url(#shadowFlow)">
+                    <rect x="130" y="365" width="140" height="40" rx="20" fill="url(#gradApprove)"/>
+                    <text x="200" y="390" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="600" fill="white">✓ APPROUVE</text>
+                </g>
+
+                <!-- Refuse -->
+                <g filter="url(#shadowFlow)">
+                    <rect x="330" y="365" width="140" height="40" rx="20" fill="url(#gradReject)"/>
+                    <text x="400" y="390" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="600" fill="white">✗ REFUSE</text>
+                </g>
+
+                <line x1="200" y1="405" x2="200" y2="420" stroke="#718096" stroke-width="2" marker-end="url(#arrowFlow)"/>
+
+                <!-- Etape 4 -->
+                <g filter="url(#shadowFlow)">
+                    <rect x="50" y="425" width="300" height="50" rx="8" fill="#38b2ac"/>
+                    <circle cx="80" cy="445" r="12" fill="white"/>
+                    <text x="80" y="450" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="700" fill="#38b2ac">4</text>
+                    <text x="110" y="443" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">Stockage dans le RAG</text>
+                    <text x="110" y="460" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9">Vectorisation → pgvector → Indexation HNSW</text>
+                </g>
+            </svg>
+
+            <h3>3.4 Hypotheses testees et resultats</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hypothese</th>
+                        <th>Resultat</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Extraction directe par prompt LLM sur ticket individuel</td>
+                        <td><span class="badge moyen">Partiel</span> - Fonctionne pour tickets bien documentes, echec sur tickets succincts</td>
+                        <td>Dec. 2025</td>
+                    </tr>
+                    <tr>
+                        <td>Agregation de plusieurs tickets similaires avant extraction</td>
+                        <td><span class="badge moyen">En cours</span> - Tests en cours sur clustering semantique</td>
+                        <td>Jan. 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Validation humaine obligatoire (100%) via SAFEGUARD L2</td>
+                        <td><span class="badge fort">Retenu</span> - Integration implementee</td>
+                        <td>Jan. 2026</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3.5 Metriques preliminaires</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metrique</th>
+                        <th>Phase N8N</th>
+                        <th>Phase Python</th>
+                        <th>Objectif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Taux de validation</strong> (procedures proposees validees)</td>
+                        <td>~40%</td>
+                        <td>Non mesure (en dev)</td>
+                        <td>> 70%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Procedures actives</strong> dans le RAG</td>
+                        <td>0</td>
+                        <td>12 (manuelles)</td>
+                        <td>> 50</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>3.6 Evaluation selon les criteres de Frascati</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Critere</th>
+                        <th>Evaluation</th>
+                        <th>Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nouveaute</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>L'etat de l'art ne propose pas de solution etablie pour la capitalisation automatique continue de connaissances IT operationnelles via LLM avec boucle de feedback</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creativite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>La chaine complete ticket -> analyse LLM -> extraction pattern -> generation procedure -> validation humaine -> vectorisation -> reutilisation est une architecture originale</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incertitude</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Trois verrous identifies sans solution connue. Les resultats de la phase N8N montrent que le probleme n'est pas trivial (taux de validation ~40%)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Systematisation</strong></td>
+                        <td><span class="badge moyen">En cours</span></td>
+                        <td>Protocoles de test definis, metriques identifiees. La collecte systematique des resultats est en cours avec la version Python</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transferabilite</strong></td>
+                        <td><span class="badge moyen">Moyen</span></td>
+                        <td>La methodologie est generalisable a tout contexte de support IT, voire au-dela (support client, maintenance industrielle)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Section 4 : OR2 -->
+        <section id="section4">
+            <h2>4. Operation R&D 2 : Qualification et resolution autonome de tickets IT</h2>
+
+            <div class="component-card">
+                <div class="component-header">
+                    <span class="component-name">Composants concernes : Assistant Ticket + Sentinel</span>
+                    <span class="badge fort">Potentiel CIR : Fort</span>
+                </div>
+                <p style="margin-top: 10px;"><strong>Statut :</strong> <span class="badge moyen">EN COURS</span> - L'Assistant Ticket est fonctionnel en mode consultation. La resolution autonome est en cours d'implementation. Sentinel est operationnel pour la detection de pannes.</p>
+            </div>
+
+            <h3>4.1 Problematique scientifique</h3>
+            <blockquote>
+                Comment un systeme IA peut-il qualifier de maniere fiable la difficulte d'un ticket IT et resoudre les cas simples de facon autonome - tout en garantissant un niveau de confiance calibre et un fallback sur vers l'humain lorsque l'incertitude est trop elevee ?
+            </blockquote>
+
+            <h3>4.2 Verrous techniques identifies</h3>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">1</span>
+                    <span class="verrou-title">Qualification automatique en 4 niveaux de difficulte</span>
+                </div>
+                <p>L'Assistant Ticket doit classer chaque ticket entrant en SIMPLE / MOYEN / COMPLEXE / EXPERT. Cette classification determine directement le traitement : resolution IA autonome vs escalade humaine. Une erreur de classification a des consequences operationnelles directes.</p>
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment un LLM peut-il evaluer la difficulte reelle d'un ticket a partir d'une description souvent incomplete ou ambigue ?</li>
+                        <li>Comment gerer le cas critique du faux SIMPLE (ticket classe simple mais qui necessitait un expert) ?</li>
+                        <li>Comment integrer le contexte historique du client (tickets passes, infrastructure) dans la qualification ?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">2</span>
+                    <span class="verrou-title">Calibration de l'indice de confiance</span>
+                </div>
+                <p>Le systeme SAFEGUARD utilise un seuil de confiance (> 80% pour execution automatique en L1). Ce seuil conditionne le degre d'autonomie du systeme. Or, les LLM sont notoirement <strong>mal calibres</strong> en termes de confiance - ils expriment souvent une haute confiance meme lorsqu'ils se trompent.</p>
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment obtenir un score de confiance fiable d'un LLM pour des actions IT concretes ?</li>
+                        <li>Comment calibrer ce score (faire en sorte que "80% de confiance" corresponde reellement a 80% de reussite) ?</li>
+                        <li>Le seuil optimal est-il universel ou doit-il varier par type d'action, par client, par complexite ?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">3</span>
+                    <span class="verrou-title">Resolution autonome avec actions irreversibles</span>
+                </div>
+                <p>Resoudre un ticket simple implique des actions reelles : reset de mot de passe AD, deblocage de compte, creation d'utilisateur. Ces actions ont des effets concrets et certaines sont irreversibles.</p>
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment valider qu'une procedure RAG retrouvee est applicable au cas precis du ticket courant ?</li>
+                        <li>Comment detecter une mauvaise application de procedure avant l'execution de l'action ?</li>
+                        <li>Quel protocole de rollback pour les actions partiellement executees en cas d'erreur detectee en cours ?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">4</span>
+                    <span class="verrou-title">Decision autonome dans le monitoring proactif (Sentinel)</span>
+                </div>
+                <p>Sentinel doit prendre des decisions en temps reel : identifier les clients impactes par une panne, determiner s'il s'agit d'une panne FAI ou infrastructure, decider quand et qui alerter.</p>
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment l'IA peut-elle distinguer automatiquement une panne FAI d'une panne infrastructure WIDIP sans intervention humaine ?</li>
+                        <li>Comment le parsing de hostnames (format CLIENT-SITE-VILLE-DEVICE) peut-il gerer les cas non conformes au pattern standard ?</li>
+                        <li>Comment correler automatiquement un equipement Observium DOWN avec les bonnes entites GLPI quand les nomenclatures ne sont pas parfaitement alignees ?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>4.3 Matrice de qualification des tickets</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Niveau</th>
+                        <th>Description</th>
+                        <th>Traitement</th>
+                        <th>Exemples</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>SIMPLE</strong></td>
+                        <td>L'IA peut resoudre</td>
+                        <td>Resolution automatique + validation SAFEGUARD</td>
+                        <td>Reset mot de passe, deblocage compte</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MOYEN</strong></td>
+                        <td>L'IA peut tenter</td>
+                        <td>Tentative avec escalade si echec</td>
+                        <td>Ajout groupe AD, modification droits</td>
+                    </tr>
+                    <tr>
+                        <td><strong>COMPLEXE</strong></td>
+                        <td>Technicien N1 requis</td>
+                        <td>Flagging + notification technicien</td>
+                        <td>Diagnostic reseau, probleme applicatif</td>
+                    </tr>
+                    <tr>
+                        <td><strong>EXPERT</strong></td>
+                        <td>Technicien N2+ requis</td>
+                        <td>Escalade immediate</td>
+                        <td>Migration serveur, incident securite</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>4.4 Hypotheses testees et resultats</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hypothese</th>
+                        <th>Resultat</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Classification directe par LLM avec prompt detaille</td>
+                        <td><span class="badge moyen">Partiel</span> - Tendance a sur-classifier en SIMPLE</td>
+                        <td>Dec. 2025</td>
+                    </tr>
+                    <tr>
+                        <td>Ajout du contexte client (entite GLPI, historique) dans le prompt</td>
+                        <td><span class="badge fort">Ameliore</span> - Meilleure detection des cas complexes</td>
+                        <td>Jan. 2026</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Demander au LLM d'auto-evaluer sa confiance (0-100%)</strong></td>
+                        <td><span class="badge faible">ECHEC</span> - Scores systematiquement > 85%, non discriminants</td>
+                        <td>Dec. 2025</td>
+                    </tr>
+                    <tr>
+                        <td>Confiance basee sur similarite avec cas resolus dans le RAG</td>
+                        <td><span class="badge moyen">Prometteur</span> - Meilleure correlation, a affiner</td>
+                        <td>Jan. 2026</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box warning">
+                <h4>Resultat cle : Echec de l'auto-evaluation de confiance</h4>
+                <p>L'hypothese initiale etait de demander au LLM de s'auto-evaluer. Les tests ont montre que les scores etaient systematiquement superieurs a 85%, meme pour des cas ou le LLM se trompait. Ce phenomene de "surconfiance" est documente dans la litterature et constitue un verrou de recherche reel. Une approche alternative basee sur la similarite RAG est en cours de test.</p>
+            </div>
+
+            <h3>4.5 Metriques preliminaires</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metrique</th>
+                        <th>Phase N8N</th>
+                        <th>Phase Python</th>
+                        <th>Objectif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Precision qualification</strong></td>
+                        <td>~65%</td>
+                        <td>~75% (preliminaire)</td>
+                        <td>> 85%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Taux faux SIMPLE</strong></td>
+                        <td>~15%</td>
+                        <td>~8% (preliminaire)</td>
+                        <td>< 5%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Detection Sentinel</strong></td>
+                        <td>N/A</td>
+                        <td>~90%</td>
+                        <td>> 95%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>4.6 Evaluation selon les criteres de Frascati</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Critere</th>
+                        <th>Evaluation</th>
+                        <th>Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nouveaute</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>La calibration de confiance d'un LLM pour des actions IT operationnelles avec consequences reelles est un probleme ouvert dans la litterature</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creativite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Le couplage qualification -> resolution -> flagging "IA_NON_RESOLU" -> enrichissement ulterieur est une boucle de feedback innovante</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incertitude</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Quatre verrous identifies. L'echec de l'auto-evaluation de confiance demontre l'incertitude reelle du projet</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Systematisation</strong></td>
+                        <td><span class="badge moyen">En cours</span></td>
+                        <td>Protocoles definis, metriques collectees. Matrice de confusion et courbe de calibration en cours de finalisation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transferabilite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>La methodologie de qualification par confiance calibree est transposable a tout domaine d'automatisation par IA</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Section 5 : OR3 -->
+        <section id="section5">
+            <h2>5. Operation R&D 3 : Gouvernance de securite multi-agents</h2>
+
+            <div class="component-card">
+                <div class="component-header">
+                    <span class="component-name">Composant concerne : SAFEGUARD (framework complet)</span>
+                    <span class="badge fort">Potentiel CIR : Fort</span>
+                </div>
+                <p style="margin-top: 10px;"><strong>Statut :</strong> <span class="badge fort">QUASI FINALISE</span> - Le framework SAFEGUARD est operationnel et en production. Les 6 niveaux de securite (L0 a L4_SMS) sont implementes. Bug double-blocage resolu.</p>
+            </div>
+
+            <h3>5.1 Problematique scientifique</h3>
+            <blockquote>
+                Comment concevoir un framework de gouvernance garantissant la securite d'un systeme multi-agents IA (3 workflows autonomes + 1 agent conversationnel) operant sur des systemes de production IT (Active Directory, ticketing, monitoring reseau) avec des actions pouvant etre irreversibles ?
+            </blockquote>
+
+            <h3>5.2 Verrous techniques identifies</h3>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">1</span>
+                    <span class="verrou-title">Modele de securite multi-niveaux pour agents IA</span>
+                </div>
+                <p>Le framework SAFEGUARD definit 6 niveaux de sensibilite (L0 a L4_SMS) croises avec 5 niveaux d'accreditation utilisateur (N0 a N4). Cette matrice determine dynamiquement ce qu'un agent IA peut faire, ce qu'il doit demander, et ce qu'il ne peut jamais faire.</p>
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment definir la bonne granularite de niveaux ? Trop peu = risque de securite, trop = friction operationnelle</li>
+                        <li>Comment gerer les cas limites entre deux niveaux ?</li>
+                        <li>Le modele est-il stable lorsque de nouveaux outils MCP sont ajoutes, ou necessite-t-il une reevaluation globale ?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">2</span>
+                    <span class="verrou-title">Coherence dans une architecture distribuee</span>
+                </div>
+                <p>Le double systeme SAFEGUARD (backend PostgreSQL + MCP Server Python) a genere un probleme de recherche concret : apres approbation humaine cote backend, le MCP Server re-bloquait l'action. La solution (<code>_bypass_safeguard</code>) implique de maintenir la coherence d'etat entre deux systemes independants dans un contexte asynchrone.</p>
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment garantir la synchronisation des niveaux de securite entre deux systemes independants ?</li>
+                        <li>Comment prevenir les race conditions entre l'approbation et l'execution dans un flux SSE asynchrone ?</li>
+                        <li>Comment auditer de maniere fiable les actions executees via bypass dans un systeme distribue ?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">3</span>
+                    <span class="verrou-title">Orchestration securisee de workflows autonomes chaines</span>
+                </div>
+                <p>Sentinel peut declencher l'Assistant Ticket, qui peut generer des actions necessitant des validations SAFEGUARD. Cette chaine cree des scenarios complexes : un workflow autonome declenche un autre workflow qui declenche une action L3 necessitant une validation humaine, pendant que le premier workflow continue de tourner.</p>
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment gerer les dependances entre actions dans une chaine de workflows ?</li>
+                        <li>Comment eviter les deadlocks quand un workflow attend une approbation pendant qu'un autre genere de nouvelles demandes ?</li>
+                        <li>Comment prioriser les demandes SAFEGUARD quand plusieurs workflows sollicitent simultanement l'humain ?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">4</span>
+                    <span class="verrou-title">Confiance dynamique et niveau L4_SMS specialise</span>
+                </div>
+                <p>Le niveau L4_SMS a ete cree specifiquement pour l'alerte SMS client - un cas ou ni le blocage total (L4) ni la simple validation (L3) ne suffisaient. Il integre une interface de selection de contact avec recommandation IA et apprentissage par feedback humain (cache Redis mis a jour si l'humain choisit un contact different).</p>
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment le systeme apprend-il quel contact recommander au fil du temps ?</li>
+                        <li>Le score d'activite DirEnt est-il un proxy fiable pour la pertinence du contact ?</li>
+                        <li>Comment gerer la degradation de la recommandation quand les contacts changent de poste ?</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>5.3 Matrice des niveaux SAFEGUARD</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Niveau</th>
+                        <th>Nom</th>
+                        <th>Description</th>
+                        <th>Comportement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>L0</strong></td>
+                        <td>READ_ONLY</td>
+                        <td>Lecture seule</td>
+                        <td>Execution automatique</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L1</strong></td>
+                        <td>MINOR</td>
+                        <td>Modification mineure, reversible</td>
+                        <td>Auto si confiance > 80%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L2</strong></td>
+                        <td>MODERATE</td>
+                        <td>Impact modere</td>
+                        <td>Notification technicien requise</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L3</strong></td>
+                        <td>SENSITIVE</td>
+                        <td>Action sensible</td>
+                        <td><strong>Validation humaine OBLIGATOIRE</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>L4</strong></td>
+                        <td>DEFERRED</td>
+                        <td>Action differee (sensible/definitive)</td>
+                        <td><strong>Execution differee avec delai d'annulation</strong></td>
+                    </tr>
+                    <tr>
+                        <td><strong>L4_SMS</strong></td>
+                        <td>SMS_ALERT</td>
+                        <td>Alerte SMS client</td>
+                        <td>Interface specialisee avec selection contact</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>5.4 Hypotheses testees et resultats</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hypothese</th>
+                        <th>Resultat</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Modele initial a 4 niveaux (L0-L3)</td>
+                        <td><span class="badge moyen">Insuffisant</span> - Besoin d'un niveau "differe" (L4)</td>
+                        <td>Dec. 2025</td>
+                    </tr>
+                    <tr>
+                        <td>Ajout niveau L4 (DEFERRED) pour actions sensibles</td>
+                        <td><span class="badge fort">OK</span> - Actions differees avec possibilite d'annulation</td>
+                        <td>Dec. 2025</td>
+                    </tr>
+                    <tr>
+                        <td>Creation niveau L4_SMS specialise pour alertes</td>
+                        <td><span class="badge fort">OK</span> - Resout le cas des alertes SMS avec selection contact</td>
+                        <td>Jan. 2026</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Synchronisation via base de donnees partagee (polling)</strong></td>
+                        <td><span class="badge faible">ECHEC</span> - Latence trop elevee, race conditions</td>
+                        <td>Jan. 2026</td>
+                    </tr>
+                    <tr>
+                        <td>Mecanisme de bypass avec parametre _bypass_safeguard</td>
+                        <td><span class="badge fort">RESOLU</span> - Deploye en production</td>
+                        <td>Jan. 2026</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box scientific">
+                <h4>Preuve d'incertitude : Bug double-blocage</h4>
+                <p><strong>Probleme rencontre</strong> : Apres approbation humaine via l'interface frontend, l'action etait a nouveau bloquee lors de l'execution par le MCP Server. Cause : le MCP Server appliquait sa propre verification SAFEGUARD sans savoir que l'action avait deja ete approuvee cote backend.</p>
+                <p><strong>Solution experimentale</strong> : Implementation d'un mecanisme <code>_bypass_safeguard</code> avec token d'approbation transmis du backend vers le MCP Server. Cette solution a ete trouvee apres echec de l'hypothese initiale (polling de base de donnees).</p>
+            </div>
+
+            <h3>5.5 Metriques de production</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metrique</th>
+                        <th>Valeur mesuree</th>
+                        <th>Objectif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Demandes traitees</strong></td>
+                        <td>~200 (sur 6 semaines)</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Actions automatiques</strong> (L0-L1)</td>
+                        <td>~65% du total</td>
+                        <td>> 60%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Taux d'approbation L3</strong></td>
+                        <td>~92%</td>
+                        <td>> 85%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Precision recommandation L4_SMS</strong></td>
+                        <td>~78% (progression : 60% → 78%)</td>
+                        <td>> 70%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Near-misses bloques</strong></td>
+                        <td>3 cas documentes</td>
+                        <td>Documenter</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incidents de securite</strong></td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>5.6 Evaluation selon les criteres de Frascati</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Critere</th>
+                        <th>Evaluation</th>
+                        <th>Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nouveaute</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Tres peu de frameworks de controle d'agents IA en production documentes dans la litterature, a fortiori pour du multi-agents sur systemes IT critiques</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creativite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>L'architecture L0-L4_SMS avec confiance dynamique, approbation inline SSE, bypass post-approbation et apprentissage du contact recommande est une conception originale</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incertitude</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Quatre verrous identifies. Le bug double-blocage et l'echec de l'hypothese polling demontrent l'incertitude reelle. La solution a ete trouvee experimentalement.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Systematisation</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Metriques collectees sur 6 semaines, ~200 demandes analysees, 3 near-misses documentes, evolution de la precision de recommandation tracee</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transferabilite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Le framework est generalisable a tout contexte d'agents IA operant sur des systemes avec actions a risque (industrie, sante, finance)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Section 6 : Synthese Frascati -->
+        <section id="section6">
+            <h2>6. Synthese et evaluation selon les criteres de Frascati</h2>
+
+            <h3>6.1 Vue croisee des 3 operations R&D</h3>
+
+            <svg viewBox="0 0 800 480" style="width: 100%; max-width: 800px; height: auto; display: block; margin: 20px auto;">
+                <defs>
+                    <linearGradient id="gradHeader" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#1a365d;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#2c5282;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradOR1" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#9f7aea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#805ad5;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradOR2" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ed8936;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#dd6b20;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradOR3" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#e53e3e;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#c53030;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="shadowSynth" x="-5%" y="-5%" width="110%" height="115%">
+                        <feDropShadow dx="2" dy="3" stdDeviation="3" flood-opacity="0.2"/>
+                    </filter>
+                </defs>
+
+                <!-- Header -->
+                <rect x="20" y="10" width="760" height="55" rx="8" fill="url(#gradHeader)" filter="url(#shadowSynth)"/>
+                <text x="400" y="35" text-anchor="middle" font-family="Segoe UI" font-size="16" font-weight="700" fill="white">PLATEFORME IA WIDIP - 3 AXES R&amp;D</text>
+                <text x="400" y="52" text-anchor="middle" font-family="Segoe UI" font-size="11" fill="white" fill-opacity="0.85">Periode : Novembre 2025 - Fevrier 2026</text>
+
+                <!-- OR1 -->
+                <g filter="url(#shadowSynth)">
+                    <rect x="30" y="80" width="350" height="165" rx="10" fill="url(#gradOR1)"/>
+                    <rect x="40" y="90" width="120" height="24" rx="12" fill="white" fill-opacity="0.2"/>
+                    <text x="100" y="107" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="600" fill="white">EN COURS</text>
+                    <text x="200" y="107" font-family="Segoe UI" font-size="14" font-weight="700" fill="white">OR1 - Capitalisation Auto</text>
+
+                    <rect x="45" y="120" width="150" height="55" rx="6" fill="white" fill-opacity="0.95"/>
+                    <text x="120" y="140" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#805ad5">Enrichisseur</text>
+                    <rect x="95" y="148" width="50" height="16" rx="8" fill="#c6f6d5"/>
+                    <text x="120" y="160" text-anchor="middle" font-family="Segoe UI" font-size="9" font-weight="600" fill="#22543d">FORT</text>
+
+                    <rect x="210" y="120" width="150" height="55" rx="6" fill="white" fill-opacity="0.95"/>
+                    <text x="285" y="140" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#805ad5">RAG evolutif</text>
+                    <rect x="260" y="148" width="50" height="16" rx="8" fill="#fefcbf"/>
+                    <text x="285" y="160" text-anchor="middle" font-family="Segoe UI" font-size="9" font-weight="600" fill="#744210">MOYEN</text>
+
+                    <text x="50" y="195" font-family="Segoe UI" font-size="10" font-weight="600" fill="white">3 verrous :</text>
+                    <text x="50" y="210" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9">• Extraction texte  • Qualite RAG  • Convergence boucle</text>
+                    <rect x="50" y="222" width="140" height="18" rx="4" fill="white" fill-opacity="0.15"/>
+                    <text x="120" y="235" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white">Taux valid. N8N: ~40%</text>
+                </g>
+
+                <!-- OR2 -->
+                <g filter="url(#shadowSynth)">
+                    <rect x="420" y="80" width="350" height="165" rx="10" fill="url(#gradOR2)"/>
+                    <rect x="430" y="90" width="120" height="24" rx="12" fill="white" fill-opacity="0.2"/>
+                    <text x="490" y="107" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="600" fill="white">EN COURS</text>
+                    <text x="590" y="107" font-family="Segoe UI" font-size="14" font-weight="700" fill="white">OR2 - Qualification Auto</text>
+
+                    <rect x="435" y="120" width="150" height="55" rx="6" fill="white" fill-opacity="0.95"/>
+                    <text x="510" y="140" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#dd6b20">Assistant Ticket</text>
+                    <rect x="485" y="148" width="50" height="16" rx="8" fill="#c6f6d5"/>
+                    <text x="510" y="160" text-anchor="middle" font-family="Segoe UI" font-size="9" font-weight="600" fill="#22543d">FORT</text>
+
+                    <rect x="600" y="120" width="150" height="55" rx="6" fill="white" fill-opacity="0.95"/>
+                    <text x="675" y="140" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#dd6b20">Sentinel</text>
+                    <rect x="650" y="148" width="50" height="16" rx="8" fill="#fefcbf"/>
+                    <text x="675" y="160" text-anchor="middle" font-family="Segoe UI" font-size="9" font-weight="600" fill="#744210">MOYEN</text>
+
+                    <text x="440" y="195" font-family="Segoe UI" font-size="10" font-weight="600" fill="white">4 verrous :</text>
+                    <text x="440" y="210" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9">• Classification  • Calibration confiance  • Actions irrev.  • Sentinel</text>
+                    <rect x="440" y="222" width="150" height="18" rx="4" fill="white" fill-opacity="0.15"/>
+                    <text x="515" y="235" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white">Precision: 65% → 75%</text>
+                </g>
+
+                <!-- OR3 -->
+                <g filter="url(#shadowSynth)">
+                    <rect x="150" y="265" width="500" height="150" rx="10" fill="url(#gradOR3)"/>
+                    <rect x="165" y="275" width="170" height="24" rx="12" fill="white" fill-opacity="0.2"/>
+                    <text x="250" y="292" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="600" fill="white">✓ QUASI FINALISE</text>
+                    <text x="450" y="292" font-family="Segoe UI" font-size="14" font-weight="700" fill="white">OR3 - Gouvernance Securite</text>
+
+                    <rect x="170" y="310" width="180" height="90" rx="6" fill="white" fill-opacity="0.95"/>
+                    <text x="260" y="330" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="600" fill="#c53030">🛡️ SAFEGUARD</text>
+                    <rect x="220" y="338" width="80" height="16" rx="8" fill="#c6f6d5"/>
+                    <text x="260" y="350" text-anchor="middle" font-family="Segoe UI" font-size="9" font-weight="600" fill="#22543d">FORT</text>
+                    <text x="180" y="370" font-family="Segoe UI" font-size="9" fill="#c53030">4 verrous :</text>
+                    <text x="180" y="385" font-family="Segoe UI" font-size="8" fill="#4a5568">• Modele multi-niv. • Coherence</text>
+                    <text x="180" y="395" font-family="Segoe UI" font-size="8" fill="#4a5568">• Orchestration • L4_SMS</text>
+
+                    <rect x="370" y="310" width="260" height="90" rx="6" fill="white" fill-opacity="0.95"/>
+                    <text x="500" y="330" text-anchor="middle" font-family="Segoe UI" font-size="12" font-weight="600" fill="#c53030">📊 Metriques Production</text>
+                    <text x="390" y="352" font-family="Segoe UI" font-size="10" fill="#2d3748">• 200 demandes traitees (6 sem.)</text>
+                    <text x="390" y="368" font-family="Segoe UI" font-size="10" fill="#2d3748">• 92% taux d'approbation L3</text>
+                    <text x="390" y="384" font-family="Segoe UI" font-size="10" fill="#2d3748">• 78% precision recommandation SMS</text>
+                    <text x="390" y="400" font-family="Segoe UI" font-size="10" font-weight="600" fill="#38a169">• 0 incident de securite</text>
+                </g>
+
+                <!-- Footer -->
+                <rect x="20" y="430" width="760" height="45" rx="8" fill="#e2e8f0"/>
+                <text x="400" y="452" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#2d3748">TOTAL : 11 verrous techniques • Pivot N8N → Python documente</text>
+                <text x="400" y="468" text-anchor="middle" font-family="Segoe UI" font-size="10" fill="#4a5568">OR3 finalise avec preuves | OR1 et OR2 en cours avec metriques</text>
+            </svg>
+
+            <h3>6.2 Tableau de synthese Frascati</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Critere</th>
+                        <th>OR1 Capitalisation</th>
+                        <th>OR2 Qualification</th>
+                        <th>OR3 Gouvernance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nouveaute</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creativite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incertitude</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Systematisation</strong></td>
+                        <td><span class="badge moyen">En cours</span></td>
+                        <td><span class="badge moyen">En cours</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transferabilite</strong></td>
+                        <td><span class="badge moyen">Moyen</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>6.3 Analyse des criteres</h3>
+
+            <h4>Nouveaute</h4>
+            <p>Les trois operations portent sur des problemes pour lesquels l'etat de l'art ne propose pas de solution etablie :</p>
+            <ul>
+                <li>La capitalisation automatique de connaissances IT par LLM avec boucle de feedback est un domaine emergent</li>
+                <li>La calibration de confiance d'un LLM pour des actions IT operationnelles est un probleme de recherche reconnu</li>
+                <li>Les frameworks de gouvernance multi-agents IA en production sont tres peu documentes</li>
+            </ul>
+
+            <h4>Creativite</h4>
+            <p>Le projet propose des architectures originales :</p>
+            <ul>
+                <li>Chaine complete ticket -> procedure -> RAG -> amelioration continue</li>
+                <li>Couplage qualification/resolution avec flagging pour enrichissement ulterieur</li>
+                <li>Modele de securite L0-L4_SMS avec approbation inline SSE et apprentissage du referent</li>
+            </ul>
+
+            <h4>Incertitude</h4>
+            <p>11 verrous techniques ont ete identifies, chacun portant des incertitudes scientifiques non resolues au demarrage du projet. Plusieurs hypotheses ont echoue, demontrant l'incertitude reelle :</p>
+            <ul>
+                <li><strong>OR2</strong> : L'auto-evaluation de confiance par le LLM a echoue (scores > 85% non discriminants)</li>
+                <li><strong>OR3</strong> : La synchronisation par polling a echoue (latence, race conditions), conduisant au mecanisme de bypass</li>
+                <li><strong>Pivot N8N → Python</strong> : L'approche low-code initiale s'est averee inadaptee pour les cas complexes</li>
+            </ul>
+
+            <h4>Systematisation</h4>
+            <div class="info-box warning">
+                <h4>Point d'attention</h4>
+                <p>C'est le critere le plus faible. Pour renforcer l'eligibilite, il est necessaire de produire :</p>
+                <ul>
+                    <li>Un etat de l'art formel pour chaque operation (publications, solutions existantes, leurs limites)</li>
+                    <li>Des hypotheses formalisees avant chaque experimentation</li>
+                    <li>Des protocoles de test avec metriques mesurables</li>
+                    <li>Des resultats chiffres (positifs ET negatifs)</li>
+                    <li>Un journal de bord R&D avec chronologie des iterations</li>
+                </ul>
+            </div>
+
+            <h4>Transferabilite</h4>
+            <p>Les methodologies developpees sont transposables :</p>
+            <ul>
+                <li>La capitalisation automatique s'applique a tout contexte de support (client, maintenance industrielle)</li>
+                <li>La qualification par confiance calibree est utilisable dans tout domaine d'automatisation IA</li>
+                <li>SAFEGUARD est generalisable a tout systeme multi-agents avec actions critiques</li>
+            </ul>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Section 7 : Preuves -->
+        <section id="section7">
+            <h2>7. Preuves materielles et documentation</h2>
+
+            <h3>7.1 Preuves a constituer par operation</h3>
+
+            <h4>OR1 - Capitalisation automatique</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type de preuve</th>
+                        <th>Description</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Logs Enrichisseur</td>
+                        <td>Tickets analyses, procedures proposees, taux de validation/rejet</td>
+                        <td>PostgreSQL + fichiers logs</td>
+                    </tr>
+                    <tr>
+                        <td>Metriques RAG</td>
+                        <td>Precision de retrieval avant/apres enrichissement</td>
+                        <td>Benchmarks internes</td>
+                    </tr>
+                    <tr>
+                        <td>Experimentations</td>
+                        <td>Criteres de filtrage testes, seuils de recurrence</td>
+                        <td>Journal de bord R&D</td>
+                    </tr>
+                    <tr>
+                        <td>Cas de test</td>
+                        <td>Exemples de procedures contradictoires ou obsoletes detectees</td>
+                        <td>Logs systeme</td>
+                    </tr>
+                    <tr>
+                        <td>Correlation</td>
+                        <td>Evolution du taux de resolution automatique vs enrichissement</td>
+                        <td>Dashboard analytics</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>OR2 - Qualification autonome</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type de preuve</th>
+                        <th>Description</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Matrice de confusion</td>
+                        <td>Qualification predite vs qualification reelle (echantillon valide humainement)</td>
+                        <td>Analyse retrospective tickets</td>
+                    </tr>
+                    <tr>
+                        <td>Courbe de calibration</td>
+                        <td>Confiance exprimee vs taux de reussite effectif</td>
+                        <td>Logs Assistant Ticket</td>
+                    </tr>
+                    <tr>
+                        <td>Logs resolution</td>
+                        <td>Tickets resolus automatiquement, incidents causes par l'IA</td>
+                        <td>GLPI + safeguard_audit</td>
+                    </tr>
+                    <tr>
+                        <td>Tickets flags</td>
+                        <td>Historique des tickets "IA_NON_RESOLU" et leur analyse post-resolution</td>
+                        <td>Redis + GLPI</td>
+                    </tr>
+                    <tr>
+                        <td>Iterations seuils</td>
+                        <td>Documentation des ajustements des seuils de confiance</td>
+                        <td>Git commits + journal R&D</td>
+                    </tr>
+                    <tr>
+                        <td>Sentinel</td>
+                        <td>Taux de faux positifs/negatifs sur l'identification automatique des pannes</td>
+                        <td>Logs workflow</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>OR3 - Gouvernance securite</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type de preuve</th>
+                        <th>Description</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Etat de l'art</td>
+                        <td>Frameworks de controle d'agents IA existants et leurs limites</td>
+                        <td>Recherche documentaire</td>
+                    </tr>
+                    <tr>
+                        <td>Historique modele</td>
+                        <td>Iterations sur les niveaux (ajouts, modifications, cas L4_SMS)</td>
+                        <td>Git history + documentation</td>
+                    </tr>
+                    <tr>
+                        <td>Bug double-blocage</td>
+                        <td>Documentation complete : analyse, hypotheses testees, solution retenue</td>
+                        <td>Issues tracker + commits</td>
+                    </tr>
+                    <tr>
+                        <td>Logs SAFEGUARD</td>
+                        <td>Demandes approuvees/rejetees, temps de reponse, taux par niveau</td>
+                        <td>Table safeguard_audit</td>
+                    </tr>
+                    <tr>
+                        <td>Near-misses</td>
+                        <td>Cas ou SAFEGUARD a bloque une action potentiellement dangereuse</td>
+                        <td>Audit trail</td>
+                    </tr>
+                    <tr>
+                        <td>Cache referent</td>
+                        <td>Evolution des recommandations, pertinence au fil du temps</td>
+                        <td>Redis + logs</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>7.2 Documentation des Operations R&D</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Document</th>
+                        <th>Contenu</th>
+                        <th>Valeur probante</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>OR1_CAPITALISATION_AUTOMATIQUE.md</td>
+                        <td>Detail de l'operation R&D 1 : verrous, experimentations, resultats</td>
+                        <td>Dossier technique OR1</td>
+                    </tr>
+                    <tr>
+                        <td>OR2_QUALIFICATION_AUTONOME.md</td>
+                        <td>Detail de l'operation R&D 2 : verrous, experimentations, resultats</td>
+                        <td>Dossier technique OR2</td>
+                    </tr>
+                    <tr>
+                        <td>OR3_GOUVERNANCE_SECURITE.md</td>
+                        <td>Detail de l'operation R&D 3 : verrous, experimentations, resultats</td>
+                        <td>Dossier technique OR3</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>7.3 Methodologie de versioning et tracabilite</h3>
+
+            <div class="info-box scientific">
+                <h4>Approche de gestion des versions</h4>
+                <p>Le projet utilise une methodologie de versioning manuelle par copies incrementales. Chaque version stable est conservee dans un repertoire dedie, permettant de reconstituer l'historique complet des travaux de recherche.</p>
+            </div>
+
+            <h4>Historique des evolutions majeures</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Phase</th>
+                        <th>Approche technique</th>
+                        <th>Raison du changement</th>
+                        <th>Valeur R&D</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Phase 1</strong></td>
+                        <td>Architecture N8N (low-code)</td>
+                        <td>Prototype initial, validation du concept</td>
+                        <td>Exploration des possibilites</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Phase 2</strong></td>
+                        <td>Migration vers Python</td>
+                        <td>Limites de N8N pour les cas complexes (orchestration multi-agents, SAFEGUARD)</td>
+                        <td>Preuve d'incertitude technique - l'approche initiale ne permettait pas de resoudre les verrous identifies</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Phase 3+</strong></td>
+                        <td>Iterations Python (v1, v2, v3...)</td>
+                        <td>Resolution progressive des verrous techniques</td>
+                        <td>Demarche experimentale iterative</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Processus de versioning</h4>
+            <p>La methodologie appliquee suit un cycle rigoureux :</p>
+            <ol>
+                <li><strong>Copie de la version stable courante</strong> avant toute modification majeure</li>
+                <li><strong>Developpement et tests</strong> sur la copie de travail</li>
+                <li><strong>Validation fonctionnelle</strong> : verification de l'absence de bugs et de regressions</li>
+                <li><strong>Renommage en version N+1</strong> une fois la stabilite confirmee</li>
+                <li><strong>Conservation de toutes les versions</strong> (y compris les versions intermediaires avec bugs = preuve d'incertitude)</li>
+            </ol>
+
+            <div class="info-box warning">
+                <h4>Preuves de tracabilite a constituer</h4>
+                <ul>
+                    <li><strong>Liste des versions</strong> : repertoire complet avec dates de creation (attributs fichiers)</li>
+                    <li><strong>Journal de bord R&D</strong> : document retraçant pour chaque version les modifications apportees, les problemes rencontres et les solutions testees</li>
+                    <li><strong>Documentation du pivot N8N → Python</strong> : justification technique du changement d'approche (limites rencontrees, verrous non resolubles)</li>
+                    <li><strong>Versions avec bugs conservees</strong> : preuves materielles des echecs et iterations (critere d'incertitude)</li>
+                </ul>
+            </div>
+
+            <h4>Valeur probante de cette methodologie</h4>
+            <p>Bien que differente d'un systeme de gestion de versions distribue (Git), cette approche presente une valeur probante pour le CIR :</p>
+            <ul>
+                <li><strong>Tracabilite temporelle</strong> : les dates de creation/modification des fichiers constituent une preuve horodatee</li>
+                <li><strong>Conservation des echecs</strong> : les versions intermediaires avec bugs documentent l'incertitude scientifique</li>
+                <li><strong>Pivot technologique documente</strong> : le passage N8N → Python illustre la demarche experimentale (hypothese invalidee, nouvelle approche)</li>
+                <li><strong>Iterations visibles</strong> : chaque version represente un cycle d'experimentation</li>
+            </ul>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Section 8 : Conclusion -->
+        <section id="section8">
+            <h2>8. Conclusion et verdict d'eligibilite</h2>
+
+            <h3>8.1 Points forts du dossier</h3>
+            <div class="info-box success">
+                <h4>Elements favorables a l'eligibilite</h4>
+                <ul>
+                    <li><strong>Problemes de recherche legitimes</strong> : Les trois operations R&D portent sur des questions ouvertes dans l'etat de l'art (capitalisation automatique, calibration de confiance LLM, gouvernance multi-agents)</li>
+                    <li><strong>Verrous techniques documentes</strong> : 11 verrous identifies avec incertitudes scientifiques explicites</li>
+                    <li><strong>Innovation architecturale</strong> : Plusieurs conceptions originales (boucle d'apprentissage, modele L0-L4_SMS, bypass post-approbation)</li>
+                    <li><strong>Resolution experimentale</strong> : Le bug double-blocage constitue une preuve de demarche scientifique (hypothese, test, solution)</li>
+                    <li><strong>Transferabilite</strong> : Les methodologies sont generalisables a d'autres domaines</li>
+                </ul>
+            </div>
+
+            <h3>8.2 Points a renforcer</h3>
+            <div class="info-box warning">
+                <h4>Actions requises pour securiser l'eligibilite</h4>
+                <ol>
+                    <li><strong>Etat de l'art formel</strong> : Documenter les solutions existantes et leurs limites pour chaque operation</li>
+                    <li><strong>Journal de bord R&D</strong> : Tenir une chronologie des iterations avec hypotheses et resultats</li>
+                    <li><strong>Metriques quantifiees</strong> : Collecter et presenter des mesures chiffrees (taux de precision, calibration, etc.)</li>
+                    <li><strong>Protocoles d'experimentation</strong> : Formaliser les protocoles de test utilises</li>
+                </ol>
+            </div>
+
+            <h3>8.3 Risque principal en cas de controle</h3>
+            <p>Un expert MESR pourrait argumenter que le projet "assemble des briques existantes" (Mistral API + pgvector + FastAPI + Redis). La cle de la defense est de demontrer que <strong>les problemes de recherche resident dans l'orchestration, la fiabilite et les boucles d'apprentissage</strong> - pas dans les composants individuels.</p>
+
+            <h3>8.4 Verdict</h3>
+            <div class="summary-box">
+                <h3>Eligibilite : POSITIVE sous conditions</h3>
+                <p>Le projet presente un <strong>potentiel CIR significatif</strong> sur les trois operations de recherche identifiees. Les verrous techniques sont reels et les incertitudes documentables.</p>
+                <p>L'eligibilite est conditionnee a la production de la documentation R&D manquante, notamment l'etat de l'art, les protocoles d'experimentation et les metriques de suivi.</p>
+                <p><strong>Recommandation</strong> : Prioriser la constitution des preuves listees en section 7 et la tenue d'un journal de bord R&D structure.</p>
+            </div>
+
+            <h3>8.5 Prochaines etapes</h3>
+            <ol>
+                <li><strong>Constituer l'etat de l'art</strong> pour chaque operation (publications, solutions concurrentes)</li>
+                <li><strong>Formaliser les hypotheses</strong> testees ou a tester pour chaque verrou</li>
+                <li><strong>Collecter les metriques</strong> : logs, taux de reussite, benchmarks comparatifs</li>
+                <li><strong>Rediger le dossier technique</strong> CIR avec le template MESR pour chaque operation</li>
+                <li><strong>Preparer les preuves materielles</strong> : commits Git dates, logs d'experimentation, comptes-rendus</li>
+            </ol>
+        </section>
+
+        <!-- Footer -->
+        <footer class="document-footer">
+            <p>Document genere le 3 fevrier 2026</p>
+            <p>Referentiels : Manuel de Frascati (OCDE) - Guide CIR 2025 (MESR) - Loi de Finances 2025</p>
+            <p>Version 1.0 - Dossier justificatif Credit d'Impot Recherche - Plateforme IA WIDIP</p>
+        </footer>
+    </div>
+</body>
+</html>

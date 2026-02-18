@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow ENRICHISSEUR - Documentation Technique et Fonctionnelle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #333;
+            background: #fff;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm 25mm;
+            margin: 0 auto;
+            background: #fff;
+            position: relative;
+        }
+
+        .header {
+            background: #9c27b0;
+            color: #fff;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 12pt;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-icon {
+            font-size: 18pt;
+        }
+
+        .cover-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 250mm;
+            text-align: center;
+        }
+
+        .cover-icon {
+            font-size: 80pt;
+            margin-bottom: 30px;
+        }
+
+        .cover-title {
+            font-size: 36pt;
+            font-weight: bold;
+            color: #9c27b0;
+            margin-bottom: 20px;
+        }
+
+        .cover-subtitle {
+            font-size: 18pt;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .cover-description {
+            font-size: 14pt;
+            color: #888;
+            margin-bottom: 80px;
+            max-width: 450px;
+        }
+
+        .cover-date {
+            font-size: 12pt;
+            color: #888;
+            font-style: italic;
+        }
+
+        h1 {
+            font-size: 18pt;
+            color: #9c27b0;
+            border-bottom: 2px solid #9c27b0;
+            padding-bottom: 8px;
+            margin: 30px 0 20px 0;
+        }
+
+        h2 {
+            font-size: 14pt;
+            color: #9c27b0;
+            margin: 25px 0 15px 0;
+        }
+
+        h3 {
+            font-size: 12pt;
+            color: #333;
+            margin: 20px 0 10px 0;
+            border-left: 4px solid #9c27b0;
+            padding-left: 10px;
+        }
+
+        h4 {
+            font-size: 11pt;
+            color: #333;
+            margin: 15px 0 8px 0;
+            font-style: italic;
+        }
+
+        p {
+            margin: 10px 0;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin: 10px 0 10px 25px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid #999;
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #9c27b0;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .table-alt th {
+            background: #e8e8e8;
+            color: #333;
+        }
+
+        .table-small {
+            font-size: 9pt;
+        }
+
+        .table-small th, .table-small td {
+            padding: 5px 8px;
+        }
+
+        pre {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-left: 4px solid #9c27b0;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            margin: 15px 0;
+            line-height: 1.3;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 10pt;
+        }
+
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .important {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .purple-box {
+            background: #f3e5f5;
+            border-left: 4px solid #9c27b0;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 15mm;
+            left: 25mm;
+            right: 25mm;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9pt;
+            color: #666;
+            border-top: 1px solid #ccc;
+            padding-top: 8px;
+        }
+
+        .toc {
+            margin: 20px 0;
+        }
+
+        .toc a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .toc-h1 {
+            font-weight: bold;
+            margin: 10px 0 5px 0;
+        }
+
+        .toc-h2 {
+            margin: 3px 0 3px 20px;
+        }
+
+        .toc-h3 {
+            margin: 2px 0 2px 40px;
+            font-size: 10pt;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .level-l0 { background: #d4edda; }
+        .level-l1 { background: #d1ecf1; }
+        .level-l2 { background: #fff3cd; }
+        .level-l3 { background: #f8d7da; }
+        .level-l4 { background: #e2e3e5; }
+
+        .workflow-box {
+            border: 2px solid #9c27b0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            background: #faf5fc;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: flex-start;
+            margin: 10px 0;
+            padding: 10px;
+            background: #fff;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .step-number {
+            background: #9c27b0;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .procedure-card {
+            border: 2px solid #9c27b0;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .procedure-header {
+            background: #9c27b0;
+            color: #fff;
+            padding: 10px 15px;
+            font-weight: bold;
+        }
+
+        .procedure-content {
+            padding: 15px;
+            background: #fff;
+        }
+
+        .cycle-arrow {
+            text-align: center;
+            font-size: 24pt;
+            color: #9c27b0;
+            margin: 10px 0;
+        }
+
+        @media print {
+            .page {
+                margin: 0;
+                padding: 15mm 20mm;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- PAGE DE GARDE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="cover-page">
+        <div class="cover-icon">&#128218;</div>
+        <div class="cover-title">ENRICHISSEUR</div>
+        <div class="cover-subtitle">Workflow de Capitalisation des Connaissances</div>
+        <div class="cover-description">
+            Transformation automatique des résolutions de tickets en procédures réutilisables pour la base de connaissances
+        </div>
+        <div class="cover-date">Documentation Technique et Fonctionnelle<br>Janvier 2026</div>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SOMMAIRE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1>Sommaire</h1>
+
+    <div class="toc">
+        <div class="toc-h1"><a href="#section1">1. Vue d'ensemble</a></div>
+        <div class="toc-h2"><a href="#section1-1">1.1. Objectif du workflow</a></div>
+        <div class="toc-h2"><a href="#section1-2">1.2. Positionnement dans l'architecture</a></div>
+        <div class="toc-h2"><a href="#section1-3">1.3. Le cercle vertueux de l'apprentissage</a></div>
+
+        <div class="toc-h1"><a href="#section2">2. Spécifications fonctionnelles</a></div>
+        <div class="toc-h2"><a href="#section2-1">2.1. Sources de données</a></div>
+        <div class="toc-h2"><a href="#section2-2">2.2. Critères de sélection</a></div>
+        <div class="toc-h2"><a href="#section2-3">2.3. Processus d'analyse</a></div>
+        <div class="toc-h2"><a href="#section2-4">2.4. Génération de procédures</a></div>
+        <div class="toc-h2"><a href="#section2-5">2.5. Validation et publication</a></div>
+
+        <div class="toc-h1"><a href="#section3">3. Connexion avec WIBOT</a></div>
+        <div class="toc-h2"><a href="#section3-1">3.1. Interface de validation</a></div>
+        <div class="toc-h2"><a href="#section3-2">3.2. Gestion de la base Knowledge</a></div>
+        <div class="toc-h2"><a href="#section3-3">3.3. Feedback et amélioration</a></div>
+
+        <div class="toc-h1"><a href="#section4">4. Spécifications techniques</a></div>
+        <div class="toc-h2"><a href="#section4-1">4.1. Architecture du workflow</a></div>
+        <div class="toc-h2"><a href="#section4-2">4.2. Intégration RAG</a></div>
+        <div class="toc-h2"><a href="#section4-3">4.3. Modèles LLM</a></div>
+        <div class="toc-h2"><a href="#section4-4">4.4. Structure des procédures</a></div>
+
+        <div class="toc-h1"><a href="#section5">5. Diagrammes de flux</a></div>
+        <div class="toc-h2"><a href="#section5-1">5.1. Flux principal</a></div>
+        <div class="toc-h2"><a href="#section5-2">5.2. Flux d'analyse ticket</a></div>
+        <div class="toc-h2"><a href="#section5-3">5.3. Flux de publication</a></div>
+
+        <div class="toc-h1"><a href="#section6">6. Exemples de procédures générées</a></div>
+
+        <div class="toc-h1"><a href="#section7">7. Configuration et évolutions</a></div>
+    </div>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>2</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 1 : VUE D'ENSEMBLE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section1">1. Vue d'ensemble</h1>
+
+    <h2 id="section1-1">1.1. Objectif du workflow</h2>
+
+    <p>L'ENRICHISSEUR est un workflow batch qui analyse les tickets résolus pour en extraire des procédures réutilisables. Il transforme l'expérience quotidienne des techniciens en connaissances capitalisées dans la base RAG.</p>
+
+    <div class="workflow-box">
+        <h4>Mission principale</h4>
+        <p><em>"Transformer chaque résolution de ticket en connaissance réutilisable pour améliorer continuellement les capacités de la plateforme"</em></p>
+    </div>
+
+    <h3>Fonctions clés</h3>
+
+    <table>
+        <tr>
+            <th style="width:150px;">Fonction</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><strong>Collecte</strong></td>
+            <td>Récupération des tickets clôturés et bien documentés</td>
+        </tr>
+        <tr>
+            <td><strong>Analyse</strong></td>
+            <td>Extraction des étapes de résolution via LLM</td>
+        </tr>
+        <tr>
+            <td><strong>Détection patterns</strong></td>
+            <td>Identification des résolutions récurrentes</td>
+        </tr>
+        <tr>
+            <td><strong>Génération</strong></td>
+            <td>Rédaction automatique de procédures structurées</td>
+        </tr>
+        <tr>
+            <td><strong>Validation</strong></td>
+            <td>Soumission pour approbation humaine (Safeguard)</td>
+        </tr>
+        <tr>
+            <td><strong>Publication</strong></td>
+            <td>Injection dans le RAG après validation</td>
+        </tr>
+    </table>
+
+    <h2 id="section1-2">1.2. Positionnement dans l'architecture</h2>
+
+    <pre>
++------------------+     +------------------+     +------------------+
+|   TECHNICIEN     | --> |      GLPI        | --> |   ENRICHISSEUR   |
+| (Résout tickets) |     | (Tickets clos)   |     |   (Analyse)      |
++------------------+     +------------------+     +--------+---------+
+                                                          |
++------------------+                                      |
+| ASSISTANT TICKET | --> Tickets flaggés ------------->---+
+| (Non résolus)    |     "IA_NON_RESOLU"                  |
++------------------+                                      |
+                                                          v
+                                                 +------------------+
+                                                 |    SAFEGUARD     |
+                                                 |   (Validation)   |
+                                                 +--------+---------+
+                                                          |
+                                                          v
++------------------+     +------------------+     +------------------+
+|     WIBOT        | <-- |       RAG        | <-- |   Publication    |
+| (Utilise proc.)  |     | (Stockage)       |     |  (Si approuvé)   |
++------------------+     +------------------+     +------------------+
+    </pre>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>3</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 1.3 : CERCLE VERTUEUX -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section1-3">1.3. Le cercle vertueux de l'apprentissage</h2>
+
+    <p>L'Enrichisseur est la clé du cercle vertueux qui permet à la plateforme de devenir plus performante avec le temps.</p>
+
+    <pre>
+                        +---------------------------+
+                        |    TICKETS DU JOUR        |
+                        |    (Résolus par techs)    |
+                        +-------------+-------------+
+                                      |
+                                      v
+                        +---------------------------+
+                        |      ENRICHISSEUR         |
+                        |   Analyse et extraction   |
+                        +-------------+-------------+
+                                      |
+                                      v
+                        +---------------------------+
+                        |   VALIDATION HUMAINE      |
+                        |   (Safeguard)             |
+                        +-------------+-------------+
+                                      |
+                                      v
+                        +---------------------------+
+                        |      RAG ENRICHI          |
+                        |   + Nouvelles procédures  |
+                        +-------------+-------------+
+                                      |
+              +-----------------------+-----------------------+
+              |                                               |
+              v                                               v
++---------------------------+               +---------------------------+
+|      WIBOT AGENT          |               |    ASSISTANT TICKET       |
+|   Réponses plus précises  |               |   Plus de tickets auto    |
++-------------+-------------+               +-------------+-------------+
+              |                                               |
+              +----------------------+------------------------+
+                                     |
+                                     v
+                        +---------------------------+
+                        |   MEILLEURE RÉSOLUTION    |
+                        |      DES TICKETS          |
+                        +-------------+-------------+
+                                      |
+                                      v
+                        +---------------------------+
+                        |   PLUS DE TICKETS         |
+                        |   BIEN DOCUMENTÉS         |
+                        +-------------+-------------+
+                                      |
+                                      +-------> Retour au début
+    </pre>
+
+    <div class="success">
+        <strong>Effet cumulatif :</strong> Plus la plateforme résout de tickets, plus elle apprend. Plus elle apprend, mieux elle résout les tickets. Ce cercle vertueux garantit une amélioration continue des performances.
+    </div>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>4</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 2 : SPECIFICATIONS FONCTIONNELLES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section2">2. Spécifications fonctionnelles</h1>
+
+    <h2 id="section2-1">2.1. Sources de données</h2>
+
+    <p>L'Enrichisseur analyse trois types de sources pour générer des procédures :</p>
+
+    <table>
+        <tr>
+            <th style="width:180px;">Source</th>
+            <th>Description</th>
+            <th style="width:100px;">Priorité</th>
+        </tr>
+        <tr>
+            <td><strong>Tickets clôturés</strong></td>
+            <td>Tickets GLPI fermés avec suivi détaillé de la résolution</td>
+            <td>Haute</td>
+        </tr>
+        <tr>
+            <td><strong>Tickets flaggés</strong></td>
+            <td>Tickets que l'Assistant Ticket n'a pas pu résoudre, maintenant résolus par un technicien</td>
+            <td>Très haute</td>
+        </tr>
+        <tr>
+            <td><strong>Conversations Agent</strong></td>
+            <td>Sessions WIBOT Agent complexes ayant abouti à une résolution documentée</td>
+            <td>Moyenne</td>
+        </tr>
+    </table>
+
+    <h2 id="section2-2">2.2. Critères de sélection</h2>
+
+    <p>Tous les tickets ne sont pas candidats à la génération de procédure. L'Enrichisseur applique des critères stricts.</p>
+
+    <h3>Critères d'inclusion</h3>
+
+    <table class="table-small">
+        <tr>
+            <th>Critère</th>
+            <th>Condition</th>
+            <th>Justification</th>
+        </tr>
+        <tr>
+            <td>Documentation</td>
+            <td>Suivi > 100 caractères</td>
+            <td>Assez de détails pour extraire une procédure</td>
+        </tr>
+        <tr>
+            <td>Résolution</td>
+            <td>Statut = Clôturé/Résolu</td>
+            <td>Solution effective et validée</td>
+        </tr>
+        <tr>
+            <td>Ancienneté</td>
+            <td>Clôturé dans les dernières 24-168h</td>
+            <td>Information fraîche et pertinente</td>
+        </tr>
+        <tr>
+            <td>Catégorie</td>
+            <td>Catégorie technique supportée</td>
+            <td>Dans le périmètre d'automatisation</td>
+        </tr>
+    </table>
+
+    <h3>Critères d'exclusion</h3>
+
+    <table class="table-small">
+        <tr>
+            <th>Critère</th>
+            <th>Raison</th>
+        </tr>
+        <tr>
+            <td>Suivi trop court (< 50 car.)</td>
+            <td>Impossible d'extraire une procédure utile</td>
+        </tr>
+        <tr>
+            <td>Ticket annulé</td>
+            <td>Pas de résolution réelle</td>
+        </tr>
+        <tr>
+            <td>Ticket doublon</td>
+            <td>Référence un autre ticket</td>
+        </tr>
+        <tr>
+            <td>Données confidentielles détectées</td>
+            <td>Mots de passe, données personnelles sensibles</td>
+        </tr>
+        <tr>
+            <td>Procédure déjà existante (RAG match > 90%)</td>
+            <td>Éviter les doublons</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>5</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 2.3 : PROCESSUS D'ANALYSE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section2-3">2.3. Processus d'analyse</h2>
+
+    <div class="workflow-box">
+        <div class="workflow-step">
+            <div class="step-number">1</div>
+            <div>
+                <strong>Collecte des tickets candidats</strong><br>
+                Requête GLPI avec filtres de sélection (voir 2.2)
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-number">2</div>
+            <div>
+                <strong>Enrichissement contexte</strong><br>
+                Récupération de l'historique complet, des pièces jointes, des commentaires
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-number">3</div>
+            <div>
+                <strong>Vérification doublon RAG</strong><br>
+                Recherche de procédures similaires existantes (seuil 90%)
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-number">4</div>
+            <div>
+                <strong>Analyse LLM</strong><br>
+                Extraction des étapes de résolution, identification du pattern
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-number">5</div>
+            <div>
+                <strong>Score de qualité</strong><br>
+                Évaluation de la qualité de la procédure générée (0-100)
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-number">6</div>
+            <div>
+                <strong>Décision</strong><br>
+                Si score > 70 : soumettre pour validation. Sinon : archiver pour review manuel
+            </div>
+        </div>
+    </div>
+
+    <h3>Prompt d'analyse LLM</h3>
+
+    <pre>
+SYSTÈME: Tu es un expert en documentation technique. Analyse ce ticket
+résolu et extrais une procédure réutilisable.
+
+TICKET:
+- Titre: {ticket.title}
+- Description: {ticket.description}
+- Catégorie: {ticket.category}
+- Suivi de résolution: {ticket.followups}
+
+INSTRUCTIONS:
+1. Identifie le problème principal
+2. Liste les symptômes décrits
+3. Extrais les étapes de résolution dans l'ordre
+4. Identifie les prérequis et outils nécessaires
+5. Note les points de vérification
+
+SORTIE (JSON):
+{
+  "problem_type": "...",
+  "symptoms": ["..."],
+  "prerequisites": ["..."],
+  "steps": [
+    {"order": 1, "action": "...", "details": "..."},
+    ...
+  ],
+  "verification": "...",
+  "quality_score": 0-100,
+  "tags": ["..."]
+}
+    </pre>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>6</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 2.4 : GENERATION DE PROCEDURES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section2-4">2.4. Génération de procédures</h2>
+
+    <p>À partir de l'analyse, l'Enrichisseur génère une procédure structurée prête à être intégrée au RAG.</p>
+
+    <h3>Structure d'une procédure</h3>
+
+    <div class="procedure-card">
+        <div class="procedure-header">
+            PROC-AD-015 : Résolution problème synchronisation OneDrive
+        </div>
+        <div class="procedure-content">
+            <p><strong>Catégorie :</strong> Office 365 / OneDrive</p>
+            <p><strong>Niveau :</strong> N1 (Technicien)</p>
+            <p><strong>Temps estimé :</strong> 15 minutes</p>
+            <p><strong>Source :</strong> Tickets #4521, #4589, #4612 (pattern récurrent)</p>
+            <hr style="margin: 10px 0;">
+
+            <p><strong>SYMPTÔMES</strong></p>
+            <ul>
+                <li>OneDrive affiche "Synchronisation en pause"</li>
+                <li>Icône OneDrive avec point d'exclamation rouge</li>
+                <li>Fichiers non synchronisés depuis plusieurs heures</li>
+            </ul>
+
+            <p><strong>PRÉREQUIS</strong></p>
+            <ul>
+                <li>Accès au poste de l'utilisateur (TeamViewer/Anydesk)</li>
+                <li>Droits administrateur local</li>
+            </ul>
+
+            <p><strong>PROCÉDURE</strong></p>
+            <ol>
+                <li>Fermer l'application OneDrive (clic droit icône > Quitter)</li>
+                <li>Ouvrir le Gestionnaire des tâches, vérifier qu'aucun processus OneDrive ne tourne</li>
+                <li>Supprimer le cache : <code>%localappdata%\Microsoft\OneDrive\</code></li>
+                <li>Relancer OneDrive depuis le menu Démarrer</li>
+                <li>Se reconnecter avec les identifiants O365 de l'utilisateur</li>
+                <li>Attendre la fin de la synchronisation initiale</li>
+            </ol>
+
+            <p><strong>VÉRIFICATION</strong></p>
+            <ul>
+                <li>Icône OneDrive verte (synchronisation OK)</li>
+                <li>Créer un fichier test et vérifier qu'il apparaît sur OneDrive web</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>Types de procédures générées</h3>
+
+    <table>
+        <tr>
+            <th>Type</th>
+            <th>Source</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td><strong>Standard</strong></td>
+            <td>Tickets simples récurrents</td>
+            <td>Reset mot de passe, déblocage compte</td>
+        </tr>
+        <tr>
+            <td><strong>Avancée</strong></td>
+            <td>Tickets flaggés résolus par tech</td>
+            <td>Diagnostic VPN, migration boîte mail</td>
+        </tr>
+        <tr>
+            <td><strong>R&D</strong></td>
+            <td>Conversations Agent complexes</td>
+            <td>Intégration nouveau service, architecture</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>7</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 2.5 : VALIDATION ET PUBLICATION -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section2-5">2.5. Validation et publication</h2>
+
+    <p>Toute procédure générée doit être validée par un humain avant publication dans le RAG.</p>
+
+    <h3>Workflow de validation</h3>
+
+    <pre>
+    Procédure générée
+            |
+            v
+    +------------------------------------------+
+    | 1. Création demande Safeguard L2         |
+    |    Catégorie: "KNOWLEDGE_ADDITION"       |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 2. Affichage dans WIBOT Knowledge        |
+    |    Section "Procédures en attente"       |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 3. Review par technicien N2+             |
+    |    - Lecture procédure complète          |
+    |    - Vérification exactitude             |
+    |    - Suggestions de modification         |
+    +------------------------------------------+
+            |
+    +-------+-------+-------+
+    |               |       |
+    v               v       v
++--------+    +--------+   +--------+
+|APPROUVER|   |MODIFIER|   |REJETER |
++--------+    +--------+   +--------+
+    |               |           |
+    v               v           v
++------------------------------------------+
+| 4a. Publication RAG                      |
+|     - Vectorisation                      |
+|     - Indexation                         |
+|     - Disponible immédiatement           |
++------------------------------------------+
+    </pre>
+
+    <h3>Options de validation</h3>
+
+    <table>
+        <tr>
+            <th style="width:120px;">Action</th>
+            <th>Description</th>
+            <th style="width:120px;">Résultat</th>
+        </tr>
+        <tr>
+            <td><strong>Approuver</strong></td>
+            <td>Procédure correcte, prête à être publiée</td>
+            <td>Publication RAG</td>
+        </tr>
+        <tr>
+            <td><strong>Modifier</strong></td>
+            <td>Procédure nécessite des ajustements (édition inline)</td>
+            <td>Édition puis approbation</td>
+        </tr>
+        <tr>
+            <td><strong>Rejeter</strong></td>
+            <td>Procédure incorrecte ou non pertinente</td>
+            <td>Archivage + feedback</td>
+        </tr>
+        <tr>
+            <td><strong>Fusionner</strong></td>
+            <td>Procédure similaire existe, enrichir l'existante</td>
+            <td>Mise à jour RAG</td>
+        </tr>
+    </table>
+
+    <div class="note">
+        <strong>Double stockage (optionnel) :</strong> Les procédures validées peuvent également être publiées dans la base de connaissances GLPI pour être accessibles depuis l'interface de ticketing.
+    </div>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>8</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3 : CONNEXION WIBOT -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section3">3. Connexion avec WIBOT</h1>
+
+    <h2 id="section3-1">3.1. Interface de validation</h2>
+
+    <p>Les procédures en attente de validation apparaissent dans l'onglet "Knowledge" de WIBOT.</p>
+
+    <pre>
++------------------------------------------------------------------+
+|  WIBOT > Knowledge > Procédures en attente                        |
++------------------------------------------------------------------+
+|                                                                   |
+|  +------------------------------------------------------------+  |
+|  | NOUVELLE PROCÉDURE DÉTECTÉE                    [Score: 85] |  |
+|  +------------------------------------------------------------+  |
+|  |                                                            |  |
+|  | Titre: Résolution synchronisation OneDrive                 |  |
+|  | Source: Tickets #4521, #4589, #4612 (3 occurrences)        |  |
+|  | Généré le: 19/01/2026 à 06:30                              |  |
+|  |                                                            |  |
+|  | APERÇU:                                                    |  |
+|  | Cette procédure décrit les étapes pour résoudre les        |  |
+|  | problèmes de synchronisation OneDrive, incluant la         |  |
+|  | suppression du cache et la reconfiguration...              |  |
+|  |                                                            |  |
+|  | [VOIR DÉTAILS]  [APPROUVER]  [MODIFIER]  [REJETER]         |  |
+|  +------------------------------------------------------------+  |
+|                                                                   |
+|  +------------------------------------------------------------+  |
+|  | NOUVELLE PROCÉDURE DÉTECTÉE                    [Score: 72] |  |
+|  +------------------------------------------------------------+  |
+|  | Titre: Configuration imprimante réseau Windows 11          |  |
+|  | Source: Ticket #4598 (flaggé IA_NON_RESOLU)                |  |
+|  | ...                                                        |  |
+|  +------------------------------------------------------------+  |
+|                                                                   |
++------------------------------------------------------------------+
+    </pre>
+
+    <h2 id="section3-2">3.2. Gestion de la base Knowledge</h2>
+
+    <p>L'onglet Knowledge de WIBOT permet de gérer l'ensemble de la base de connaissances.</p>
+
+    <h3>Fonctionnalités disponibles</h3>
+
+    <table>
+        <tr>
+            <th style="width:180px;">Fonctionnalité</th>
+            <th>Description</th>
+            <th style="width:80px;">Niveau</th>
+        </tr>
+        <tr>
+            <td>Consulter procédures</td>
+            <td>Recherche et lecture des procédures existantes</td>
+            <td>N0+</td>
+        </tr>
+        <tr>
+            <td>Valider nouvelles</td>
+            <td>Approuver/rejeter les procédures générées</td>
+            <td>N2+</td>
+        </tr>
+        <tr>
+            <td>Éditer procédures</td>
+            <td>Modifier le contenu des procédures existantes</td>
+            <td>N2+</td>
+        </tr>
+        <tr>
+            <td>Upload documents</td>
+            <td>Ajouter manuellement des documents au RAG</td>
+            <td>N2+</td>
+        </tr>
+        <tr>
+            <td>Supprimer</td>
+            <td>Retirer une procédure obsolète</td>
+            <td>N3+</td>
+        </tr>
+        <tr>
+            <td>Statistiques</td>
+            <td>Voir les métriques d'utilisation du RAG</td>
+            <td>N2+</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>9</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3.3 : FEEDBACK -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section3-3">3.3. Feedback et amélioration</h2>
+
+    <p>Le système de feedback permet d'améliorer la qualité des procédures générées au fil du temps.</p>
+
+    <h3>Sources de feedback</h3>
+
+    <table>
+        <tr>
+            <th>Source</th>
+            <th>Type</th>
+            <th>Impact</th>
+        </tr>
+        <tr>
+            <td><strong>Rejet procédure</strong></td>
+            <td>Explicite</td>
+            <td>Ajuste les critères de génération</td>
+        </tr>
+        <tr>
+            <td><strong>Modification procédure</strong></td>
+            <td>Explicite</td>
+            <td>Apprend les corrections fréquentes</td>
+        </tr>
+        <tr>
+            <td><strong>Utilisation RAG</strong></td>
+            <td>Implicite</td>
+            <td>Procédures populaires = qualité validée</td>
+        </tr>
+        <tr>
+            <td><strong>Résolution réussie</strong></td>
+            <td>Implicite</td>
+            <td>Procédure efficace (Assistant Ticket)</td>
+        </tr>
+        <tr>
+            <td><strong>Note utilisateur</strong></td>
+            <td>Explicite</td>
+            <td>Feedback direct sur la qualité</td>
+        </tr>
+    </table>
+
+    <h3>Métriques de qualité</h3>
+
+    <pre>
++------------------------------------------------------------------+
+|  STATISTIQUES ENRICHISSEUR - Janvier 2026                         |
++------------------------------------------------------------------+
+|                                                                   |
+|  Procédures générées ce mois:                    47               |
+|  Procédures approuvées:                          38 (81%)         |
+|  Procédures modifiées puis approuvées:           6  (13%)         |
+|  Procédures rejetées:                            3  (6%)          |
+|                                                                   |
+|  Score qualité moyen:                            78/100           |
+|  Temps moyen de validation:                      4.2 heures       |
+|                                                                   |
+|  Top catégories:                                                  |
+|  1. Active Directory (15 proc.)                                   |
+|  2. Office 365 (12 proc.)                                         |
+|  3. Réseau (8 proc.)                                              |
+|                                                                   |
+|  Procédures les plus utilisées (RAG):                             |
+|  1. Reset MDP AD (342 requêtes)                                   |
+|  2. Config VPN (187 requêtes)                                     |
+|  3. Synchro OneDrive (156 requêtes)                               |
+|                                                                   |
++------------------------------------------------------------------+
+    </pre>
+
+    <div class="info">
+        <strong>Amélioration continue :</strong> Les statistiques permettent d'identifier les lacunes de la base de connaissances et d'orienter les efforts de documentation manuelle vers les sujets les plus demandés mais peu couverts.
+    </div>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>10</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4 : SPECIFICATIONS TECHNIQUES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section4">4. Spécifications techniques</h1>
+
+    <h2 id="section4-1">4.1. Architecture du workflow</h2>
+
+    <pre>
++------------------------------------------------------------------+
+|                   ENRICHISSEUR WORKFLOW SERVICE                   |
++------------------------------------------------------------------+
+|                                                                   |
+|  +------------------+     +------------------+                    |
+|  |   Scheduler      |     |   Ticket         |                    |
+|  |   (APScheduler)  |     |   Collector      |                    |
+|  |   Cron: 06:00    |     |   (GLPI + Redis) |                    |
+|  +--------+---------+     +--------+---------+                    |
+|           |                        |                              |
+|           v                        v                              |
+|  +------------------+     +------------------+                    |
+|  |  Filter &        |     |   Analyzer       |                    |
+|  |  Dedupe          |     |   (LLM Engine)   |                    |
+|  +--------+---------+     +--------+---------+                    |
+|           |                        |                              |
+|           v                        v                              |
+|  +------------------+     +------------------+                    |
+|  |  RAG Client      |     |  Procedure       |                    |
+|  |  (Check dupes)   |     |  Generator       |                    |
+|  +--------+---------+     +--------+---------+                    |
+|           |                        |                              |
+|           +------------------------+                              |
+|                        |                                          |
+|                        v                                          |
+|               +------------------+                                 |
+|               |  Safeguard       |                                 |
+|               |  Submitter       |                                 |
+|               +------------------+                                 |
++------------------------------------------------------------------+
+    </pre>
+
+    <h2 id="section4-2">4.2. Intégration RAG</h2>
+
+    <h3>Processus de publication</h3>
+
+    <pre>
+    Procédure validée
+            |
+            v
+    +------------------------------------------+
+    | 1. Sanitization                          |
+    |    - Suppression données sensibles       |
+    |    - Normalisation format                |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 2. Chunking                              |
+    |    - Découpage en sections               |
+    |    - Métadonnées par chunk               |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 3. Vectorisation                         |
+    |    - Mistral Embed (1024 dim)            |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 4. Stockage PostgreSQL                   |
+    |    - Table: knowledge_chunks             |
+    |    - Index HNSW (pgvector)               |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 5. Mise à jour métadonnées               |
+    |    - Table: knowledge_documents          |
+    |    - Statut: "published"                 |
+    +------------------------------------------+
+    </pre>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>11</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4.3 ET 4.4 -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section4-3">4.3. Modèles LLM</h2>
+
+    <table>
+        <tr>
+            <th>Tâche</th>
+            <th>Modèle</th>
+            <th>Justification</th>
+        </tr>
+        <tr>
+            <td>Analyse ticket</td>
+            <td>Mistral Large</td>
+            <td>Extraction complexe, raisonnement</td>
+        </tr>
+        <tr>
+            <td>Génération procédure</td>
+            <td>Mistral Large</td>
+            <td>Rédaction structurée de qualité</td>
+        </tr>
+        <tr>
+            <td>Score qualité</td>
+            <td>Devstral Small</td>
+            <td>Évaluation rapide, critères simples</td>
+        </tr>
+        <tr>
+            <td>Détection doublons</td>
+            <td>Mistral Embed</td>
+            <td>Similarité sémantique</td>
+        </tr>
+    </table>
+
+    <h2 id="section4-4">4.4. Structure des procédures</h2>
+
+    <h3>Schéma JSON</h3>
+
+    <pre>
+{
+  "id": "PROC-AD-015",
+  "version": "1.0",
+  "created_at": "2026-01-19T06:30:00Z",
+  "updated_at": "2026-01-19T10:15:00Z",
+  "status": "published",
+
+  "metadata": {
+    "title": "Résolution synchronisation OneDrive",
+    "category": "office365.onedrive",
+    "level": "N1",
+    "estimated_time": 15,
+    "tags": ["onedrive", "sync", "cache", "office365"],
+    "source_tickets": [4521, 4589, 4612],
+    "quality_score": 85,
+    "usage_count": 156
+  },
+
+  "content": {
+    "symptoms": [
+      "OneDrive affiche 'Synchronisation en pause'",
+      "Icône avec point d'exclamation rouge"
+    ],
+    "prerequisites": [
+      "Accès au poste utilisateur",
+      "Droits administrateur local"
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "action": "Fermer OneDrive",
+        "details": "Clic droit icône > Quitter",
+        "verification": "Vérifier dans gestionnaire tâches"
+      },
+      ...
+    ],
+    "verification": "Icône verte, fichier test synchronisé",
+    "troubleshooting": [
+      {
+        "problem": "OneDrive ne redémarre pas",
+        "solution": "Réinstaller l'application"
+      }
+    ]
+  },
+
+  "embeddings": {
+    "chunk_ids": ["chunk-001", "chunk-002", "chunk-003"],
+    "vector_count": 3
+  }
+}
+    </pre>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>12</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 5 : DIAGRAMMES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section5">5. Diagrammes de flux</h1>
+
+    <h2 id="section5-1">5.1. Flux principal</h2>
+
+    <pre>
+                    +-------------+
+                    |   START     |
+                    | (Cron 06:00)|
+                    +------+------+
+                           |
+                           v
+                    +-------------+
+                    | Collecter   |
+                    | tickets     |
+                    +------+------+
+                           |
+                           v
+                    +-------------+
+                    | Filtrer     |
+                    | candidats   |
+                    +------+------+
+                           |
+                           v
+                    +-------------+
+                    | Candidats   |
+                    | trouvés ?   |
+                    +------+------+
+                           |
+              +------------+------------+
+              |                         |
+              v                         v
+        +-----+-----+             +-----+-----+
+        |    NON    |             |    OUI    |
+        | (Fin)     |             | (Liste)   |
+        +-----------+             +-----+-----+
+                                        |
+                                        v
+                                  +-----+-----+
+                                  | Pour      |
+                                  | chaque    |
+                                  | ticket    |
+                                  +-----+-----+
+                                        |
+                                        v
+                                  +-----+-----+
+                                  | Check     |
+                                  | doublon   |
+                                  | RAG       |
+                                  +-----+-----+
+                                        |
+                              +---------+---------+
+                              |                   |
+                              v                   v
+                        +-----+-----+       +-----+-----+
+                        | Doublon   |       | Unique    |
+                        | (Skip)    |       |           |
+                        +-----------+       +-----+-----+
+                                                  |
+                                                  v
+                                            +-----+-----+
+                                            | Analyser  |
+                                            | (LLM)     |
+                                            +-----+-----+
+                                                  |
+                                                  v
+                                            +-----+-----+
+                                            | Générer   |
+                                            | procédure |
+                                            +-----+-----+
+                                                  |
+                                                  v
+                                            +-----+-----+
+                                            | Score     |
+                                            | > 70 ?    |
+                                            +-----+-----+
+                                                  |
+                                      +-----------+-----------+
+                                      |                       |
+                                      v                       v
+                                +-----+-----+           +-----+-----+
+                                |    OUI    |           |    NON    |
+                                | Safeguard |           | Archive   |
+                                +-----+-----+           +-----------+
+                                      |
+                                      v
+                                +-----+-----+
+                                |   FIN     |
+                                +-----------+
+    </pre>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>13</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 5.2 ET 5.3 -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section5-2">5.2. Flux d'analyse ticket</h2>
+
+    <pre>
+    Ticket candidat
+            |
+            v
+    +------------------------------------------+
+    | 1. Extraction données GLPI               |
+    |    - Titre, description                  |
+    |    - Tous les suivis                     |
+    |    - Pièces jointes (noms)               |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 2. Nettoyage données                     |
+    |    - Suppression signatures email        |
+    |    - Anonymisation (optionnel)           |
+    |    - Normalisation format                |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 3. Construction prompt LLM               |
+    |    - Contexte ticket                     |
+    |    - Instructions extraction             |
+    |    - Format sortie attendu               |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 4. Appel LLM (Mistral Large)             |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 5. Parsing réponse JSON                  |
+    |    - Validation structure                |
+    |    - Extraction champs                   |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 6. Calcul score qualité                  |
+    |    - Complétude étapes                   |
+    |    - Clarté instructions                 |
+    |    - Présence vérification               |
+    +------------------------------------------+
+    </pre>
+
+    <h2 id="section5-3">5.3. Flux de publication</h2>
+
+    <pre>
+    Validation Safeguard = APPROUVÉ
+            |
+            v
+    +------------------------------------------+
+    | 1. Finalisation procédure                |
+    |    - Attribution ID unique               |
+    |    - Timestamp publication               |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 2. Chunking                              |
+    |    - Découpage 500 caractères            |
+    |    - Overlap 50 caractères               |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 3. Vectorisation (Mistral Embed)         |
+    |    - 1024 dimensions par chunk           |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 4. INSERT PostgreSQL                     |
+    |    - knowledge_documents                 |
+    |    - knowledge_chunks (avec vecteurs)    |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 5. Notification                          |
+    |    - Log publication                     |
+    |    - Optionnel: GLPI KB                  |
+    +------------------------------------------+
+    </pre>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>14</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 6 : EXEMPLES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section6">6. Exemples de procédures générées</h1>
+
+    <h2>6.1. Procédure depuis ticket simple</h2>
+
+    <div class="purple-box">
+        <strong>Ticket source #4521</strong><br>
+        Titre: "OneDrive ne synchronise plus"<br>
+        Suivi: "Fermé OneDrive, supprimé le cache dans AppData, relancé, resynchronisation OK"
+    </div>
+
+    <div class="procedure-card">
+        <div class="procedure-header">
+            Procédure générée: Résolution problème synchronisation OneDrive
+        </div>
+        <div class="procedure-content">
+            <p><strong>Score qualité:</strong> 75/100</p>
+            <p><strong>Étapes extraites:</strong></p>
+            <ol>
+                <li>Fermer l'application OneDrive</li>
+                <li>Supprimer le cache dans %localappdata%\Microsoft\OneDrive</li>
+                <li>Relancer OneDrive</li>
+                <li>Vérifier la resynchronisation</li>
+            </ol>
+        </div>
+    </div>
+
+    <h2>6.2. Procédure depuis ticket flaggé</h2>
+
+    <div class="purple-box">
+        <strong>Ticket source #4598 (flaggé IA_NON_RESOLU)</strong><br>
+        Titre: "Imprimante réseau non détectée W11"<br>
+        Raison flag: "NO_PROCEDURE"<br>
+        Résolution tech: "[Suivi détaillé de 500 caractères avec toutes les étapes]"
+    </div>
+
+    <div class="procedure-card">
+        <div class="procedure-header">
+            Procédure générée: Configuration imprimante réseau Windows 11
+        </div>
+        <div class="procedure-content">
+            <p><strong>Score qualité:</strong> 88/100</p>
+            <p><strong>Valeur ajoutée:</strong> Cette procédure comble une lacune identifiée (l'IA n'avait pas pu résoudre faute de documentation)</p>
+        </div>
+    </div>
+
+    <h2>6.3. Procédure depuis conversation Agent</h2>
+
+    <div class="purple-box">
+        <strong>Session Agent #AG-2026-0119-042</strong><br>
+        Sujet: "Migration boîte mail Exchange vers O365"<br>
+        Durée: 45 minutes, 12 échanges<br>
+        Résultat: Migration réussie avec documentation complète
+    </div>
+
+    <div class="procedure-card">
+        <div class="procedure-header">
+            Procédure générée: Migration boîte Exchange vers Microsoft 365
+        </div>
+        <div class="procedure-content">
+            <p><strong>Score qualité:</strong> 92/100</p>
+            <p><strong>Type:</strong> R&D (procédure avancée)</p>
+            <p><strong>Niveau:</strong> N2 (Technicien senior)</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>15</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 7 : CONFIGURATION -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128218;</span>
+            <span>ENRICHISSEUR - Capitalisation</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section7">7. Configuration et évolutions</h1>
+
+    <h2>7.1. Paramètres configurables</h2>
+
+    <table>
+        <tr>
+            <th>Paramètre</th>
+            <th style="width:120px;">Défaut</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>ENRICHISSEUR_ENABLED</code></td>
+            <td>true</td>
+            <td>Active/désactive le workflow</td>
+        </tr>
+        <tr>
+            <td><code>RUN_SCHEDULE</code></td>
+            <td>"0 6 * * *"</td>
+            <td>Cron d'exécution (06:00 quotidien)</td>
+        </tr>
+        <tr>
+            <td><code>RUN_MODE</code></td>
+            <td>"daily"</td>
+            <td>daily | weekly | manual</td>
+        </tr>
+        <tr>
+            <td><code>QUALITY_THRESHOLD</code></td>
+            <td>70</td>
+            <td>Score minimum pour soumission Safeguard</td>
+        </tr>
+        <tr>
+            <td><code>DUPLICATE_THRESHOLD</code></td>
+            <td>0.90</td>
+            <td>Seuil similarité pour détection doublon</td>
+        </tr>
+        <tr>
+            <td><code>MIN_FOLLOWUP_LENGTH</code></td>
+            <td>100</td>
+            <td>Longueur min du suivi (caractères)</td>
+        </tr>
+        <tr>
+            <td><code>INCLUDE_AGENT_SESSIONS</code></td>
+            <td>false</td>
+            <td>Analyser aussi les conversations Agent</td>
+        </tr>
+        <tr>
+            <td><code>PUBLISH_TO_GLPI</code></td>
+            <td>false</td>
+            <td>Double publication RAG + GLPI KB</td>
+        </tr>
+    </table>
+
+    <h2>7.2. Évolutions prévues</h2>
+
+    <table>
+        <tr>
+            <th>Évolution</th>
+            <th style="width:80px;">Priorité</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><strong>Analyse conversations Agent</strong></td>
+            <td>Haute</td>
+            <td>Extraire procédures des sessions Agent complexes</td>
+        </tr>
+        <tr>
+            <td><strong>Double stockage GLPI</strong></td>
+            <td>Moyenne</td>
+            <td>Publier aussi dans la KB GLPI native</td>
+        </tr>
+        <tr>
+            <td><strong>Détection patterns</strong></td>
+            <td>Moyenne</td>
+            <td>Regrouper tickets similaires pour procédure consolidée</td>
+        </tr>
+        <tr>
+            <td><strong>Versioning procédures</strong></td>
+            <td>Moyenne</td>
+            <td>Gérer les versions et l'historique des modifications</td>
+        </tr>
+        <tr>
+            <td><strong>Feedback automatique</strong></td>
+            <td>Basse</td>
+            <td>Ajuster les paramètres selon les taux d'approbation</td>
+        </tr>
+    </table>
+
+    <div class="success">
+        <strong>Objectifs de performance :</strong>
+        <ul>
+            <li>Taux d'approbation > 80%</li>
+            <li>Score qualité moyen > 75</li>
+            <li>Couverture RAG croissante (+20% par trimestre)</li>
+            <li>Réduction tickets flaggés "NO_PROCEDURE"</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <span>Workflow ENRICHISSEUR</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>16</span>
+    </div>
+</div>
+
+</body>
+</html>

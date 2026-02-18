@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow SENTINEL - Documentation Fonctionnelle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #333;
+            background: #fff;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm 25mm;
+            margin: 0 auto;
+            background: #fff;
+            position: relative;
+        }
+
+        .header {
+            background: #2c5aa0;
+            color: #fff;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 12pt;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-icon {
+            font-size: 18pt;
+        }
+
+        .cover-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 250mm;
+            text-align: center;
+        }
+
+        .cover-icon {
+            font-size: 80pt;
+            margin-bottom: 30px;
+        }
+
+        .cover-title {
+            font-size: 36pt;
+            font-weight: bold;
+            color: #2c5aa0;
+            margin-bottom: 20px;
+        }
+
+        .cover-subtitle {
+            font-size: 18pt;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .cover-description {
+            font-size: 14pt;
+            color: #888;
+            margin-bottom: 80px;
+            max-width: 450px;
+        }
+
+        .cover-date {
+            font-size: 12pt;
+            color: #888;
+            font-style: italic;
+        }
+
+        h1 {
+            font-size: 18pt;
+            color: #2c5aa0;
+            border-bottom: 2px solid #2c5aa0;
+            padding-bottom: 8px;
+            margin: 30px 0 20px 0;
+        }
+
+        h2 {
+            font-size: 14pt;
+            color: #2c5aa0;
+            margin: 25px 0 15px 0;
+        }
+
+        h3 {
+            font-size: 12pt;
+            color: #333;
+            margin: 20px 0 10px 0;
+            border-left: 4px solid #2c5aa0;
+            padding-left: 10px;
+        }
+
+        h4 {
+            font-size: 11pt;
+            color: #333;
+            margin: 15px 0 8px 0;
+            font-style: italic;
+        }
+
+        p {
+            margin: 10px 0;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin: 10px 0 10px 25px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid #999;
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #2c5aa0;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .table-small {
+            font-size: 9pt;
+        }
+
+        .table-small th, .table-small td {
+            padding: 5px 8px;
+        }
+
+        pre {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-left: 4px solid #2c5aa0;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            margin: 15px 0;
+            line-height: 1.3;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 10pt;
+        }
+
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .important {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 15mm;
+            left: 25mm;
+            right: 25mm;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9pt;
+            color: #666;
+            border-top: 1px solid #ccc;
+            padding-top: 8px;
+        }
+
+        .toc {
+            margin: 20px 0;
+        }
+
+        .toc a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .toc-h1 {
+            font-weight: bold;
+            margin: 10px 0 5px 0;
+        }
+
+        .toc-h2 {
+            margin: 3px 0 3px 20px;
+        }
+
+        .toc-h3 {
+            margin: 2px 0 2px 40px;
+            font-size: 10pt;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .level-l0 { background: #d4edda; }
+        .level-l1 { background: #d1ecf1; }
+        .level-l2 { background: #fff3cd; }
+        .level-l3 { background: #f8d7da; }
+        .level-l4 { background: #e2e3e5; }
+
+        .workflow-box {
+            border: 2px solid #2c5aa0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            background: #f8f9fa;
+        }
+
+        .orchestrator-box {
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            background: #f0fff0;
+        }
+
+        .orchestrator-box h4 {
+            color: #28a745;
+        }
+
+        .agent-box {
+            border: 2px solid #6f42c1;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            background: #f3f0ff;
+        }
+
+        .agent-box h4 {
+            color: #6f42c1;
+        }
+
+        @media print {
+            .page {
+                margin: 0;
+                padding: 15mm 20mm;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- PAGE DE GARDE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="cover-page">
+        <div class="cover-icon">&#128225;</div>
+        <div class="cover-title">SENTINEL</div>
+        <div class="cover-subtitle">Workflow de Surveillance Proactive</div>
+        <div class="cover-description">
+            Orchestrateur Python + Agent Devstral2 pour la détection et notification proactive des pannes réseau
+        </div>
+        <div class="cover-date">Documentation Fonctionnelle<br>Janvier 2026</div>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SOMMAIRE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1>Sommaire</h1>
+
+    <div class="toc">
+        <div class="toc-h1"><a href="#section1">1. Vue d'ensemble</a></div>
+        <div class="toc-h2"><a href="#section1-1">1.1. Mission de SENTINEL</a></div>
+        <div class="toc-h2"><a href="#section1-2">1.2. Architecture Orchestrateur + Agent</a></div>
+        <div class="toc-h2"><a href="#section1-3">1.3. Séparation des responsabilités</a></div>
+
+        <div class="toc-h1"><a href="#section2">2. Orchestrateur (Python)</a></div>
+        <div class="toc-h2"><a href="#section2-1">2.1. Cycle de polling (60 secondes)</a></div>
+        <div class="toc-h2"><a href="#section2-2">2.2. Vérifications automatiques</a></div>
+        <div class="toc-h2"><a href="#section2-3">2.3. Déclenchement de l'agent</a></div>
+
+        <div class="toc-h1"><a href="#section3">3. Agent SENTINEL (Devstral2)</a></div>
+        <div class="toc-h2"><a href="#section3-1">3.1. Contexte reçu de l'orchestrateur</a></div>
+        <div class="toc-h2"><a href="#section3-2">3.2. Recherche client dans GLPI</a></div>
+        <div class="toc-h2"><a href="#section3-3">3.3. Création ticket et envoi SMS</a></div>
+        <div class="toc-h2"><a href="#section3-4">3.4. Gestion des cas ambigus</a></div>
+
+        <div class="toc-h1"><a href="#section4">4. Règles métier</a></div>
+        <div class="toc-h2"><a href="#section4-1">4.1. Convention de nommage équipements</a></div>
+        <div class="toc-h2"><a href="#section4-2">4.2. Distinction Panne FAI vs WIDIP</a></div>
+        <div class="toc-h2"><a href="#section4-3">4.3. Hiérarchie des contacts</a></div>
+        <div class="toc-h2"><a href="#section4-4">4.4. Templates SMS</a></div>
+
+        <div class="toc-h1"><a href="#section5">5. Outils MCP et Safeguard</a></div>
+        <div class="toc-h2"><a href="#section5-1">5.1. Outils utilisés par l'agent</a></div>
+        <div class="toc-h2"><a href="#section5-2">5.2. Niveaux Safeguard</a></div>
+        <div class="toc-h2"><a href="#section5-3">5.3. Flux de validation SMS (L3)</a></div>
+
+        <div class="toc-h1"><a href="#section6">6. Scénarios concrets</a></div>
+        <div class="toc-h2"><a href="#section6-1">6.1. Panne WIDIP - Flux complet</a></div>
+        <div class="toc-h2"><a href="#section6-2">6.2. Panne FAI - Email opérateur</a></div>
+        <div class="toc-h2"><a href="#section6-3">6.3. Client non trouvé - Fuzzy matching</a></div>
+
+        <div class="toc-h1"><a href="#section7">7. Prompt système de l'agent</a></div>
+
+        <div class="toc-h1"><a href="#section8">8. Configuration</a></div>
+        <div class="toc-h2"><a href="#section8-1">8.1. Paramètres orchestrateur</a></div>
+        <div class="toc-h2"><a href="#section8-2">8.2. Paramètres agent</a></div>
+    </div>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>2</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 1 : VUE D'ENSEMBLE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section1">1. Vue d'ensemble</h1>
+
+    <h2 id="section1-1">1.1. Mission de SENTINEL</h2>
+
+    <p>SENTINEL est un workflow de surveillance proactive dont la mission est de <strong>détecter les pannes réseau AVANT que le client n'appelle</strong> et de l'informer proactivement avec un numéro de ticket GLPI.</p>
+
+    <div class="workflow-box">
+        <h4>Objectif</h4>
+        <p><em>"Transformer le support réactif en support proactif : le client reçoit un SMS l'informant de la panne avant même qu'il ne s'en aperçoive."</em></p>
+    </div>
+
+    <h2 id="section1-2">1.2. Architecture Orchestrateur + Agent</h2>
+
+    <p>SENTINEL est composé de <strong>deux couches distinctes</strong> avec des responsabilités séparées :</p>
+
+    <div class="workflow-box">
+        <pre>
+┌─────────────────────────────────────────────────────────────────────┐
+│                    ORCHESTRATEUR (Python)                           │
+│                                                                      │
+│  Responsabilités:                                                   │
+│  ✓ Polling Observium toutes les 60 secondes                        │
+│  ✓ Vérification cache Redis (alerte déjà traitée ?)                │
+│  ✓ Vérification durée DOWN > 20 minutes                            │
+│  ✓ Check emails FAI (panne opérateur ?)                            │
+│  ✓ SI nouvelle alerte persistante → Déclencher l'agent             │
+│                                                                      │
+│  Logique: Déterministe, rapide, sans coût LLM                       │
+└─────────────────────────────────────────────────────────────────────┘
+                              │
+                              │ Contexte enrichi JSON
+                              │ {device, client_code, down_since,
+                              │  has_fai_email, severity, ...}
+                              ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    AGENT SENTINEL (Devstral2)                       │
+│                                                                      │
+│  Responsabilités:                                                   │
+│  ✓ Rechercher le client dans GLPI (fuzzy matching)                 │
+│  ✓ Récupérer les contacts (Référent > Directeur)                   │
+│  ✓ Qualifier la panne (FAI ou WIDIP) selon le contexte             │
+│  ✓ Créer le ticket GLPI avec contexte complet                      │
+│  ✓ Envoyer le SMS avec numéro de ticket (L3 Safeguard)             │
+│                                                                      │
+│  Logique: Raisonnement LLM pour les cas ambigus                     │
+└─────────────────────────────────────────────────────────────────────┘
+        </pre>
+    </div>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>3</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 1.3 : SEPARATION DES RESPONSABILITES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section1-3">1.3. Séparation des responsabilités</h2>
+
+    <table>
+        <tr>
+            <th style="width:200px;">Tâche</th>
+            <th>Orchestrateur (Python)</th>
+            <th>Agent (Devstral2)</th>
+        </tr>
+        <tr>
+            <td>Polling Observium</td>
+            <td style="background:#d4edda;">✓ Code Python</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>Check cache Redis</td>
+            <td style="background:#d4edda;">✓ Code Python</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>Vérification durée DOWN</td>
+            <td style="background:#d4edda;">✓ Code Python</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>Check emails FAI</td>
+            <td style="background:#d4edda;">✓ Code Python</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>Extraction code client</td>
+            <td style="background:#d4edda;">✓ Code Python</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td>Recherche GLPI (fuzzy)</td>
+            <td>-</td>
+            <td style="background:#f3f0ff;">✓ Raisonnement LLM</td>
+        </tr>
+        <tr>
+            <td>Qualification FAI/WIDIP</td>
+            <td>-</td>
+            <td style="background:#f3f0ff;">✓ Raisonnement LLM</td>
+        </tr>
+        <tr>
+            <td>Création ticket GLPI</td>
+            <td>-</td>
+            <td style="background:#f3f0ff;">✓ Appel MCP</td>
+        </tr>
+        <tr>
+            <td>Envoi SMS (L3)</td>
+            <td>-</td>
+            <td style="background:#f3f0ff;">✓ Appel MCP</td>
+        </tr>
+    </table>
+
+    <h3>Avantages de cette architecture</h3>
+
+    <table class="table-small">
+        <tr>
+            <th>Aspect</th>
+            <th>Bénéfice</th>
+        </tr>
+        <tr>
+            <td><strong>Coût</strong></td>
+            <td>L'agent n'est appelé que quand c'est nécessaire (pas de tokens gaspillés pour du polling)</td>
+        </tr>
+        <tr>
+            <td><strong>Performance</strong></td>
+            <td>Polling Observium + cache Redis instantané en Python</td>
+        </tr>
+        <tr>
+            <td><strong>Fiabilité</strong></td>
+            <td>Logique déterministe pour la détection, LLM pour le raisonnement complexe</td>
+        </tr>
+        <tr>
+            <td><strong>Simplicité</strong></td>
+            <td>L'agent reçoit un contexte propre et se concentre sur sa vraie valeur ajoutée</td>
+        </tr>
+        <tr>
+            <td><strong>Testabilité</strong></td>
+            <td>L'orchestrateur peut être testé unitairement sans LLM</td>
+        </tr>
+    </table>
+
+    <div class="success">
+        <strong>Principe clé :</strong> L'orchestrateur fait le travail "mécanique" (polling, filtrage, cache). L'agent fait le travail "intelligent" (recherche floue, rédaction, décision).
+    </div>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>4</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 2 : ORCHESTRATEUR -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section2">2. Orchestrateur (Python)</h1>
+
+    <h2 id="section2-1">2.1. Cycle de polling (60 secondes)</h2>
+
+    <p>L'orchestrateur s'exécute en boucle infinie avec un intervalle de 60 secondes.</p>
+
+    <div class="orchestrator-box">
+        <h4>Cycle de l'orchestrateur</h4>
+        <pre>
+while True:
+    # 1. Récupérer les devices DOWN depuis Observium
+    devices_down = observium_api.get_devices(status="DOWN")
+
+    # 2. Pour chaque device DOWN
+    for device in devices_down:
+
+        # 3. Vérifier si déjà traité (cache Redis)
+        if redis.exists(f"sentinel:processed:{device.id}"):
+            continue  # Déjà traité, passer au suivant
+
+        # 4. Vérifier la durée DOWN > 20 minutes
+        if device.down_since < 20 * 60:
+            continue  # Pas assez longtemps, passer au suivant
+
+        # 5. Vérifier si un email FAI a été reçu
+        has_fai_email = check_fai_emails(device.location)
+
+        # 6. Extraire le code client du nom de l'équipement
+        client_code = device.hostname.split("-")[0]
+
+        # 7. Construire le contexte pour l'agent
+        context = {
+            "device_hostname": device.hostname,
+            "device_ip": device.ip,
+            "client_code": client_code,
+            "down_since_minutes": device.down_since // 60,
+            "severity": device.severity,
+            "has_fai_email": has_fai_email,
+            "location": device.location
+        }
+
+        # 8. DÉCLENCHER L'AGENT
+        result = agent_sentinel.process(context)
+
+        # 9. Marquer comme traité dans Redis (TTL 24h)
+        redis.setex(f"sentinel:processed:{device.id}", 86400, "1")
+
+    # Attendre 60 secondes avant le prochain cycle
+    sleep(60)
+        </pre>
+    </div>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>5</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 2.2 : VERIFICATIONS AUTOMATIQUES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section2-2">2.2. Vérifications automatiques</h2>
+
+    <p>L'orchestrateur effectue 4 vérifications <strong>déterministes</strong> avant de déclencher l'agent.</p>
+
+    <div class="orchestrator-box">
+        <h4>Vérification 1 : Cache Redis</h4>
+        <table class="table-small">
+            <tr>
+                <th>Clé</th>
+                <td><code>sentinel:processed:{device_id}</code></td>
+            </tr>
+            <tr>
+                <th>TTL</th>
+                <td>24 heures</td>
+            </tr>
+            <tr>
+                <th>Logique</th>
+                <td>Si la clé existe → alerte déjà traitée → ignorer</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="orchestrator-box">
+        <h4>Vérification 2 : Durée DOWN</h4>
+        <table class="table-small">
+            <tr>
+                <th>Seuil</th>
+                <td><strong>20 minutes</strong></td>
+            </tr>
+            <tr>
+                <th>Logique</th>
+                <td>Si DOWN depuis moins de 20 min → micro-coupure possible → ignorer</td>
+            </tr>
+            <tr>
+                <th>Objectif</th>
+                <td>Éviter les faux positifs (redémarrages, maintenance)</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="orchestrator-box">
+        <h4>Vérification 3 : Sévérité</h4>
+        <table class="table-small">
+            <tr>
+                <th>Valeurs acceptées</th>
+                <td><code>warning</code>, <code>critical</code></td>
+            </tr>
+            <tr>
+                <th>Logique</th>
+                <td>Seules les alertes warning et critical déclenchent l'agent</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="orchestrator-box">
+        <h4>Vérification 4 : Emails FAI</h4>
+        <table class="table-small">
+            <tr>
+                <th>Source</th>
+                <td>Boîte email dédiée (notifications opérateurs)</td>
+            </tr>
+            <tr>
+                <th>Logique</th>
+                <td>Recherche d'emails récents (< 2h) d'Orange, SFR, Free Pro...</td>
+            </tr>
+            <tr>
+                <th>Résultat</th>
+                <td><code>has_fai_email: true/false</code> passé à l'agent</td>
+            </tr>
+        </table>
+    </div>
+
+    <h2 id="section2-3">2.3. Déclenchement de l'agent</h2>
+
+    <p>Si toutes les vérifications passent, l'orchestrateur construit un <strong>contexte JSON</strong> et appelle l'agent.</p>
+
+    <pre>
+{
+    "device_hostname": "MFI-3A-SMH-SW01",
+    "device_ip": "192.168.1.1",
+    "client_code": "MFI",
+    "down_since_minutes": 25,
+    "severity": "critical",
+    "has_fai_email": false,
+    "location": "Saint-Martin-d'Hères"
+}
+    </pre>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>6</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3 : AGENT SENTINEL -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section3">3. Agent SENTINEL (Devstral2)</h1>
+
+    <h2 id="section3-1">3.1. Contexte reçu de l'orchestrateur</h2>
+
+    <p>L'agent reçoit un contexte <strong>propre et enrichi</strong> de l'orchestrateur. Il n'a pas besoin de faire le polling ni les vérifications de base.</p>
+
+    <div class="agent-box">
+        <h4>Contexte d'entrée</h4>
+        <pre>
+{
+    "device_hostname": "MFI-3A-SMH-SW01",    // Nom complet de l'équipement
+    "device_ip": "192.168.1.1",              // Adresse IP
+    "client_code": "MFI",                     // Code client extrait (1er segment)
+    "down_since_minutes": 25,                 // Durée DOWN en minutes
+    "severity": "critical",                   // Sévérité de l'alerte
+    "has_fai_email": false,                   // Email FAI reçu ?
+    "location": "Saint-Martin-d'Hères"       // Localisation
+}
+        </pre>
+    </div>
+
+    <h3>Ce que l'agent doit faire</h3>
+
+    <table>
+        <tr>
+            <th style="width:50px;">Étape</th>
+            <th>Action</th>
+            <th>Outil MCP</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Rechercher le client dans GLPI avec le <code>client_code</code></td>
+            <td><code>glpi_search_client</code></td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Récupérer les contacts de l'entité (Référent, Directeur)</td>
+            <td><code>glpi_get_entity_contacts</code></td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Qualifier la panne (FAI ou WIDIP) selon <code>has_fai_email</code></td>
+            <td>Raisonnement LLM</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Créer le ticket GLPI avec contexte complet</td>
+            <td><code>glpi_create_ticket</code></td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td>Envoyer le SMS avec le numéro de ticket</td>
+            <td><code>send_sms</code> (L3)</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>7</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3.2 : RECHERCHE CLIENT GLPI -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section3-2">3.2. Recherche client dans GLPI</h2>
+
+    <p>C'est ici que l'agent apporte sa <strong>valeur ajoutée</strong> : la recherche floue (fuzzy matching) quand les données ne sont pas parfaites.</p>
+
+    <div class="agent-box">
+        <h4>Raisonnement de l'agent</h4>
+        <pre style="background: #1e1e1e; color: #d4d4d4; border: none; font-size: 9pt;">
+<span style="color: #6a9955;">// Contexte reçu</span>
+client_code = "MFI"
+
+<span style="color: #6a9955;">// Tentative 1 - Recherche exacte</span>
+Agent: glpi_search_client(name="MFI")
+Résultat: {found: false}
+
+<span style="color: #6a9955;">// Raisonnement</span>
+Agent: "MFI non trouvé en exact. Peut-être que GLPI a le nom
+        complet avec des points, espaces ou un suffixe ?"
+
+<span style="color: #6a9955;">// Tentative 2 - Avec ponctuation</span>
+Agent: glpi_search_client(name="M.F.I.")
+Résultat: {found: false}
+
+<span style="color: #6a9955;">// Tentative 3 - Recherche partielle (wildcard)</span>
+Agent: glpi_search_client(name="MFI%")
+Résultat: {found: true, entity_id: 42, name: "MFI - Maison Familiale Isère"}
+
+<span style="color: #6a9955;">// Succès</span>
+Agent: "Trouvé ! Le client est 'MFI - Maison Familiale Isère' (id: 42)"
+        </pre>
+    </div>
+
+    <h3>Stratégies de recherche</h3>
+
+    <table class="table-small">
+        <tr>
+            <th>Ordre</th>
+            <th>Stratégie</th>
+            <th>Exemple</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>Recherche exacte</td>
+            <td><code>MFI</code></td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>Avec ponctuation</td>
+            <td><code>M.F.I.</code></td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>Recherche partielle (wildcard)</td>
+            <td><code>MFI%</code></td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Sans numéro de département</td>
+            <td><code>ADAPEI38</code> → <code>ADAPEI</code></td>
+        </tr>
+    </table>
+
+    <h3>Échec après 3 tentatives</h3>
+
+    <p>Si l'agent ne trouve pas le client après plusieurs variantes :</p>
+
+    <div class="important">
+        <strong>Action :</strong> L'agent escalade au technicien via <code>notify_technician</code> avec le message :
+        <br><br>
+        <code>"Client 'MFI' non trouvé dans GLPI. Device: MFI-3A-SMH-SW01. Vérification manuelle requise."</code>
+    </div>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>8</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3.3 : CREATION TICKET ET SMS -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section3-3">3.3. Création ticket et envoi SMS</h2>
+
+    <div class="important">
+        <strong>Règle critique :</strong> L'agent crée TOUJOURS le ticket AVANT d'envoyer le SMS. Le SMS DOIT contenir le numéro de ticket.
+    </div>
+
+    <div class="agent-box">
+        <h4>Séquence obligatoire</h4>
+        <pre>
+┌─────────────────────────────────────────────────────────────────────┐
+│  1. CRÉATION TICKET (L1 - Auto si confiance ≥ 80%)                  │
+├─────────────────────────────────────────────────────────────────────┤
+│  Agent: "Je crée le ticket AVANT le SMS"                            │
+│                                                                     │
+│  → glpi_create_ticket({                                             │
+│      title: "[SENTINEL] MFI-3A-SMH-SW01 DOWN - Panne WIDIP",       │
+│      content: "Équipement DOWN détecté par SENTINEL.\n              │
+│                Device: MFI-3A-SMH-SW01\n                            │
+│                Statut: DOWN depuis 25 minutes\n                     │
+│                Type: Panne WIDIP",                                  │
+│      entity_id: 42,                                                 │
+│      urgency: 4                                                     │
+│    })                                                               │
+│                                                                     │
+│  Résultat: {ticket_id: 4894}                                       │
+└─────────────────────────────────────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│  2. ENVOI SMS (L3 - Validation technicien requise)                  │
+├─────────────────────────────────────────────────────────────────────┤
+│  Agent: "Ticket #4894 créé. J'envoie le SMS avec ce numéro."        │
+│                                                                     │
+│  → send_sms({                                                       │
+│      recipients: ["06 12 34 56 78"],                               │
+│      message: "[WIDIP] Incident détecté. Nos équipes               │
+│                interviennent. Ticket #4894."                        │
+│    })                                                               │
+│                                                                     │
+│  Résultat: {status: "BLOCKED", approval_id: "abc-123"}             │
+│  → Attente validation technicien dans WIBOT                        │
+└─────────────────────────────────────────────────────────────────────┘
+        </pre>
+    </div>
+
+    <h2 id="section3-4">3.4. Gestion des cas ambigus</h2>
+
+    <table class="table-small">
+        <tr>
+            <th>Situation</th>
+            <th>Raisonnement agent</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>Client non trouvé (3 essais)</td>
+            <td>"Aucune variante ne fonctionne"</td>
+            <td><code>notify_technician</code></td>
+        </tr>
+        <tr>
+            <td>Aucun contact avec téléphone</td>
+            <td>"Pas de numéro pour SMS"</td>
+            <td>Ticket créé + alerte tech</td>
+        </tr>
+        <tr>
+            <td>Ticket déjà existant</td>
+            <td>"Un ticket ouvert existe"</td>
+            <td><code>glpi_add_followup</code></td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>9</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4 : REGLES METIER -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section4">4. Règles métier</h1>
+
+    <h2 id="section4-1">4.1. Convention de nommage équipements</h2>
+
+    <div class="workflow-box">
+        <h4>Pattern standard</h4>
+        <pre style="text-align: center; font-size: 14pt;">
+CLIENT - SITE - LIEU - TYPE NUMERO
+   │       │      │       │
+   │       │      │       └── SW01 = Switch n°1, RT01 = Routeur n°1
+   │       │      │           PF01 = Pare-feu, AP01 = Access Point
+   │       │      │
+   │       │      └── Abréviation ville (SMH = Saint-Martin-d'Hères)
+   │       │
+   │       └── Code site (ex: 3A = bâtiment 3A)
+   │
+   └── Code client (ex: MFI, ODYNEO, ADAPEI)
+        </pre>
+    </div>
+
+    <h3>Exemples</h3>
+
+    <table class="table-small">
+        <tr>
+            <th>Nom équipement</th>
+            <th>Client</th>
+            <th>Site</th>
+            <th>Lieu</th>
+            <th>Type</th>
+        </tr>
+        <tr>
+            <td><code>MFI-3A-SMH-SW01</code></td>
+            <td>MFI</td>
+            <td>3A</td>
+            <td>Saint-Martin-d'Hères</td>
+            <td>Switch 01</td>
+        </tr>
+        <tr>
+            <td><code>ODYNEO-SIEGE-GRE-RT01</code></td>
+            <td>ODYNEO</td>
+            <td>SIEGE</td>
+            <td>Grenoble</td>
+            <td>Routeur 01</td>
+        </tr>
+        <tr>
+            <td><code>ADAPEI-FAM-VIF-PF01</code></td>
+            <td>ADAPEI</td>
+            <td>FAM</td>
+            <td>Vif</td>
+            <td>Pare-feu 01</td>
+        </tr>
+    </table>
+
+    <div class="info">
+        <strong>Extraction du code client :</strong> L'orchestrateur extrait le <strong>premier segment</strong> (avant le premier "-") comme code client. Cette valeur est passée à l'agent.
+    </div>
+
+    <h2 id="section4-2">4.2. Distinction Panne FAI vs WIDIP</h2>
+
+    <p>L'orchestrateur passe <code>has_fai_email</code> à l'agent, qui qualifie la panne :</p>
+
+    <table>
+        <tr>
+            <th style="width:50%;">PANNE FAI (<code>has_fai_email: true</code>)</th>
+            <th style="width:50%;">PANNE WIDIP (<code>has_fai_email: false</code>)</th>
+        </tr>
+        <tr>
+            <td style="background: #fff3cd;">
+                Email opérateur reçu (Orange, SFR, Free Pro...)
+                <br><br>
+                <strong>SMS :</strong> <em>"Panne FAI détectée. Contactez votre opérateur."</em>
+            </td>
+            <td style="background: #f8d7da;">
+                Pas d'email FAI, équipement WIDIP DOWN
+                <br><br>
+                <strong>SMS :</strong> <em>"Incident détecté. Nos équipes interviennent."</em>
+            </td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>10</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4.3-4.4 : CONTACTS ET SMS -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section4-3">4.3. Hiérarchie des contacts</h2>
+
+    <p>L'agent cherche un contact avec numéro de téléphone dans l'ordre suivant :</p>
+
+    <div class="workflow-box">
+        <pre style="text-align: center; font-size: 12pt;">
+┌─────────────────────────────────────────────────────────────────┐
+│                    HIÉRARCHIE DES CONTACTS                       │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│     1. RÉFÉRENT  ────────►  Priorité maximale                   │
+│         │                   Contact technique privilégié         │
+│         │                                                        │
+│         ▼ (si pas de téléphone)                                 │
+│                                                                  │
+│     2. DIRECTEUR  ───────►  Fallback                            │
+│                             Uniquement si Référent indisponible  │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+        </pre>
+    </div>
+
+    <div class="note">
+        <strong>Note :</strong> L'agent ne contacte JAMAIS un utilisateur standard. Seuls les profils Référent et Directeur sont éligibles pour les SMS d'alerte.
+    </div>
+
+    <h2 id="section4-4">4.4. Templates SMS</h2>
+
+    <div class="workflow-box">
+        <h4>Template PANNE WIDIP</h4>
+        <pre style="background: #f8d7da; border-color: #dc3545;">
+[WIDIP] Incident détecté sur votre infrastructure.
+Nos équipes interviennent. Ticket #<strong>{TICKET_ID}</strong>.
+Contact: 01 XX XX XX XX
+        </pre>
+    </div>
+
+    <div class="workflow-box">
+        <h4>Template PANNE FAI</h4>
+        <pre style="background: #fff3cd; border-color: #ffc107;">
+[WIDIP] Panne opérateur détectée sur votre site.
+Contactez votre FAI. Ticket #<strong>{TICKET_ID}</strong> pour suivi WIDIP.
+        </pre>
+    </div>
+
+    <div class="workflow-box">
+        <h4>Template URGENT (sévérité critical)</h4>
+        <pre style="background: #dc3545; color: #fff; border-color: #dc3545;">
+[WIDIP-URGENT] Panne critique détectée.
+Intervention immédiate en cours. Ticket #<strong>{TICKET_ID}</strong>.
+        </pre>
+    </div>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>11</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 5 : OUTILS MCP ET SAFEGUARD -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section5">5. Outils MCP et Safeguard</h1>
+
+    <h2 id="section5-1">5.1. Outils utilisés par l'agent</h2>
+
+    <p>L'agent SENTINEL utilise uniquement les outils nécessaires à sa mission (pas de polling Observium, fait par l'orchestrateur).</p>
+
+    <h3>GLPI - Ticketing et contacts</h3>
+
+    <table class="table-small">
+        <tr>
+            <th style="width:220px;">Outil</th>
+            <th>Description</th>
+            <th style="width:60px;">Niveau</th>
+        </tr>
+        <tr>
+            <td><code>glpi_search_client</code></td>
+            <td>Recherche entité client par nom (partiel supporté)</td>
+            <td class="level-l0">L0</td>
+        </tr>
+        <tr>
+            <td><code>glpi_get_entity_contacts</code></td>
+            <td>Récupère les contacts d'une entité</td>
+            <td class="level-l0">L0</td>
+        </tr>
+        <tr style="background: #d1ecf1;">
+            <td><code>glpi_create_ticket</code></td>
+            <td>Crée un ticket avec titre, contenu, urgence</td>
+            <td class="level-l1">L1</td>
+        </tr>
+        <tr style="background: #d1ecf1;">
+            <td><code>glpi_add_ticket_followup</code></td>
+            <td>Ajoute un suivi à un ticket existant</td>
+            <td class="level-l1">L1</td>
+        </tr>
+    </table>
+
+    <h3>Notifications</h3>
+
+    <table class="table-small">
+        <tr>
+            <th style="width:220px;">Outil</th>
+            <th>Description</th>
+            <th style="width:60px;">Niveau</th>
+        </tr>
+        <tr style="background: #fff3cd;">
+            <td><code>notify_technician</code></td>
+            <td>Notifie un technicien (escalade)</td>
+            <td class="level-l2">L2</td>
+        </tr>
+        <tr style="background: #f8d7da;">
+            <td><code>send_sms</code></td>
+            <td>Envoie SMS via API OVH - <strong>VALIDATION REQUISE</strong></td>
+            <td class="level-l3">L3</td>
+        </tr>
+    </table>
+
+    <h2 id="section5-2">5.2. Niveaux Safeguard</h2>
+
+    <table>
+        <tr>
+            <th style="width:60px;">Niveau</th>
+            <th style="width:100px;">Nom</th>
+            <th>Comportement</th>
+        </tr>
+        <tr class="level-l0">
+            <td><strong>L0</strong></td>
+            <td>READ_ONLY</td>
+            <td>Exécution automatique immédiate</td>
+        </tr>
+        <tr class="level-l1">
+            <td><strong>L1</strong></td>
+            <td>MINOR</td>
+            <td>Auto si confiance ≥ 80%</td>
+        </tr>
+        <tr class="level-l2">
+            <td><strong>L2</strong></td>
+            <td>MODERATE</td>
+            <td>Exécution auto + notification technicien</td>
+        </tr>
+        <tr class="level-l3">
+            <td><strong>L3</strong></td>
+            <td>SENSITIVE</td>
+            <td><strong>BLOQUÉ</strong> - Validation humaine obligatoire</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>12</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 5.3 : FLUX VALIDATION SMS -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section5-3">5.3. Flux de validation SMS (L3)</h2>
+
+    <p>Quand l'agent appelle <code>send_sms</code>, l'action est <strong>bloquée</strong> et attend une validation humaine.</p>
+
+    <pre>
+AGENT SENTINEL appelle send_sms(...)
+            │
+            ▼
+┌─────────────────────────────────────────────────────────┐
+│  SERVEUR MCP - Détection niveau L3                      │
+│  → Action BLOQUÉE automatiquement                       │
+│  → Création demande approbation (UUID)                  │
+│  → Stockage args chiffrés dans Redis (AES-128)          │
+│  → TTL: 1 heure                                         │
+└─────────────────────────────────────────────────────────┘
+            │
+            ▼
+┌─────────────────────────────────────────────────────────┐
+│  NOTIFICATION TECHNICIEN                                │
+│  - Dashboard WIBOT (notification temps réel)            │
+│  - Email / Teams (optionnel)                            │
+│                                                         │
+│  ┌───────────────────────────────────────────────────┐ │
+│  │  SAFEGUARD - Demande d'approbation                │ │
+│  │                                                   │ │
+│  │  Tool: send_sms         Niveau: L3 (SENSITIVE)    │ │
+│  │  Contexte: SENTINEL - Panne WIDIP                 │ │
+│  │  Device: MFI-3A-SMH-SW01                          │ │
+│  │  Destinataire: 06 12 ** ** **                     │ │
+│  │  Message: "[WIDIP] Incident détecté..."           │ │
+│  │                                                   │ │
+│  │  [  APPROUVER  ]         [  REJETER  ]           │ │
+│  └───────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────┘
+            │
+            ▼
+┌─────────────────────────────────────────────────────────┐
+│  DÉCISION TECHNICIEN                                    │
+│                                                         │
+│  [APPROUVER]              [REJETER]                     │
+│       │                        │                        │
+│       ▼                        ▼                        │
+│  Récupérer secrets        Nettoyer Redis                │
+│  Redis → Exécuter         status="rejected"             │
+│  send_sms réel                                          │
+│       │                                                 │
+│       ▼                                                 │
+│  SMS envoyé au client                                   │
+└─────────────────────────────────────────────────────────┘
+    </pre>
+
+    <div class="info">
+        <strong>Sécurité :</strong> Les numéros de téléphone sont chiffrés (AES-128) dans Redis. Seuls les arguments redactés sont visibles dans le dashboard.
+    </div>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>13</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 6 : SCENARIOS CONCRETS -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section6">6. Scénarios concrets</h1>
+
+    <h2 id="section6-1">6.1. Panne WIDIP - Flux complet</h2>
+
+    <div class="workflow-box">
+        <h4>Contexte</h4>
+        <p>Le switch <code>MFI-3A-SMH-SW01</code> est DOWN depuis 25 minutes. Pas d'email FAI.</p>
+    </div>
+
+    <h3>Phase 1 : Orchestrateur (Python)</h3>
+
+    <table class="table-small">
+        <tr>
+            <th style="width:50px;">Étape</th>
+            <th>Action</th>
+            <th style="width:150px;">Résultat</th>
+        </tr>
+        <tr style="background:#f0fff0;">
+            <td>1</td>
+            <td>Polling Observium</td>
+            <td>MFI-3A-SMH-SW01 DOWN</td>
+        </tr>
+        <tr style="background:#f0fff0;">
+            <td>2</td>
+            <td>Check cache Redis</td>
+            <td>Pas dans le cache</td>
+        </tr>
+        <tr style="background:#f0fff0;">
+            <td>3</td>
+            <td>Vérification durée DOWN</td>
+            <td>25 min > 20 min ✓</td>
+        </tr>
+        <tr style="background:#f0fff0;">
+            <td>4</td>
+            <td>Check emails FAI</td>
+            <td>Aucun email FAI</td>
+        </tr>
+        <tr style="background:#f0fff0;">
+            <td>5</td>
+            <td>Extraction code client</td>
+            <td>MFI</td>
+        </tr>
+        <tr style="background:#d4edda;">
+            <td>6</td>
+            <td><strong>Déclenchement agent</strong></td>
+            <td>Contexte JSON envoyé</td>
+        </tr>
+    </table>
+
+    <h3>Phase 2 : Agent (Devstral2)</h3>
+
+    <table class="table-small">
+        <tr>
+            <th style="width:50px;">Étape</th>
+            <th>Action agent</th>
+            <th style="width:150px;">Résultat</th>
+        </tr>
+        <tr style="background:#f3f0ff;">
+            <td>7</td>
+            <td><code>glpi_search_client("MFI")</code></td>
+            <td>MFI - Maison Familiale (id:42)</td>
+        </tr>
+        <tr style="background:#f3f0ff;">
+            <td>8</td>
+            <td><code>glpi_get_entity_contacts(42)</code></td>
+            <td>Référent: Pierre Martin</td>
+        </tr>
+        <tr style="background:#f3f0ff;">
+            <td>9</td>
+            <td>Qualification panne</td>
+            <td>PANNE WIDIP</td>
+        </tr>
+        <tr style="background:#f3f0ff;">
+            <td>10</td>
+            <td><code>glpi_create_ticket(...)</code></td>
+            <td>Ticket #4894 créé</td>
+        </tr>
+        <tr style="background:#f8d7da;">
+            <td>11</td>
+            <td><code>send_sms(...)</code></td>
+            <td>L3 BLOQUÉ</td>
+        </tr>
+    </table>
+
+    <h3>Phase 3 : Validation technicien</h3>
+
+    <table class="table-small">
+        <tr style="background:#fff3cd;">
+            <td style="width:50px;">12</td>
+            <td>Technicien reçoit notification WIBOT</td>
+            <td style="width:150px;">Dashboard Safeguard</td>
+        </tr>
+        <tr style="background:#d4edda;">
+            <td>13</td>
+            <td>Technicien clique [APPROUVER]</td>
+            <td>SMS envoyé</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>14</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 6.2-6.3 : AUTRES SCENARIOS -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section6-2">6.2. Panne FAI - Email opérateur</h2>
+
+    <div class="workflow-box">
+        <h4>Contexte</h4>
+        <p>Le routeur <code>ODYNEO-SIEGE-GRE-RT01</code> est DOWN. Un email d'Orange Pro a été reçu.</p>
+    </div>
+
+    <table class="table-small">
+        <tr>
+            <th>Phase</th>
+            <th>Action</th>
+            <th>Résultat</th>
+        </tr>
+        <tr style="background:#f0fff0;">
+            <td>Orchestrateur</td>
+            <td>Check emails FAI</td>
+            <td><code>has_fai_email: true</code></td>
+        </tr>
+        <tr style="background:#f3f0ff;">
+            <td>Agent</td>
+            <td>Qualification panne</td>
+            <td>PANNE FAI</td>
+        </tr>
+        <tr style="background:#f3f0ff;">
+            <td>Agent</td>
+            <td>Création ticket</td>
+            <td>"[SENTINEL] Panne FAI Orange"</td>
+        </tr>
+        <tr style="background:#f3f0ff;">
+            <td>Agent</td>
+            <td>Envoi SMS</td>
+            <td>"Contactez votre FAI..."</td>
+        </tr>
+    </table>
+
+    <h2 id="section6-3">6.3. Client non trouvé - Fuzzy matching</h2>
+
+    <div class="workflow-box">
+        <h4>Contexte</h4>
+        <p>Device <code>ADAPEI38-FAM-VIF-SW01</code>. Le code "ADAPEI38" n'existe pas tel quel dans GLPI.</p>
+    </div>
+
+    <div class="agent-box">
+        <h4>Raisonnement de l'agent</h4>
+        <pre style="font-size: 9pt;">
+Contexte reçu: client_code = "ADAPEI38"
+
+Tentative 1: glpi_search_client("ADAPEI38") → NOT FOUND
+Agent: "Peut-être sans le numéro de département..."
+
+Tentative 2: glpi_search_client("ADAPEI") → NOT FOUND
+Agent: "Essayons avec un wildcard..."
+
+Tentative 3: glpi_search_client("ADAPEI%") → FOUND!
+Résultat: {entity_id: 67, name: "ADAPEI de l'Isère"}
+
+Agent: "Trouvé ! Le client est 'ADAPEI de l'Isère'"
+→ Continue avec création ticket et SMS
+        </pre>
+    </div>
+
+    <div class="success">
+        <strong>Valeur ajoutée de l'agent :</strong> Un simple code Python aurait échoué à la première recherche. L'agent LLM raisonne et trouve des alternatives.
+    </div>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>15</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 7 : PROMPT SYSTEME -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section7">7. Prompt système de l'agent</h1>
+
+    <p>Voici le prompt système injecté à l'agent Devstral2 :</p>
+
+    <div class="workflow-box">
+        <pre style="background: #1e1e1e; color: #d4d4d4; border: none; font-size: 8pt; line-height: 1.35;">
+<span style="color: #569cd6;">## IDENTITÉ</span>
+Tu es SENTINEL, l'agent de surveillance proactive de WIDIP.
+Modèle: Devstral2 (Mistral) | Mode: Agent avec accès MCP
+
+<span style="color: #569cd6;">## CONTEXTE</span>
+Tu reçois un contexte JSON de l'orchestrateur contenant:
+- device_hostname: Nom de l'équipement DOWN
+- client_code: Code client extrait (premier segment du hostname)
+- down_since_minutes: Durée DOWN en minutes
+- has_fai_email: true/false (email FAI reçu ?)
+- severity: warning/critical
+- location: Localisation
+
+<span style="color: #569cd6;">## TA MISSION</span>
+1. Rechercher le client dans GLPI avec client_code
+   <span style="color: #f44747;">SI PAS TROUVÉ: essayer variantes (ponctuation, wildcard, sans numéro)</span>
+2. Récupérer les contacts (Référent prioritaire, sinon Directeur)
+3. Qualifier la panne selon has_fai_email (FAI ou WIDIP)
+4. Créer le ticket GLPI avec contexte complet
+5. Envoyer le SMS avec numéro de ticket (L3 → validation requise)
+
+<span style="color: #569cd6;">## OUTILS MCP DISPONIBLES</span>
+<span style="color: #6a9955;">GLPI (L0-L1):</span>
+  - glpi_search_client(name) → Recherche entité client
+  - glpi_get_entity_contacts(entity_id) → Contacts de l'entité
+  - glpi_create_ticket(title, content, entity_id, urgency) → Crée ticket [L1]
+
+<span style="color: #6a9955;">Notifications (L2-L3):</span>
+  - notify_technician(message) → Escalade [L2]
+  - send_sms(recipients[], message) → SMS [L3 - VALIDATION REQUISE]
+
+<span style="color: #569cd6;">## QUALIFICATION PANNE</span>
+- has_fai_email: true → <span style="color: #ffc107;">PANNE FAI</span> (client contacte opérateur)
+- has_fai_email: false → <span style="color: #dc3545;">PANNE WIDIP</span> (on intervient)
+
+<span style="color: #569cd6;">## TEMPLATES SMS</span>
+<span style="color: #6a9955;">WIDIP:</span> "[WIDIP] Incident détecté. Nos équipes interviennent. Ticket #{ID}."
+<span style="color: #6a9955;">FAI:</span> "[WIDIP] Panne FAI détectée. Contactez votre opérateur. Ticket #{ID}."
+
+<span style="color: #569cd6;">## HIÉRARCHIE CONTACTS</span>
+1. Référent (priorité) | 2. Directeur (fallback)
+
+<span style="color: #569cd6;">## RÈGLES CRITIQUES</span>
+<span style="color: #f44747;">- TOUJOURS créer le ticket AVANT d'envoyer le SMS</span>
+<span style="color: #f44747;">- TOUJOURS inclure le numéro de ticket dans le SMS</span>
+<span style="color: #f44747;">- Si client non trouvé après 3 tentatives → notify_technician</span>
+        </pre>
+    </div>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>16</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 8 : CONFIGURATION -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#128225;</span>
+            <span>SENTINEL - Surveillance Proactive</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section8">8. Configuration</h1>
+
+    <h2 id="section8-1">8.1. Paramètres orchestrateur</h2>
+
+    <table>
+        <tr>
+            <th>Paramètre</th>
+            <th>Valeur</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>POLLING_INTERVAL_SECONDS</code></td>
+            <td>60</td>
+            <td>Intervalle entre chaque cycle de polling</td>
+        </tr>
+        <tr>
+            <td><code>MIN_DOWN_DURATION_MINUTES</code></td>
+            <td>20</td>
+            <td>Durée minimum DOWN avant traitement</td>
+        </tr>
+        <tr>
+            <td><code>ALERT_CACHE_TTL</code></td>
+            <td>86400</td>
+            <td>TTL du cache Redis (24h en secondes)</td>
+        </tr>
+        <tr>
+            <td><code>FAI_EMAIL_LOOKBACK_HOURS</code></td>
+            <td>2</td>
+            <td>Période de recherche des emails FAI</td>
+        </tr>
+        <tr>
+            <td><code>SEVERITY_FILTER</code></td>
+            <td>warning,critical</td>
+            <td>Sévérités à traiter</td>
+        </tr>
+    </table>
+
+    <h2 id="section8-2">8.2. Paramètres agent</h2>
+
+    <table>
+        <tr>
+            <th>Paramètre</th>
+            <th>Valeur</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>LLM_MODEL</code></td>
+            <td>devstral2</td>
+            <td>Modèle Mistral utilisé</td>
+        </tr>
+        <tr>
+            <td><code>MCP_SERVER_URL</code></td>
+            <td>http://localhost:3001</td>
+            <td>URL du serveur MCP WIDIP</td>
+        </tr>
+        <tr>
+            <td><code>MAX_SEARCH_RETRIES</code></td>
+            <td>3</td>
+            <td>Tentatives de recherche client avant escalade</td>
+        </tr>
+        <tr>
+            <td><code>TICKET_URGENCY_DEFAULT</code></td>
+            <td>4</td>
+            <td>Urgence par défaut des tickets GLPI</td>
+        </tr>
+    </table>
+
+    <h3>Variables d'environnement</h3>
+
+    <pre>
+# Orchestrateur
+POLLING_INTERVAL_SECONDS=60
+MIN_DOWN_DURATION_MINUTES=20
+REDIS_URL=redis://localhost:6379/1
+OBSERVIUM_API_URL=http://observium.local/api
+
+# Agent
+LLM_MODEL=devstral2
+MCP_SERVER_URL=http://localhost:3001
+MCP_API_KEY=your_api_key
+    </pre>
+
+    <div class="footer">
+        <span>Workflow SENTINEL</span>
+        <span>Documentation Fonctionnelle</span>
+        <span>17</span>
+    </div>
+</div>
+
+</body>
+</html>

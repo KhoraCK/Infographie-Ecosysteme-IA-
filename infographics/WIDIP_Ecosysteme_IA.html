@@ -1,0 +1,2629 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIDIP - Écosystème IA Support</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+/* ============================================
+   VARIABLES & RESET
+   ============================================ */
+:root {
+    --primary: #2563eb;
+    --primary-light: #3b82f6;
+    --primary-glow: rgba(37, 99, 235, 0.4);
+    --accent: #10b981;
+    --accent-light: #34d399;
+    --sentinel: #0ea5e9;
+    --enrichisseur: #8b5cf6;
+    --safeguard: #10b981;
+    --knowledge: #f59e0b;
+    --red: #ef4444;
+    --dark: #0a0a0f;
+    --dark-100: #0f172a;
+    --gray: #64748b;
+    --gray-light: #94a3b8;
+    --gray-lighter: #cbd5e1;
+    --white: #ffffff;
+    --font-main: 'Inter', -apple-system, sans-serif;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 30px;
+    --radius-full: 9999px;
+    --transition-base: 0.3s ease;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: var(--font-main);
+    background: var(--dark);
+    color: var(--white);
+    line-height: 1.6;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 30px var(--primary-glow); }
+    50% { box-shadow: 0 0 50px var(--primary-glow); }
+}
+
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    z-index: 1000;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    width: 0%;
+    transition: width 0.2s;
+}
+
+.nav {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.nav-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base);
+}
+
+.nav-btn:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.nav-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.slide-counter {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    font-size: 0.9rem;
+    color: var(--gray-light);
+    z-index: 1000;
+    padding: 10px 18px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-full);
+}
+
+.slide-counter .current { color: var(--white); font-weight: 700; }
+
+/* ============================================
+   SLIDES
+   ============================================ */
+.slides-container {
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    height: 100vh;
+    scrollbar-width: none;
+}
+
+.slides-container::-webkit-scrollbar { display: none; }
+
+.slide {
+    min-height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 60px;
+    position: relative;
+}
+
+.slide-content {
+    max-width: 1200px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+.slide-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 0%, transparent 70%);
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+.section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(37, 99, 235, 0.15);
+    border: 1px solid rgba(37, 99, 235, 0.3);
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary-light);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1.5rem;
+}
+
+.section-label.sentinel { background: rgba(14,165,233,0.15); border-color: rgba(14,165,233,0.3); color: var(--sentinel); }
+.section-label.enrichisseur { background: rgba(139,92,246,0.15); border-color: rgba(139,92,246,0.3); color: var(--enrichisseur); }
+.section-label.safeguard { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.3); color: var(--safeguard); }
+.section-label.knowledge { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.3); color: var(--knowledge); }
+
+.section-title {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+}
+
+.section-title.centered { text-align: center; }
+
+.section-subtitle {
+    font-size: 1.2rem;
+    color: var(--gray-light);
+    max-width: 600px;
+}
+
+.section-subtitle.centered { text-align: center; margin: 0 auto; }
+
+.highlight { color: var(--primary-light); }
+
+/* ============================================
+   ICONS SVG
+   ============================================ */
+.icon {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    fill: none;
+}
+
+.icon-lg { width: 32px; height: 32px; }
+.icon-xl { width: 48px; height: 48px; }
+
+.icon-box {
+    width: 70px;
+    height: 70px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary), #7c3aed);
+}
+
+.icon-box.sentinel { background: linear-gradient(135deg, var(--sentinel), var(--primary)); }
+.icon-box.enrichisseur { background: linear-gradient(135deg, var(--enrichisseur), #ec4899); }
+.icon-box.safeguard { background: linear-gradient(135deg, var(--safeguard), #14b8a6); }
+.icon-box.knowledge { background: linear-gradient(135deg, var(--knowledge), var(--red)); }
+
+.icon-box svg { width: 32px; height: 32px; color: white; }
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    transition: all var(--transition-base);
+}
+
+.card:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.12);
+    transform: translateY(-4px);
+}
+
+.card-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.card-text {
+    color: var(--gray-light);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* ============================================
+   GRIDS
+   ============================================ */
+.grid { display: grid; gap: 1.5rem; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 900px) {
+    .slide { padding: 60px 30px; }
+    .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+    .slide { padding: 40px 20px; }
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<nav class="nav">
+    <button class="nav-btn" id="prevBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 15l-6-6-6 6"/>
+        </svg>
+    </button>
+    <button class="nav-btn" id="nextBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9l6 6 6-6"/>
+        </svg>
+    </button>
+</nav>
+
+<div class="slide-counter">
+    <span class="current" id="currentSlide">1</span>
+    <span> / </span>
+    <span id="totalSlides">17</span>
+</div>
+
+<div class="slides-container" id="slidesContainer">
+
+<!-- SLIDE 1: HERO -->
+<section class="slide slide-hero" id="slide-1">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="hero-content">
+            <div class="hero-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <!-- Tête de robot -->
+                    <rect x="4" y="6" width="16" height="12" rx="2"/>
+                    <!-- Yeux -->
+                    <circle cx="9" cy="12" r="1.5" fill="currentColor"/>
+                    <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+                    <!-- Antenne -->
+                    <path d="M12 6V3"/>
+                    <circle cx="12" cy="2" r="1" fill="currentColor"/>
+                    <!-- Oreilles / capteurs -->
+                    <path d="M4 10H2"/>
+                    <path d="M4 14H2"/>
+                    <path d="M20 10h2"/>
+                    <path d="M20 14h2"/>
+                </svg>
+            </div>
+            <div class="hero-badge">Plateforme IA Support</div>
+            <h1 class="hero-title">WIDIP IA</h1>
+            <p class="hero-subtitle">L'intelligence artificielle au service de votre efficacité</p>
+            <button class="btn-primary" onclick="nextSlide()">
+                Découvrir
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:20px;height:20px;margin-left:8px;">
+                    <path d="M6 9l6 6 6-6"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-hero { background: var(--dark); }
+.slide-hero .slide-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 20%, rgba(37,99,235,0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(139,92,246,0.08) 0%, transparent 50%);
+}
+
+.hero-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hero-logo {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, var(--primary), #7c3aed);
+    border-radius: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+    animation: float 4s ease-in-out infinite, glow 3s ease-in-out infinite;
+}
+
+.hero-logo svg {
+    width: 60px;
+    height: 60px;
+    color: white;
+}
+
+.hero-badge {
+    padding: 10px 20px;
+    background: rgba(16,185,129,0.15);
+    border: 1px solid rgba(16,185,129,0.3);
+    border-radius: var(--radius-full);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-light);
+    margin-bottom: 1.5rem;
+}
+
+.hero-title {
+    font-size: clamp(4rem, 10vw, 8rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    background: linear-gradient(180deg, #fff 0%, #64748b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+    font-size: 1.4rem;
+    color: var(--gray-light);
+    margin-bottom: 2.5rem;
+    max-width: 500px;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, var(--primary), #7c3aed);
+    border: none;
+    border-radius: var(--radius-full);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px var(--primary-glow);
+}
+</style>
+
+<!-- SLIDE 2: LE CONSTAT -->
+<section class="slide slide-problem" id="slide-2">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                Le constat
+            </span>
+            <h2 class="section-title centered">Les défis du quotidien</h2>
+        </div>
+
+        <div class="grid grid-3 problem-grid">
+            <div class="card problem-card animate-on-scroll delay-1">
+                <div class="icon-box" style="background: linear-gradient(135deg, var(--red), #f97316); margin-bottom: 1.5rem;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                </div>
+                <h3 class="card-title" style="color: #f87171;">Le client appelle en premier</h3>
+                <p class="card-text">Découvrir un incident au téléphone avec un client mécontent n'est jamais idéal.</p>
+            </div>
+
+            <div class="card problem-card animate-on-scroll delay-2">
+                <div class="icon-box" style="background: linear-gradient(135deg, var(--red), #f97316); margin-bottom: 1.5rem;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                    </svg>
+                </div>
+                <h3 class="card-title" style="color: #f87171;">Information dispersée</h3>
+                <p class="card-text">Mails, fichiers, tickets, mémoire des collègues... L'info est partout et nulle part.</p>
+            </div>
+
+            <div class="card problem-card animate-on-scroll delay-3">
+                <div class="icon-box" style="background: linear-gradient(135deg, var(--red), #f97316); margin-bottom: 1.5rem;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                <h3 class="card-title" style="color: #f87171;">Connaissances volatiles</h3>
+                <p class="card-text">Un collègue part, son expertise aussi. On réinvente la roue régulièrement.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-problem { background: linear-gradient(180deg, var(--dark-100) 0%, var(--dark) 100%); }
+.text-center { text-align: center; margin-bottom: 3rem; }
+.problem-card { border-left: 3px solid var(--red); }
+.problem-card:hover { border-color: #f87171; }
+</style>
+
+<!-- SLIDE 3: LA SOLUTION -->
+<section class="slide slide-solution" id="slide-3">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="solution-content animate-on-scroll">
+            <p class="solution-question">Et si vous aviez...</p>
+            <h2 class="solution-answer">
+                Un assistant qui <span class="highlight">répond instantanément</span>,<br>
+                Une surveillance qui <span class="highlight">anticipe les pannes</span>,<br>
+                Une base qui <span class="highlight">capitalise tout</span>
+            </h2>
+            <div class="solution-badge">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                L'écosystème IA WIDIP
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-solution { background: var(--dark); }
+.slide-solution .slide-bg::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 60%);
+}
+
+.solution-content { text-align: center; max-width: 900px; margin: 0 auto; }
+
+.solution-question {
+    font-size: 1.5rem;
+    color: var(--gray-light);
+    margin-bottom: 1.5rem;
+}
+
+.solution-answer {
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 2.5rem;
+}
+
+.solution-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, var(--primary), #7c3aed);
+    border-radius: var(--radius-full);
+    font-size: 1.2rem;
+    font-weight: 700;
+    box-shadow: 0 10px 40px var(--primary-glow);
+}
+</style>
+
+<!-- SLIDE 4: WIBOT OVERVIEW -->
+<section class="slide slide-wibot" id="slide-4">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                WIBOT
+            </span>
+            <h2 class="section-title centered">Votre assistant au quotidien</h2>
+            <p class="section-subtitle centered">Posez une question en langage naturel, obtenez une réponse sourcée.</p>
+        </div>
+
+        <div class="chat-demo animate-on-scroll delay-1">
+            <div class="chat-window">
+                <div class="chat-header">
+                    <div class="chat-dots"><span></span><span></span><span></span></div>
+                    <span class="chat-title">WIBOT</span>
+                </div>
+                <div class="chat-body">
+                    <div class="chat-msg user">
+                        <div class="msg-content">Quel est le VLAN du site Dupont ?</div>
+                    </div>
+                    <div class="chat-msg bot">
+                        <div class="msg-content">
+                            <strong>Site Dupont — VLAN 142</strong><br>
+                            Plage IP : 192.168.142.0/24<br>
+                            Gateway : 192.168.142.1
+                            <span class="msg-source">Source : Fiche client • Mise à jour le 15/01</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="features-row animate-on-scroll delay-2">
+            <div class="feature-item">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                <span>Réponse instantanée</span>
+            </div>
+            <div class="feature-item">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+                <span>Base de connaissances complète</span>
+            </div>
+            <div class="feature-item">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span>Langage naturel</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-wibot { background: linear-gradient(180deg, var(--dark) 0%, var(--dark-100) 100%); }
+
+.chat-demo { max-width: 650px; margin: 0 auto 2.5rem; }
+
+.chat-window {
+    background: #0d1117;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+}
+
+.chat-header {
+    background: linear-gradient(180deg, #21262d 0%, #161b22 100%);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.chat-dots { display: flex; gap: 6px; }
+.chat-dots span {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #3b4048;
+}
+.chat-dots span:nth-child(1) { background: #ff5f56; }
+.chat-dots span:nth-child(2) { background: #ffbd2e; }
+.chat-dots span:nth-child(3) { background: #27ca40; }
+
+.chat-title { flex: 1; text-align: center; color: var(--gray); font-size: 0.9rem; }
+
+.chat-body { padding: 1.5rem; }
+
+.chat-msg { display: flex; margin-bottom: 1rem; }
+.chat-msg.user { justify-content: flex-end; }
+
+.msg-content {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: var(--radius-lg);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.chat-msg.user .msg-content {
+    background: rgba(37,99,235,0.2);
+    border: 1px solid rgba(37,99,235,0.3);
+}
+
+.chat-msg.bot .msg-content {
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.2);
+}
+
+.msg-source {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.8rem;
+    color: var(--gray);
+}
+
+.features-row {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    color: var(--gray-lighter);
+}
+</style>
+
+<!-- SLIDE 5: LES 4 MODES -->
+<section class="slide slide-modes" id="slide-5">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                    <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                </svg>
+                WIBOT
+            </span>
+            <h2 class="section-title centered">4 modes adaptés à vos besoins</h2>
+        </div>
+
+        <div class="grid grid-4 modes-grid">
+            <div class="mode-card animate-on-scroll delay-1" style="--mode-color: #f59e0b;">
+                <div class="mode-icon" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                </div>
+                <h3>Flash</h3>
+                <p class="mode-desc">Questions rapides</p>
+                <p class="mode-example">"C'est quoi le VLAN du client X ?"</p>
+            </div>
+
+            <div class="mode-card animate-on-scroll delay-2" style="--mode-color: #3b82f6;">
+                <div class="mode-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>
+                    </svg>
+                </div>
+                <h3>Pro</h3>
+                <p class="mode-desc">Analyse approfondie</p>
+                <p class="mode-example">"Explique l'architecture réseau de Y"</p>
+            </div>
+
+            <div class="mode-card animate-on-scroll delay-3" style="--mode-color: #8b5cf6;">
+                <div class="mode-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+                    </svg>
+                </div>
+                <h3>Code</h3>
+                <p class="mode-desc">Génération de scripts</p>
+                <p class="mode-example">"Script pour lister les users AD inactifs"</p>
+            </div>
+
+            <div class="mode-card animate-on-scroll delay-4" style="--mode-color: #10b981;">
+                <div class="mode-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/>
+                        <path d="M18 9v1a6 6 0 0 1-12 0V9"/><path d="M12 17v5"/><path d="M8 22h8"/>
+                    </svg>
+                </div>
+                <h3>Agent</h3>
+                <p class="mode-desc">Résolution de problèmes</p>
+                <p class="mode-example">"Pourquoi le client Z a des lenteurs ?"</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-modes { background: linear-gradient(180deg, var(--dark-100) 0%, var(--dark) 100%); }
+
+.modes-grid { margin-top: 1rem; }
+
+.mode-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius-xl);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    transition: all 0.4s ease;
+}
+
+.mode-card:hover {
+    background: rgba(255,255,255,0.04);
+    border-color: var(--mode-color);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.mode-icon {
+    width: 80px; height: 80px;
+    margin: 0 auto 1.5rem;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.mode-icon svg { width: 36px; height: 36px; color: white; }
+
+.mode-card:hover .mode-icon { transform: scale(1.1); }
+
+.mode-card h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 0.5rem; }
+.mode-desc { color: var(--gray-light); font-size: 0.9rem; margin-bottom: 1rem; }
+
+.mode-example {
+    background: rgba(0,0,0,0.3);
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    color: var(--gray);
+    font-style: italic;
+}
+</style>
+
+<!-- SLIDE 6: AVANT/APRÈS -->
+<section class="slide slide-comparison" id="slide-6">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 20V10M12 20V4M6 20v-6"/>
+                </svg>
+                Impact
+            </span>
+            <h2 class="section-title centered">Avant / Après</h2>
+        </div>
+
+        <div class="comparison-container animate-on-scroll delay-1">
+            <div class="comp-box before">
+                <span class="comp-label">Avant</span>
+                <div class="comp-steps">
+                    <div class="comp-step">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                        </svg>
+                        <span>Chercher dans les mails</span>
+                    </div>
+                    <div class="comp-step">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <span>Fouiller les fichiers</span>
+                    </div>
+                    <div class="comp-step">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                        </svg>
+                        <span>Demander aux collègues</span>
+                    </div>
+                </div>
+                <div class="comp-result">15+ minutes</div>
+            </div>
+
+            <div class="comp-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </div>
+
+            <div class="comp-box after">
+                <span class="comp-label">Après</span>
+                <div class="comp-steps">
+                    <div class="comp-step">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        <span>Poser la question</span>
+                    </div>
+                    <div class="comp-step">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>Réponse sourcée</span>
+                    </div>
+                </div>
+                <div class="comp-result">30 secondes</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-comparison { background: var(--dark); }
+
+.comparison-container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: center;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.comp-box {
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    position: relative;
+}
+
+.comp-box.before {
+    background: rgba(239,68,68,0.05);
+    border: 1px solid rgba(239,68,68,0.2);
+}
+
+.comp-box.after {
+    background: rgba(16,185,129,0.05);
+    border: 1px solid rgba(16,185,129,0.2);
+}
+
+.comp-label {
+    position: absolute;
+    top: -12px; left: 24px;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.comp-box.before .comp-label { background: var(--red); }
+.comp-box.after .comp-label { background: var(--accent); }
+
+.comp-steps { margin: 1rem 0 1.5rem; }
+
+.comp-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.95rem;
+    color: var(--gray-lighter);
+}
+
+.comp-step:last-child { border-bottom: none; }
+
+.comp-step .icon { flex-shrink: 0; color: var(--gray); }
+
+.comp-result {
+    text-align: center;
+    padding: 16px;
+    border-radius: var(--radius-lg);
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+.comp-box.before .comp-result { background: rgba(239,68,68,0.15); color: #f87171; }
+.comp-box.after .comp-result { background: rgba(16,185,129,0.15); color: var(--accent-light); }
+
+.comp-arrow {
+    width: 70px; height: 70px;
+    background: linear-gradient(135deg, var(--primary), #7c3aed);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 40px var(--primary-glow);
+}
+
+.comp-arrow svg { width: 28px; height: 28px; color: white; }
+
+@media (max-width: 900px) {
+    .comparison-container { grid-template-columns: 1fr; }
+    .comp-arrow { margin: 0 auto; transform: rotate(90deg); }
+}
+</style>
+
+<!-- SLIDE 7: SENTINEL - AVANT -->
+<section class="slide slide-sentinel-before" id="slide-7">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label sentinel">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+                SENTINEL
+            </span>
+            <h2 class="section-title centered">Sans surveillance proactive</h2>
+        </div>
+
+        <div class="timeline animate-on-scroll delay-1">
+            <div class="timeline-item bad">
+                <div class="timeline-time">8h32</div>
+                <div class="timeline-content">
+                    <div class="timeline-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-text">
+                        <strong>Le client appelle</strong>
+                        <p>"J'ai plus internet depuis ce matin !"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="timeline-item bad">
+                <div class="timeline-time">8h33</div>
+                <div class="timeline-content">
+                    <div class="timeline-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-text">
+                        <strong>Découverte du problème</strong>
+                        <p>Vous vérifiez... et constatez la panne</p>
+                    </div>
+                </div>
+            </div>
+            <div class="timeline-item bad">
+                <div class="timeline-time">8h45</div>
+                <div class="timeline-content">
+                    <div class="timeline-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-text">
+                        <strong>Résolution</strong>
+                        <p>Diagnostic, escalade... Le client attend</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-box bad animate-on-scroll delay-2">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span>Mode réactif : le client subit, vous subissez</span>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-sentinel-before { background: linear-gradient(180deg, var(--dark) 0%, var(--dark-100) 100%); }
+
+.timeline {
+    max-width: 600px;
+    margin: 0 auto 2rem;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    background: rgba(255,255,255,0.02);
+    border-radius: var(--radius-xl);
+    border-left: 3px solid transparent;
+    transition: all var(--transition-base);
+}
+
+.timeline-item.bad { border-left-color: var(--red); }
+.timeline-item.good { border-left-color: var(--sentinel); }
+
+.timeline-item:hover { background: rgba(255,255,255,0.04); transform: translateX(8px); }
+
+.timeline-time {
+    min-width: 60px;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+    height: fit-content;
+}
+
+.timeline-item.bad .timeline-time { background: rgba(239,68,68,0.2); color: #f87171; }
+.timeline-item.good .timeline-time { background: rgba(14,165,233,0.2); color: var(--sentinel); }
+
+.timeline-content { display: flex; gap: 1rem; flex: 1; }
+
+.timeline-icon {
+    width: 48px; height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.timeline-item.bad .timeline-icon { background: rgba(239,68,68,0.15); color: #f87171; }
+.timeline-item.good .timeline-icon { background: rgba(14,165,233,0.15); color: var(--sentinel); }
+
+.timeline-icon svg { width: 24px; height: 24px; }
+
+.timeline-text strong { display: block; margin-bottom: 4px; }
+.timeline-text p { color: var(--gray-light); font-size: 0.9rem; }
+
+.result-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 1rem 2rem;
+    border-radius: var(--radius-xl);
+    max-width: 500px;
+    margin: 0 auto;
+    font-size: 1rem;
+}
+
+.result-box.bad { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: #f87171; }
+.result-box.good { background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.2); color: var(--sentinel); }
+</style>
+
+<!-- SLIDE 8: SENTINEL - APRÈS -->
+<section class="slide slide-sentinel-after" id="slide-8">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label sentinel">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+                SENTINEL
+            </span>
+            <h2 class="section-title centered">Avec surveillance proactive</h2>
+        </div>
+
+        <div class="timeline animate-on-scroll delay-1">
+            <div class="timeline-item good">
+                <div class="timeline-time">7h45</div>
+                <div class="timeline-content">
+                    <div class="timeline-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-text">
+                        <strong>Détection automatique</strong>
+                        <p>SENTINEL détecte la panne réseau</p>
+                    </div>
+                </div>
+            </div>
+            <div class="timeline-item good">
+                <div class="timeline-time">7h46</div>
+                <div class="timeline-content">
+                    <div class="timeline-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-text">
+                        <strong>Ticket créé</strong>
+                        <p>Toutes les infos sont documentées</p>
+                    </div>
+                </div>
+            </div>
+            <div class="timeline-item good">
+                <div class="timeline-time">7h47</div>
+                <div class="timeline-content">
+                    <div class="timeline-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-text">
+                        <strong>Client informé par SMS</strong>
+                        <p>"Incident détecté, nos équipes interviennent"</p>
+                    </div>
+                </div>
+            </div>
+            <div class="timeline-item good">
+                <div class="timeline-time">8h32</div>
+                <div class="timeline-content">
+                    <div class="timeline-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-text">
+                        <strong>Client rassuré</strong>
+                        <p>Il savait avant même de s'en apercevoir</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-box good animate-on-scroll delay-2">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Mode proactif : vous anticipez, le client apprécie</span>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-sentinel-after { background: linear-gradient(180deg, var(--dark-100) 0%, var(--dark) 100%); }
+.slide-sentinel-after .slide-bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 30%, rgba(14,165,233,0.08) 0%, transparent 50%);
+}
+</style>
+
+<!-- SLIDE 9: SENTINEL - BÉNÉFICES -->
+<section class="slide slide-sentinel-benefits" id="slide-9">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label sentinel">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+                SENTINEL
+            </span>
+            <h2 class="section-title centered">Ce que ça change</h2>
+        </div>
+
+        <div class="grid grid-3 benefits-grid">
+            <div class="benefit-card animate-on-scroll delay-1">
+                <div class="icon-box sentinel">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        <line x1="1" y1="1" x2="23" y2="23" stroke-width="2"/>
+                    </svg>
+                </div>
+                <h3>Moins d'appels entrants</h3>
+                <p>Les clients sont prévenus avant d'appeler. Moins de stress, plus de sérénité.</p>
+            </div>
+
+            <div class="benefit-card animate-on-scroll delay-2">
+                <div class="icon-box sentinel">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <h3>Image professionnelle</h3>
+                <p>Montrer qu'on surveille activement. Le client voit la valeur ajoutée.</p>
+            </div>
+
+            <div class="benefit-card animate-on-scroll delay-3">
+                <div class="icon-box sentinel">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                        <polyline points="16 11 18 13 22 9"/>
+                    </svg>
+                </div>
+                <h3>Vous gardez le contrôle</h3>
+                <p>Validation avant chaque SMS. L'IA propose, vous décidez.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-sentinel-benefits { background: var(--dark); }
+
+.benefits-grid { margin-top: 1rem; }
+
+.benefit-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.4s ease;
+}
+
+.benefit-card:hover {
+    background: rgba(14,165,233,0.05);
+    border-color: rgba(14,165,233,0.2);
+    transform: translateY(-8px);
+}
+
+.benefit-card .icon-box { margin: 0 auto 1.5rem; }
+
+.benefit-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem; }
+.benefit-card p { color: var(--gray-light); font-size: 0.95rem; line-height: 1.6; }
+</style>
+
+<!-- SLIDE 10: ENRICHISSEUR -->
+<section class="slide slide-enrichisseur" id="slide-10">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label enrichisseur">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+                ENRICHISSEUR
+            </span>
+            <h2 class="section-title centered">Le cercle vertueux</h2>
+            <p class="section-subtitle centered">Plus on travaille, plus on devient efficaces</p>
+        </div>
+
+        <div class="cycle-diagram animate-on-scroll delay-1">
+            <div class="cycle-center">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                </svg>
+                <span>Amélioration continue</span>
+            </div>
+
+            <div class="cycle-step step-1">
+                <div class="step-num">1</div>
+                <span>Ticket résolu</span>
+            </div>
+            <div class="cycle-step step-2">
+                <div class="step-num">2</div>
+                <span>Analyse IA</span>
+            </div>
+            <div class="cycle-step step-3">
+                <div class="step-num">3</div>
+                <span>Procédure créée</span>
+            </div>
+            <div class="cycle-step step-4">
+                <div class="step-num">4</div>
+                <span>Base enrichie</span>
+            </div>
+        </div>
+
+        <div class="result-box good animate-on-scroll delay-2" style="background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.2); color: var(--enrichisseur);">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            <span>La prochaine fois, réponse instantanée</span>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-enrichisseur { background: linear-gradient(180deg, var(--dark) 0%, var(--dark-100) 100%); }
+.slide-enrichisseur .slide-bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.08) 0%, transparent 50%);
+}
+
+.cycle-diagram {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    margin: 0 auto 2rem;
+}
+
+.cycle-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 130px; height: 130px;
+    background: linear-gradient(135deg, var(--enrichisseur), #ec4899);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 0 50px rgba(139,92,246,0.4);
+}
+
+.cycle-center svg { width: 36px; height: 36px; color: white; margin-bottom: 8px; }
+.cycle-center span { font-size: 0.75rem; font-weight: 700; color: white; }
+
+.cycle-step {
+    position: absolute;
+    width: 100px;
+    padding: 16px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(139,92,246,0.3);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    transition: all var(--transition-base);
+}
+
+.cycle-step:hover { background: rgba(139,92,246,0.1); transform: scale(1.1); }
+
+.step-num {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--enrichisseur), #ec4899);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.85rem;
+}
+
+.cycle-step span { font-size: 0.75rem; color: var(--gray-lighter); }
+
+.step-1 { top: 20px; left: 50%; transform: translateX(-50%); }
+.step-2 { top: 50%; right: 20px; transform: translateY(-50%); }
+.step-3 { bottom: 20px; left: 50%; transform: translateX(-50%); }
+.step-4 { top: 50%; left: 20px; transform: translateY(-50%); }
+
+@media (max-width: 500px) {
+    .cycle-diagram { width: 300px; height: 300px; }
+    .cycle-center { width: 100px; height: 100px; }
+    .cycle-step { width: 80px; padding: 12px 8px; }
+}
+</style>
+
+<!-- SLIDE 11: ENRICHISSEUR - CONCRET -->
+<section class="slide slide-enrichisseur-2" id="slide-11">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label enrichisseur">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+                ENRICHISSEUR
+            </span>
+            <h2 class="section-title centered">Concrètement</h2>
+        </div>
+
+        <div class="grid grid-3 concrete-grid">
+            <div class="concrete-card animate-on-scroll delay-1">
+                <div class="icon-box enrichisseur">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>
+                    </svg>
+                </div>
+                <h3>Fini le "Comment on avait fait ?"</h3>
+                <p>Chaque résolution est documentée. Plus besoin de fouiller sa mémoire.</p>
+            </div>
+
+            <div class="concrete-card animate-on-scroll delay-2">
+                <div class="icon-box enrichisseur">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                <h3>Les connaissances restent</h3>
+                <p>Un collègue part, son expertise reste. Les nouveaux ont accès à tout.</p>
+            </div>
+
+            <div class="concrete-card animate-on-scroll delay-3">
+                <div class="icon-box enrichisseur">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <h3>Vous validez</h3>
+                <p>Chaque procédure passe par vous avant publication. Contrôle qualité garanti.</p>
+            </div>
+        </div>
+
+        <div class="procedure-example animate-on-scroll delay-4">
+            <div class="procedure-header">Exemple de procédure générée</div>
+            <div class="procedure-content">
+                <strong>Imprimante hors ligne après mise à jour Windows</strong>
+                <ol>
+                    <li>Supprimer l'imprimante dans Paramètres</li>
+                    <li>Redémarrer le service Spouleur</li>
+                    <li>Réinstaller via IP</li>
+                </ol>
+                <span class="procedure-source">Générée à partir du ticket #4521 • Validée le 18/01</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-enrichisseur-2 { background: linear-gradient(180deg, var(--dark-100) 0%, var(--dark) 100%); }
+
+.concrete-grid { margin-bottom: 2.5rem; }
+
+.concrete-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.4s ease;
+}
+
+.concrete-card:hover {
+    background: rgba(139,92,246,0.05);
+    border-color: rgba(139,92,246,0.2);
+    transform: translateY(-5px);
+}
+
+.concrete-card .icon-box { margin: 0 auto 1.5rem; }
+.concrete-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; }
+.concrete-card p { color: var(--gray-light); font-size: 0.9rem; line-height: 1.6; }
+
+.procedure-example {
+    max-width: 550px;
+    margin: 0 auto;
+    background: rgba(139,92,246,0.05);
+    border: 1px solid rgba(139,92,246,0.2);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+.procedure-header {
+    background: rgba(139,92,246,0.15);
+    padding: 12px 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--enrichisseur);
+}
+
+.procedure-content {
+    padding: 1.5rem;
+}
+
+.procedure-content strong { display: block; margin-bottom: 1rem; }
+
+.procedure-content ol {
+    list-style: decimal;
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--gray-lighter);
+}
+
+.procedure-content ol li { margin-bottom: 0.5rem; font-size: 0.95rem; }
+
+.procedure-source {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--gray);
+    font-style: italic;
+}
+</style>
+
+<!-- SLIDE 12: BASE DE CONNAISSANCES -->
+<section class="slide slide-knowledge" id="slide-12">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label knowledge">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                </svg>
+                BASE DE CONNAISSANCES
+            </span>
+            <h2 class="section-title centered">Une source de vérité unique</h2>
+        </div>
+
+        <div class="knowledge-compare animate-on-scroll delay-1">
+            <div class="kn-before">
+                <h3>Avant</h3>
+                <div class="scattered">
+                    <span>Mails</span>
+                    <span>Fichiers Word</span>
+                    <span>Tickets anciens</span>
+                    <span>Mémoire collègues</span>
+                    <span>Notes perso</span>
+                </div>
+                <p class="kn-verdict bad">"Où est cette info ?"</p>
+            </div>
+
+            <div class="kn-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </div>
+
+            <div class="kn-after">
+                <h3>Après</h3>
+                <div class="unified">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                    </svg>
+                    <span>Une base centralisée</span>
+                </div>
+                <ul class="kn-features">
+                    <li>Toujours à jour</li>
+                    <li>Accessible en 1 question</li>
+                    <li>S'enrichit automatiquement</li>
+                </ul>
+                <p class="kn-verdict good">"Je demande à WIBOT"</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-knowledge { background: var(--dark); }
+.slide-knowledge .slide-bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, rgba(245,158,11,0.06) 0%, transparent 50%);
+}
+
+.knowledge-compare {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: center;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.kn-before, .kn-after {
+    padding: 2rem;
+    border-radius: var(--radius-xl);
+    text-align: center;
+}
+
+.kn-before {
+    background: rgba(239,68,68,0.05);
+    border: 1px solid rgba(239,68,68,0.15);
+}
+
+.kn-after {
+    background: rgba(245,158,11,0.05);
+    border: 1px solid rgba(245,158,11,0.2);
+}
+
+.kn-before h3, .kn-after h3 {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+}
+
+.scattered {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.scattered span {
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-full);
+    font-size: 0.8rem;
+    color: var(--gray-lighter);
+}
+
+.unified {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.unified svg { width: 48px; height: 48px; color: var(--knowledge); }
+.unified span { font-size: 1.1rem; font-weight: 700; color: var(--knowledge); }
+
+.kn-features {
+    list-style: none;
+    margin-bottom: 1.5rem;
+}
+
+.kn-features li {
+    padding: 6px 0;
+    font-size: 0.95rem;
+    color: var(--gray-lighter);
+}
+
+.kn-features li::before {
+    content: "✓ ";
+    color: var(--knowledge);
+}
+
+.kn-verdict {
+    padding: 10px 20px;
+    border-radius: var(--radius-full);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.kn-verdict.bad { background: rgba(239,68,68,0.15); color: #f87171; }
+.kn-verdict.good { background: rgba(245,158,11,0.15); color: var(--knowledge); }
+
+.kn-arrow {
+    width: 60px; height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kn-arrow svg { width: 32px; height: 32px; color: var(--gray); }
+
+@media (max-width: 800px) {
+    .knowledge-compare { grid-template-columns: 1fr; }
+    .kn-arrow { margin: 0 auto; transform: rotate(90deg); }
+}
+</style>
+
+<!-- SLIDE 13: SAFEGUARD -->
+<section class="slide slide-safeguard" id="slide-13">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label safeguard">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                SAFEGUARD
+            </span>
+            <h2 class="section-title centered">Validation des actions sensibles</h2>
+            <p class="section-subtitle centered">L'IA propose, vous validez</p>
+        </div>
+
+        <div class="validation-flow animate-on-scroll delay-1">
+            <div class="flow-step">
+                <div class="flow-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/>
+                        <path d="M18 9v1a6 6 0 0 1-12 0V9"/>
+                    </svg>
+                </div>
+                <span>L'IA veut agir</span>
+            </div>
+            <div class="flow-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </div>
+            <div class="flow-step">
+                <div class="flow-icon safeguard-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </div>
+                <span>Action bloquée</span>
+            </div>
+            <div class="flow-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </div>
+            <div class="flow-step">
+                <div class="flow-icon user-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+                <span>Vous validez</span>
+            </div>
+            <div class="flow-arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </div>
+            <div class="flow-step">
+                <div class="flow-icon check-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <span>Exécution</span>
+            </div>
+        </div>
+
+        <div class="validation-examples animate-on-scroll delay-2">
+            <p>Actions nécessitant validation :</p>
+            <div class="examples-list">
+                <div class="example-tag">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+                    </svg>
+                    Envoi de SMS client
+                </div>
+                <div class="example-tag">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                    Publication procédure
+                </div>
+                <div class="example-tag">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                    Action sur équipement
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-safeguard { background: linear-gradient(180deg, var(--dark-100) 0%, var(--dark) 100%); }
+
+.validation-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+}
+
+.flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-xl);
+    min-width: 120px;
+}
+
+.flow-icon {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary), #7c3aed);
+}
+
+.flow-icon.safeguard-icon { background: linear-gradient(135deg, var(--safeguard), #14b8a6); }
+.flow-icon.user-icon { background: linear-gradient(135deg, var(--knowledge), var(--red)); }
+.flow-icon.check-icon { background: linear-gradient(135deg, var(--accent), #06b6d4); }
+
+.flow-icon svg { width: 28px; height: 28px; color: white; }
+
+.flow-step span { font-size: 0.85rem; color: var(--gray-lighter); text-align: center; }
+
+.flow-arrow svg { width: 24px; height: 24px; color: var(--gray); }
+
+.validation-examples { text-align: center; }
+
+.validation-examples > p {
+    font-size: 0.95rem;
+    color: var(--gray-light);
+    margin-bottom: 1rem;
+}
+
+.examples-list {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.example-tag {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: rgba(16,185,129,0.08);
+    border: 1px solid rgba(16,185,129,0.15);
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    color: var(--gray-lighter);
+}
+
+.example-tag .icon { width: 18px; height: 18px; color: var(--safeguard); }
+
+@media (max-width: 700px) {
+    .validation-flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+}
+</style>
+
+<!-- SLIDE 14: EN PRATIQUE -->
+<section class="slide slide-practice" id="slide-14">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                </svg>
+                En pratique
+            </span>
+            <h2 class="section-title centered">Au quotidien</h2>
+        </div>
+
+        <div class="grid grid-2 practice-grid">
+            <div class="practice-card animate-on-scroll delay-1">
+                <div class="practice-question">Question rapide sur un client ?</div>
+                <div class="practice-answer">
+                    <span class="mode-tag flash">Flash</span>
+                    <p>"C'est quoi le VLAN du site X ?"</p>
+                </div>
+            </div>
+
+            <div class="practice-card animate-on-scroll delay-2">
+                <div class="practice-question">Besoin d'une analyse complète ?</div>
+                <div class="practice-answer">
+                    <span class="mode-tag pro">Pro</span>
+                    <p>"Explique l'architecture réseau de Y"</p>
+                </div>
+            </div>
+
+            <div class="practice-card animate-on-scroll delay-3">
+                <div class="practice-question">Un script à créer ?</div>
+                <div class="practice-answer">
+                    <span class="mode-tag code">Code</span>
+                    <p>"Script pour lister les users inactifs"</p>
+                </div>
+            </div>
+
+            <div class="practice-card animate-on-scroll delay-4">
+                <div class="practice-question">Un problème à résoudre ?</div>
+                <div class="practice-answer">
+                    <span class="mode-tag agent">Agent</span>
+                    <p>"Pourquoi le client Z a des lenteurs ?"</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-practice { background: var(--dark); }
+
+.practice-grid { max-width: 800px; margin: 0 auto; }
+
+.practice-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius-xl);
+    padding: 1.5rem;
+    transition: all var(--transition-base);
+}
+
+.practice-card:hover {
+    background: rgba(255,255,255,0.04);
+    transform: translateY(-4px);
+}
+
+.practice-question {
+    font-size: 1rem;
+    color: var(--gray-light);
+    margin-bottom: 1rem;
+}
+
+.practice-answer {
+    padding: 1rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: var(--radius-lg);
+}
+
+.mode-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.mode-tag.flash { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+.mode-tag.pro { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.mode-tag.code { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+.mode-tag.agent { background: linear-gradient(135deg, #10b981, #059669); }
+
+.practice-answer p { font-size: 0.9rem; color: var(--gray-lighter); font-style: italic; }
+</style>
+
+<!-- SLIDE 15: ÉCOSYSTÈME -->
+<section class="slide slide-ecosystem" id="slide-15">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                Vue d'ensemble
+            </span>
+            <h2 class="section-title centered">L'écosystème complet</h2>
+        </div>
+
+        <div class="ecosystem-diagram animate-on-scroll delay-1">
+            <div class="eco-center">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>VOUS</span>
+            </div>
+
+            <div class="eco-item wibot">
+                <div class="eco-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                </div>
+                <span class="eco-name">WIBOT</span>
+                <span class="eco-role">Assistant</span>
+            </div>
+
+            <div class="eco-item sentinel">
+                <div class="eco-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                </div>
+                <span class="eco-name">SENTINEL</span>
+                <span class="eco-role">Surveillance</span>
+            </div>
+
+            <div class="eco-item enrichisseur">
+                <div class="eco-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                </div>
+                <span class="eco-name">ENRICHISSEUR</span>
+                <span class="eco-role">Capitalisation</span>
+            </div>
+
+            <div class="eco-item safeguard">
+                <div class="eco-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <span class="eco-name">SAFEGUARD</span>
+                <span class="eco-role">Validation</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-ecosystem { background: linear-gradient(180deg, var(--dark-100) 0%, var(--dark) 100%); }
+
+.ecosystem-diagram {
+    position: relative;
+    width: 500px;
+    height: 400px;
+    margin: 0 auto;
+}
+
+.eco-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 110px; height: 110px;
+    background: linear-gradient(135deg, var(--primary), #7c3aed);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 0 50px var(--primary-glow);
+    z-index: 10;
+}
+
+.eco-center svg { width: 32px; height: 32px; color: white; }
+.eco-center span { font-size: 0.85rem; font-weight: 800; color: white; margin-top: 6px; }
+
+.eco-item {
+    position: absolute;
+    width: 120px;
+    padding: 16px 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    transition: all var(--transition-base);
+}
+
+.eco-item:hover { transform: scale(1.1); }
+
+.eco-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.eco-icon svg { width: 24px; height: 24px; color: white; }
+
+.eco-name { font-size: 0.8rem; font-weight: 800; }
+.eco-role { font-size: 0.7rem; color: var(--gray); }
+
+.eco-item.wibot { top: 20px; left: 50%; transform: translateX(-50%); border-color: rgba(37,99,235,0.3); }
+.eco-item.wibot .eco-icon { background: linear-gradient(135deg, var(--primary), #7c3aed); }
+.eco-item.wibot:hover { border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
+
+.eco-item.sentinel { top: 50%; right: 30px; transform: translateY(-50%); border-color: rgba(14,165,233,0.3); }
+.eco-item.sentinel .eco-icon { background: linear-gradient(135deg, var(--sentinel), var(--primary)); }
+.eco-item.sentinel:hover { border-color: var(--sentinel); box-shadow: 0 0 30px rgba(14,165,233,0.4); }
+
+.eco-item.enrichisseur { bottom: 20px; left: 50%; transform: translateX(-50%); border-color: rgba(139,92,246,0.3); }
+.eco-item.enrichisseur .eco-icon { background: linear-gradient(135deg, var(--enrichisseur), #ec4899); }
+.eco-item.enrichisseur:hover { border-color: var(--enrichisseur); box-shadow: 0 0 30px rgba(139,92,246,0.4); }
+
+.eco-item.safeguard { top: 50%; left: 30px; transform: translateY(-50%); border-color: rgba(16,185,129,0.3); }
+.eco-item.safeguard .eco-icon { background: linear-gradient(135deg, var(--safeguard), #14b8a6); }
+.eco-item.safeguard:hover { border-color: var(--safeguard); box-shadow: 0 0 30px rgba(16,185,129,0.4); }
+
+@media (max-width: 550px) {
+    .ecosystem-diagram { width: 100%; height: 450px; }
+    .eco-item { width: 100px; padding: 12px 8px; }
+    .eco-item.sentinel { right: 10px; }
+    .eco-item.safeguard { left: 10px; }
+}
+</style>
+
+<!-- SLIDE 16: ROADMAP -->
+<section class="slide slide-roadmap" id="slide-16">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+                Vision
+            </span>
+            <h2 class="section-title centered">Roadmap <span>WIDIP IA</span></h2>
+            <p class="section-subtitle centered" style="max-width: 600px; margin: 0 auto;">Le déploiement progressif de notre écosystème intelligent</p>
+        </div>
+
+        <div class="roadmap-container animate-on-scroll delay-1">
+            <div class="roadmap-line"></div>
+
+            <div class="roadmap-step completed">
+                <div class="roadmap-marker">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <div class="roadmap-content">
+                    <div class="roadmap-badge wibot">Phase 1</div>
+                    <h3>WIBOT</h3>
+                    <p>Assistant IA central avec ses 4 modes d'interaction</p>
+                    <div class="roadmap-details">
+                        <span>Mode Dialogue</span>
+                        <span>Mode Commande</span>
+                        <span>Mode Recherche</span>
+                        <span>Mode Action</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="roadmap-step current">
+                <div class="roadmap-marker pulse">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2a10 10 0 1 0 10 10"/>
+                        <path d="M12 12l8-8"/>
+                    </svg>
+                </div>
+                <div class="roadmap-content">
+                    <div class="roadmap-badge sentinel">Phase 2</div>
+                    <h3>SENTINEL</h3>
+                    <p>Agent de surveillance proactive infrastructure</p>
+                    <div class="roadmap-details">
+                        <span>Détection pannes</span>
+                        <span>Alertes SMS</span>
+                        <span>Tickets auto</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="roadmap-step upcoming">
+                <div class="roadmap-marker">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                </div>
+                <div class="roadmap-content">
+                    <div class="roadmap-badge rag">Phase 3</div>
+                    <h3>Base de Connaissances</h3>
+                    <p>RAG centralisé et partagé par tous les agents</p>
+                    <div class="roadmap-details">
+                        <span>Procédures unifiées</span>
+                        <span>Accès transversal</span>
+                        <span>Mise à jour temps réel</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="roadmap-step future">
+                <div class="roadmap-marker">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 3v18"/>
+                        <rect x="4" y="8" width="16" height="8" rx="2"/>
+                        <path d="M8 8V5a4 4 0 0 1 8 0v3"/>
+                    </svg>
+                </div>
+                <div class="roadmap-content">
+                    <div class="roadmap-badge enrichisseur">Phase 4</div>
+                    <h3>ENRICHISSEUR</h3>
+                    <p>Agent d'apprentissage automatique de la base</p>
+                    <div class="roadmap-details">
+                        <span>Analyse tickets</span>
+                        <span>Génération procédures</span>
+                        <span>Amélioration continue</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-roadmap { background: var(--dark); }
+.slide-roadmap .slide-bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 20% 30%, rgba(37,99,235,0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(139,92,246,0.1) 0%, transparent 50%);
+}
+
+.roadmap-container {
+    max-width: 900px;
+    margin: 3rem auto 0;
+    position: relative;
+    padding: 0 20px;
+}
+
+.roadmap-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--primary), var(--enrichisseur));
+    transform: translateX(-50%);
+    border-radius: 2px;
+    opacity: 0.3;
+}
+
+.roadmap-step {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 2.5rem;
+    position: relative;
+}
+
+.roadmap-step:nth-child(even) {
+    flex-direction: row-reverse;
+}
+
+.roadmap-step:nth-child(even) .roadmap-content {
+    text-align: right;
+    padding-right: 40px;
+    padding-left: 0;
+}
+
+.roadmap-step:nth-child(odd) .roadmap-content {
+    padding-left: 40px;
+}
+
+.roadmap-marker {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--dark-200);
+    border: 3px solid var(--gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.roadmap-marker svg {
+    width: 24px;
+    height: 24px;
+    color: var(--gray);
+}
+
+.roadmap-step.completed .roadmap-marker {
+    border-color: var(--accent);
+    background: rgba(16, 185, 129, 0.2);
+}
+
+.roadmap-step.completed .roadmap-marker svg {
+    color: var(--accent);
+}
+
+.roadmap-step.current .roadmap-marker {
+    border-color: var(--primary);
+    background: rgba(37, 99, 235, 0.2);
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+.roadmap-step.current .roadmap-marker svg {
+    color: var(--primary-light);
+}
+
+.roadmap-step.current .roadmap-marker.pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.roadmap-step.upcoming .roadmap-marker {
+    border-color: var(--enrichisseur);
+    background: rgba(139, 92, 246, 0.1);
+}
+
+.roadmap-step.upcoming .roadmap-marker svg {
+    color: var(--enrichisseur);
+}
+
+.roadmap-step.future .roadmap-marker {
+    border-color: rgba(255,255,255,0.2);
+    background: var(--dark-200);
+}
+
+.roadmap-step.future .roadmap-marker svg {
+    color: var(--gray);
+}
+
+.roadmap-content {
+    width: calc(50% - 40px);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.roadmap-step:hover .roadmap-content {
+    background: rgba(255,255,255,0.05);
+    transform: translateY(-5px);
+}
+
+.roadmap-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.roadmap-badge.wibot {
+    background: rgba(37, 99, 235, 0.2);
+    color: var(--primary-light);
+}
+
+.roadmap-badge.sentinel {
+    background: rgba(14, 165, 233, 0.2);
+    color: #38bdf8;
+}
+
+.roadmap-badge.rag {
+    background: rgba(139, 92, 246, 0.2);
+    color: #a78bfa;
+}
+
+.roadmap-badge.enrichisseur {
+    background: rgba(236, 72, 153, 0.2);
+    color: #f472b6;
+}
+
+.roadmap-content h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--white);
+}
+
+.roadmap-content p {
+    font-size: 0.95rem;
+    color: var(--gray-light);
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.roadmap-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.roadmap-step:nth-child(even) .roadmap-details {
+    justify-content: flex-end;
+}
+
+.roadmap-details span {
+    background: rgba(255,255,255,0.05);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    color: var(--gray);
+}
+
+@media (max-width: 768px) {
+    .roadmap-line {
+        left: 30px;
+    }
+
+    .roadmap-step,
+    .roadmap-step:nth-child(even) {
+        flex-direction: row;
+    }
+
+    .roadmap-marker {
+        left: 30px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .roadmap-marker svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .roadmap-content,
+    .roadmap-step:nth-child(even) .roadmap-content {
+        width: calc(100% - 80px);
+        margin-left: 70px;
+        padding-left: 0;
+        padding-right: 0;
+        text-align: left;
+    }
+
+    .roadmap-step:nth-child(even) .roadmap-details {
+        justify-content: flex-start;
+    }
+}
+</style>
+
+<!-- SLIDE 17: RÉSUMÉ -->
+<section class="slide slide-summary" id="slide-17">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center animate-on-scroll">
+            <span class="section-label">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                En résumé
+            </span>
+            <h2 class="section-title centered">Ce qui change</h2>
+        </div>
+
+        <div class="summary-list animate-on-scroll delay-1">
+            <div class="summary-item">
+                <span class="from">Réactivité</span>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                <span class="to">Proactivité</span>
+            </div>
+            <div class="summary-item">
+                <span class="from">Information dispersée</span>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                <span class="to">Centralisée</span>
+            </div>
+            <div class="summary-item">
+                <span class="from">Connaissances perdues</span>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                <span class="to">Capitalisées</span>
+            </div>
+            <div class="summary-item">
+                <span class="from">15 min de recherche</span>
+                <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+                <span class="to">30 secondes</span>
+            </div>
+        </div>
+
+        <div class="final-message animate-on-scroll delay-2">
+            <p>L'IA qui vous <strong>facilite la vie</strong></p>
+        </div>
+    </div>
+</section>
+
+<style>
+.slide-summary { background: var(--dark); }
+.slide-summary .slide-bg::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 30% 20%, rgba(37,99,235,0.08) 0%, transparent 40%),
+                radial-gradient(ellipse at 70% 80%, rgba(16,185,129,0.08) 0%, transparent 40%);
+}
+
+.summary-list {
+    max-width: 550px;
+    margin: 0 auto 2.5rem;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 1rem 1.5rem;
+    margin-bottom: 0.75rem;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: var(--radius-xl);
+    transition: all var(--transition-base);
+}
+
+.summary-item:hover {
+    background: rgba(255,255,255,0.04);
+    transform: scale(1.02);
+}
+
+.summary-item .from {
+    color: var(--gray);
+    text-decoration: line-through;
+    text-decoration-color: var(--red);
+}
+
+.summary-item .arrow {
+    width: 24px; height: 24px;
+    color: var(--primary-light);
+    flex-shrink: 0;
+}
+
+.summary-item .to {
+    color: var(--accent-light);
+    font-weight: 700;
+}
+
+.final-message {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--primary), #7c3aed);
+    border-radius: var(--radius-xl);
+    max-width: 500px;
+    margin: 0 auto;
+    box-shadow: 0 20px 60px var(--primary-glow);
+}
+
+.final-message p {
+    font-size: 1.3rem;
+    line-height: 1.4;
+}
+
+.final-message strong { color: var(--accent-light); }
+</style>
+
+</div>
+
+<script>
+const slidesContainer = document.getElementById('slidesContainer');
+const slides = document.querySelectorAll('.slide');
+const progressBar = document.getElementById('progressBar');
+const currentSlideEl = document.getElementById('currentSlide');
+const totalSlidesEl = document.getElementById('totalSlides');
+
+let currentSlide = 0;
+const totalSlides = slides.length;
+totalSlidesEl.textContent = totalSlides;
+
+function updateProgress() {
+    const scrollTop = slidesContainer.scrollTop;
+    const scrollHeight = slidesContainer.scrollHeight - slidesContainer.clientHeight;
+    const progress = (scrollTop / scrollHeight) * 100;
+    progressBar.style.width = progress + '%';
+
+    const slideIndex = Math.round(scrollTop / window.innerHeight);
+    currentSlide = Math.min(slideIndex, totalSlides - 1);
+    currentSlideEl.textContent = currentSlide + 1;
+}
+
+function goToSlide(index) {
+    if (index >= 0 && index < totalSlides) {
+        slides[index].scrollIntoView({ behavior: 'smooth' });
+        currentSlide = index;
+    }
+}
+
+function nextSlide() { goToSlide(currentSlide + 1); }
+function prevSlide() { goToSlide(currentSlide - 1); }
+
+slidesContainer.addEventListener('scroll', updateProgress);
+document.getElementById('prevBtn').addEventListener('click', prevSlide);
+document.getElementById('nextBtn').addEventListener('click', nextSlide);
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault(); nextSlide();
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault(); prevSlide();
+    }
+});
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+}, { root: slidesContainer, threshold: 0.2 });
+
+document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

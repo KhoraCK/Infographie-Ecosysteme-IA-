@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base de Connaissances RAG - Documentation Technique et Fonctionnelle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #333;
+            background: #fff;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm 25mm;
+            margin: 0 auto;
+            background: #fff;
+            position: relative;
+        }
+
+        .header {
+            background: #ff5722;
+            color: #fff;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 12pt;
+            margin-bottom: 30px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-icon {
+            font-size: 18pt;
+        }
+
+        .cover-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 250mm;
+            text-align: center;
+        }
+
+        .cover-icon {
+            font-size: 80pt;
+            margin-bottom: 30px;
+        }
+
+        .cover-title {
+            font-size: 36pt;
+            font-weight: bold;
+            color: #ff5722;
+            margin-bottom: 20px;
+        }
+
+        .cover-subtitle {
+            font-size: 18pt;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .cover-description {
+            font-size: 14pt;
+            color: #888;
+            margin-bottom: 80px;
+            max-width: 450px;
+        }
+
+        .cover-date {
+            font-size: 12pt;
+            color: #888;
+            font-style: italic;
+        }
+
+        h1 {
+            font-size: 18pt;
+            color: #ff5722;
+            border-bottom: 2px solid #ff5722;
+            padding-bottom: 8px;
+            margin: 30px 0 20px 0;
+        }
+
+        h2 {
+            font-size: 14pt;
+            color: #ff5722;
+            margin: 25px 0 15px 0;
+        }
+
+        h3 {
+            font-size: 12pt;
+            color: #333;
+            margin: 20px 0 10px 0;
+            border-left: 4px solid #ff5722;
+            padding-left: 10px;
+        }
+
+        h4 {
+            font-size: 11pt;
+            color: #333;
+            margin: 15px 0 8px 0;
+            font-style: italic;
+        }
+
+        p {
+            margin: 10px 0;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin: 10px 0 10px 25px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid #999;
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #ff5722;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .table-alt th {
+            background: #e8e8e8;
+            color: #333;
+        }
+
+        .table-small {
+            font-size: 9pt;
+        }
+
+        .table-small th, .table-small td {
+            padding: 5px 8px;
+        }
+
+        pre {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-left: 4px solid #ff5722;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            margin: 15px 0;
+            line-height: 1.3;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 10pt;
+        }
+
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .important {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .orange-box {
+            background: #fff3e0;
+            border-left: 4px solid #ff5722;
+            padding: 10px 15px;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 15mm;
+            left: 25mm;
+            right: 25mm;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9pt;
+            color: #666;
+            border-top: 1px solid #ccc;
+            padding-top: 8px;
+        }
+
+        .toc {
+            margin: 20px 0;
+        }
+
+        .toc a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .toc-h1 {
+            font-weight: bold;
+            margin: 10px 0 5px 0;
+        }
+
+        .toc-h2 {
+            margin: 3px 0 3px 20px;
+        }
+
+        .toc-h3 {
+            margin: 2px 0 2px 40px;
+            font-size: 10pt;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        .workflow-box {
+            border: 2px solid #ff5722;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            background: #fff8f5;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: flex-start;
+            margin: 10px 0;
+            padding: 10px;
+            background: #fff;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .step-number {
+            background: #ff5722;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .vector-visual {
+            background: linear-gradient(90deg, #ff5722 0%, #ff9800 50%, #ffc107 100%);
+            height: 20px;
+            border-radius: 10px;
+            margin: 5px 0;
+        }
+
+        .chunk-box {
+            border: 1px dashed #ff5722;
+            padding: 10px;
+            margin: 5px 0;
+            background: #fff;
+            font-size: 9pt;
+        }
+
+        .similarity-bar {
+            background: #e0e0e0;
+            height: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+
+        .similarity-fill {
+            background: #ff5722;
+            height: 100%;
+        }
+
+        @media print {
+            .page {
+                margin: 0;
+                padding: 15mm 20mm;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- PAGE DE GARDE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="cover-page">
+        <div class="cover-icon">&#129504;</div>
+        <div class="cover-title">BASE DE CONNAISSANCES</div>
+        <div class="cover-subtitle">RAG - Retrieval-Augmented Generation</div>
+        <div class="cover-description">
+            Système de stockage et recherche sémantique des connaissances techniques pour enrichir les réponses de l'IA
+        </div>
+        <div class="cover-date">Documentation Technique et Fonctionnelle<br>Janvier 2026</div>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SOMMAIRE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1>Sommaire</h1>
+
+    <div class="toc">
+        <div class="toc-h1"><a href="#section1">1. Vue d'ensemble</a></div>
+        <div class="toc-h2"><a href="#section1-1">1.1. Qu'est-ce que le RAG ?</a></div>
+        <div class="toc-h2"><a href="#section1-2">1.2. Rôle dans la plateforme</a></div>
+        <div class="toc-h2"><a href="#section1-3">1.3. Avantages de l'approche RAG</a></div>
+
+        <div class="toc-h1"><a href="#section2">2. Sources de connaissances</a></div>
+        <div class="toc-h2"><a href="#section2-1">2.1. Types de documents</a></div>
+        <div class="toc-h2"><a href="#section2-2">2.2. Alimentation de la base</a></div>
+        <div class="toc-h2"><a href="#section2-3">2.3. Cycle de vie des documents</a></div>
+
+        <div class="toc-h1"><a href="#section3">3. Fonctionnement technique</a></div>
+        <div class="toc-h2"><a href="#section3-1">3.1. Pipeline d'ingestion</a></div>
+        <div class="toc-h2"><a href="#section3-2">3.2. Chunking (découpage)</a></div>
+        <div class="toc-h2"><a href="#section3-3">3.3. Vectorisation (embeddings)</a></div>
+        <div class="toc-h2"><a href="#section3-4">3.4. Recherche sémantique</a></div>
+
+        <div class="toc-h1"><a href="#section4">4. Connexion avec WIBOT</a></div>
+        <div class="toc-h2"><a href="#section4-1">4.1. Utilisation dans les modes de chat</a></div>
+        <div class="toc-h2"><a href="#section4-2">4.2. Interface Knowledge</a></div>
+        <div class="toc-h2"><a href="#section4-3">4.3. Intégration avec les workflows</a></div>
+
+        <div class="toc-h1"><a href="#section5">5. Architecture technique</a></div>
+        <div class="toc-h2"><a href="#section5-1">5.1. Stack technologique</a></div>
+        <div class="toc-h2"><a href="#section5-2">5.2. Modèle de données</a></div>
+        <div class="toc-h2"><a href="#section5-3">5.3. Index et performances</a></div>
+
+        <div class="toc-h1"><a href="#section6">6. Diagrammes de flux</a></div>
+        <div class="toc-h2"><a href="#section6-1">6.1. Flux d'ingestion</a></div>
+        <div class="toc-h2"><a href="#section6-2">6.2. Flux de recherche</a></div>
+
+        <div class="toc-h1"><a href="#section7">7. Configuration et évolutions</a></div>
+    </div>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>2</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 1 : VUE D'ENSEMBLE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section1">1. Vue d'ensemble</h1>
+
+    <h2 id="section1-1">1.1. Qu'est-ce que le RAG ?</h2>
+
+    <p><strong>RAG</strong> (Retrieval-Augmented Generation) est une technique qui combine la recherche d'information avec la génération de texte par IA. Au lieu de se fier uniquement aux connaissances "encodées" dans le modèle LLM, le RAG permet de rechercher des documents pertinents et de les injecter dans le contexte de la requête.</p>
+
+    <div class="workflow-box">
+        <h4>Principe fondamental</h4>
+        <p><em>"Au lieu de demander au LLM de tout savoir, on lui fournit les documents pertinents pour qu'il puisse répondre avec précision et citer ses sources."</em></p>
+    </div>
+
+    <h3>Comparaison avec/sans RAG</h3>
+
+    <table>
+        <tr>
+            <th style="width:150px;">Aspect</th>
+            <th>Sans RAG</th>
+            <th>Avec RAG</th>
+        </tr>
+        <tr>
+            <td><strong>Connaissances</strong></td>
+            <td>Limitées à l'entraînement du modèle</td>
+            <td>Enrichies par les documents de l'entreprise</td>
+        </tr>
+        <tr>
+            <td><strong>Actualité</strong></td>
+            <td>Figées à la date de cutoff</td>
+            <td>Mises à jour en temps réel</td>
+        </tr>
+        <tr>
+            <td><strong>Précision</strong></td>
+            <td>Peut "halluciner"</td>
+            <td>Basée sur des sources vérifiables</td>
+        </tr>
+        <tr>
+            <td><strong>Traçabilité</strong></td>
+            <td>Impossible de vérifier</td>
+            <td>Sources citées et consultables</td>
+        </tr>
+        <tr>
+            <td><strong>Personnalisation</strong></td>
+            <td>Générique</td>
+            <td>Adaptée au contexte WIDIP</td>
+        </tr>
+    </table>
+
+    <h2 id="section1-2">1.2. Rôle dans la plateforme</h2>
+
+    <p>Le RAG est le <strong>cerveau documentaire</strong> de la plateforme IA Support. Il stocke et permet de rechercher toutes les connaissances techniques de WIDIP.</p>
+
+    <pre>
+                    +------------------+
+                    |   UTILISATEUR    |
+                    |   (Question)     |
+                    +--------+---------+
+                             |
+                             v
+                    +------------------+
+                    |     WIBOT        |
+                    |   (Tous modes)   |
+                    +--------+---------+
+                             |
+            +----------------+----------------+
+            |                                 |
+            v                                 v
+    +------------------+             +------------------+
+    |      RAG         |             |      LLM         |
+    | (Recherche docs) |             | (Génération)     |
+    +--------+---------+             +--------+---------+
+             |                                |
+             |   Documents pertinents         |
+             +--------------->----------------+
+                             |
+                             v
+                    +------------------+
+                    |    RÉPONSE       |
+                    | (Enrichie+Sourcée|
+                    +------------------+
+    </pre>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>3</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 1.3 : AVANTAGES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section1-3">1.3. Avantages de l'approche RAG</h2>
+
+    <table>
+        <tr>
+            <th>Avantage</th>
+            <th>Description</th>
+            <th style="width:100px;">Impact</th>
+        </tr>
+        <tr>
+            <td><strong>Connaissances propriétaires</strong></td>
+            <td>Les procédures internes de WIDIP sont accessibles à l'IA</td>
+            <td>Pertinence ++</td>
+        </tr>
+        <tr>
+            <td><strong>Mise à jour continue</strong></td>
+            <td>Nouveaux documents disponibles immédiatement sans réentraînement</td>
+            <td>Agilité ++</td>
+        </tr>
+        <tr>
+            <td><strong>Réduction hallucinations</strong></td>
+            <td>L'IA se base sur des documents réels, pas sur des suppositions</td>
+            <td>Fiabilité ++</td>
+        </tr>
+        <tr>
+            <td><strong>Traçabilité</strong></td>
+            <td>Chaque réponse peut citer ses sources</td>
+            <td>Confiance ++</td>
+        </tr>
+        <tr>
+            <td><strong>Coût optimisé</strong></td>
+            <td>Pas besoin de fine-tuner un modèle coûteux</td>
+            <td>Budget -50%</td>
+        </tr>
+        <tr>
+            <td><strong>Cercle vertueux</strong></td>
+            <td>L'Enrichisseur alimente continuellement la base</td>
+            <td>Amélioration continue</td>
+        </tr>
+    </table>
+
+    <h1 id="section2">2. Sources de connaissances</h1>
+
+    <h2 id="section2-1">2.1. Types de documents</h2>
+
+    <table>
+        <tr>
+            <th style="width:180px;">Type</th>
+            <th>Description</th>
+            <th style="width:120px;">Format</th>
+        </tr>
+        <tr>
+            <td><strong>Procédures techniques</strong></td>
+            <td>How-to, troubleshooting, guides de résolution</td>
+            <td>Markdown, PDF</td>
+        </tr>
+        <tr>
+            <td><strong>Documentation interne</strong></td>
+            <td>Manuels, guides utilisateur, bonnes pratiques</td>
+            <td>PDF, Word, MD</td>
+        </tr>
+        <tr>
+            <td><strong>Tickets résolus</strong></td>
+            <td>Historique des résolutions (via Enrichisseur)</td>
+            <td>Auto-généré</td>
+        </tr>
+        <tr>
+            <td><strong>Architecture clients</strong></td>
+            <td>Schémas réseau, configurations, inventaires</td>
+            <td>PDF, Texte</td>
+        </tr>
+        <tr>
+            <td><strong>Contacts et contrats</strong></td>
+            <td>Informations clients, SLA, contacts</td>
+            <td>Structuré (JSON)</td>
+        </tr>
+        <tr>
+            <td><strong>FAQ</strong></td>
+            <td>Questions fréquentes et réponses standard</td>
+            <td>Markdown</td>
+        </tr>
+    </table>
+
+    <div class="note">
+        <strong>Formats supportés :</strong> PDF, Word (.docx), Markdown (.md), Texte brut (.txt), JSON structuré. Les images et tableaux complexes dans les PDF sont extraits en texte.
+    </div>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>4</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 2.2 : ALIMENTATION -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section2-2">2.2. Alimentation de la base</h2>
+
+    <p>La base de connaissances peut être alimentée de trois manières :</p>
+
+    <h3>1. Upload manuel</h3>
+
+    <table class="table-alt">
+        <tr>
+            <th style="width:120px;">Aspect</th>
+            <th>Détails</th>
+        </tr>
+        <tr>
+            <td><strong>Qui</strong></td>
+            <td>Techniciens N2+ via l'interface WIBOT Knowledge</td>
+        </tr>
+        <tr>
+            <td><strong>Quoi</strong></td>
+            <td>Fichiers PDF, Word, Markdown</td>
+        </tr>
+        <tr>
+            <td><strong>Validation</strong></td>
+            <td>Immédiate (déjà validé par l'upload manuel)</td>
+        </tr>
+        <tr>
+            <td><strong>Usage</strong></td>
+            <td>Documentation existante, procédures historiques</td>
+        </tr>
+    </table>
+
+    <h3>2. Génération automatique (Enrichisseur)</h3>
+
+    <table class="table-alt">
+        <tr>
+            <th style="width:120px;">Aspect</th>
+            <th>Détails</th>
+        </tr>
+        <tr>
+            <td><strong>Source</strong></td>
+            <td>Tickets GLPI résolus, conversations Agent</td>
+        </tr>
+        <tr>
+            <td><strong>Fréquence</strong></td>
+            <td>Quotidienne ou hebdomadaire (configurable)</td>
+        </tr>
+        <tr>
+            <td><strong>Validation</strong></td>
+            <td>Safeguard L2 obligatoire avant publication</td>
+        </tr>
+        <tr>
+            <td><strong>Usage</strong></td>
+            <td>Capitalisation continue des connaissances</td>
+        </tr>
+    </table>
+
+    <h3>3. Import bulk (initial)</h3>
+
+    <table class="table-alt">
+        <tr>
+            <th style="width:120px;">Aspect</th>
+            <th>Détails</th>
+        </tr>
+        <tr>
+            <td><strong>Qui</strong></td>
+            <td>Administrateur N4 via script CLI</td>
+        </tr>
+        <tr>
+            <td><strong>Quand</strong></td>
+            <td>Initialisation de la plateforme</td>
+        </tr>
+        <tr>
+            <td><strong>Quoi</strong></td>
+            <td>Répertoire complet de documents</td>
+        </tr>
+        <tr>
+            <td><strong>Usage</strong></td>
+            <td>Migration base documentaire existante</td>
+        </tr>
+    </table>
+
+    <h2 id="section2-3">2.3. Cycle de vie des documents</h2>
+
+    <pre>
+    +-------------+     +-------------+     +-------------+
+    |   DRAFT     | --> |  PUBLISHED  | --> |  ARCHIVED   |
+    | (Brouillon) |     | (Publié)    |     | (Archivé)   |
+    +-------------+     +-------------+     +-------------+
+          |                   |                   |
+          |                   |                   |
+          v                   v                   v
+    Upload en cours     Recherchable        Non recherchable
+    Non vectorisé       Vectorisé           Conservé pour
+                        Utilisé par IA      historique
+    </pre>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>5</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3 : FONCTIONNEMENT TECHNIQUE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section3">3. Fonctionnement technique</h1>
+
+    <h2 id="section3-1">3.1. Pipeline d'ingestion</h2>
+
+    <p>Lorsqu'un document est ajouté à la base, il passe par un pipeline de traitement en plusieurs étapes.</p>
+
+    <div class="workflow-box">
+        <div class="workflow-step">
+            <div class="step-number">1</div>
+            <div>
+                <strong>Extraction</strong><br>
+                Lecture du fichier et extraction du texte brut (PDF parser, docx reader)
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-number">2</div>
+            <div>
+                <strong>Nettoyage</strong><br>
+                Suppression des caractères spéciaux, normalisation, détection de la langue
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-number">3</div>
+            <div>
+                <strong>Chunking</strong><br>
+                Découpage en segments de taille optimale (500 caractères)
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-number">4</div>
+            <div>
+                <strong>Vectorisation</strong><br>
+                Transformation de chaque chunk en vecteur 1024 dimensions (Mistral Embed)
+            </div>
+        </div>
+        <div class="workflow-step">
+            <div class="step-number">5</div>
+            <div>
+                <strong>Indexation</strong><br>
+                Stockage dans PostgreSQL avec index HNSW pour recherche rapide
+            </div>
+        </div>
+    </div>
+
+    <h2 id="section3-2">3.2. Chunking (découpage)</h2>
+
+    <p>Le chunking est l'étape critique qui découpe le document en morceaux recherchables.</p>
+
+    <h3>Paramètres de chunking</h3>
+
+    <table>
+        <tr>
+            <th>Paramètre</th>
+            <th style="width:100px;">Valeur</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>CHUNK_SIZE</code></td>
+            <td>500</td>
+            <td>Taille cible de chaque chunk (caractères)</td>
+        </tr>
+        <tr>
+            <td><code>CHUNK_OVERLAP</code></td>
+            <td>50</td>
+            <td>Chevauchement entre chunks pour continuité</td>
+        </tr>
+        <tr>
+            <td><code>SEPARATOR</code></td>
+            <td>\n\n</td>
+            <td>Séparateur privilégié (paragraphes)</td>
+        </tr>
+    </table>
+
+    <h3>Exemple de chunking</h3>
+
+    <div class="chunk-box">
+        <strong>Chunk 1 (caractères 1-500)</strong><br>
+        "Cette procédure décrit les étapes pour résoudre les problèmes de synchronisation OneDrive sous Windows 11. Les symptômes typiques incluent une icône OneDrive avec un point d'exclamation rouge et un message 'Synchronisation en pause'..."
+    </div>
+    <div class="chunk-box">
+        <strong>Chunk 2 (caractères 450-950)</strong><br>
+        "...message 'Synchronisation en pause'. Pour résoudre ce problème, suivez les étapes suivantes : 1. Fermer l'application OneDrive en cliquant droit sur l'icône dans la barre des tâches puis 'Quitter OneDrive'..."
+    </div>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>6</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3.3 : VECTORISATION -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section3-3">3.3. Vectorisation (embeddings)</h2>
+
+    <p>La vectorisation transforme le texte en représentation numérique dans un espace à haute dimension, où les textes sémantiquement proches sont géométriquement proches.</p>
+
+    <h3>Modèle d'embedding</h3>
+
+    <table>
+        <tr>
+            <th style="width:150px;">Caractéristique</th>
+            <th>Valeur</th>
+        </tr>
+        <tr>
+            <td><strong>Modèle</strong></td>
+            <td>Mistral Embed</td>
+        </tr>
+        <tr>
+            <td><strong>Dimensions</strong></td>
+            <td>1024</td>
+        </tr>
+        <tr>
+            <td><strong>Contexte max</strong></td>
+            <td>8192 tokens</td>
+        </tr>
+        <tr>
+            <td><strong>Langue</strong></td>
+            <td>Multilingue (FR/EN optimisé)</td>
+        </tr>
+    </table>
+
+    <h3>Visualisation conceptuelle</h3>
+
+    <pre>
+    Espace vectoriel simplifié (2D pour illustration)
+
+                        ^
+                        |
+          "mot de passe"|   * "reset password"
+              oublié" --+-- *
+                        |       * "déblocage compte"
+                        |
+                        |
+    ----+---------------+---------------+----->
+        |               |               |
+        |  * "imprimante|               |
+        |    réseau"    |               |
+        |               |               |
+        |       * "config|              |
+        |         print" |              |
+        |               |               |
+                        |
+    Les documents sur le même sujet sont PROCHES dans l'espace vectoriel
+    </pre>
+
+    <h3>Processus de vectorisation</h3>
+
+    <pre>
+    Chunk de texte
+    "Cette procédure décrit les étapes pour résoudre
+     les problèmes de synchronisation OneDrive..."
+            |
+            v
+    +------------------------------------------+
+    | API Mistral Embed                        |
+    | POST /v1/embeddings                      |
+    | model: "mistral-embed"                   |
+    +------------------------------------------+
+            |
+            v
+    Vecteur 1024 dimensions
+    [0.0234, -0.1567, 0.0891, ..., 0.0456]
+            |
+            v
+    +------------------------------------------+
+    | Stockage PostgreSQL                      |
+    | vector(1024) avec pgvector               |
+    +------------------------------------------+
+    </pre>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>7</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 3.4 : RECHERCHE SEMANTIQUE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section3-4">3.4. Recherche sémantique</h2>
+
+    <p>La recherche sémantique trouve les documents pertinents en comparant les vecteurs de la question avec ceux des chunks stockés.</p>
+
+    <h3>Processus de recherche</h3>
+
+    <pre>
+    Question utilisateur
+    "Comment résoudre un problème OneDrive ?"
+            |
+            v
+    +------------------------------------------+
+    | 1. Vectorisation de la question          |
+    |    API Mistral Embed                     |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 2. Recherche similarité cosinus          |
+    |    SELECT * FROM chunks                  |
+    |    ORDER BY embedding <=> query_vector   |
+    |    LIMIT 5                               |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 3. Résultats classés par similarité      |
+    |                                          |
+    |    Chunk 1: "Proc OneDrive sync" (0.95)  |
+    |    Chunk 2: "Proc OneDrive cache" (0.89) |
+    |    Chunk 3: "Proc Office 365" (0.72)     |
+    |    Chunk 4: "Proc Windows Update" (0.45) |
+    +------------------------------------------+
+    </pre>
+
+    <h3>Métriques de similarité</h3>
+
+    <table>
+        <tr>
+            <th style="width:100px;">Score</th>
+            <th>Interprétation</th>
+            <th style="width:150px;">Action</th>
+        </tr>
+        <tr>
+            <td>> 0.85</td>
+            <td>Très pertinent - correspondance forte</td>
+            <td>Inclure en priorité</td>
+        </tr>
+        <tr>
+            <td>0.70 - 0.85</td>
+            <td>Pertinent - bonne correspondance</td>
+            <td>Inclure</td>
+        </tr>
+        <tr>
+            <td>0.50 - 0.70</td>
+            <td>Potentiellement utile</td>
+            <td>Inclure si contexte</td>
+        </tr>
+        <tr>
+            <td>< 0.50</td>
+            <td>Peu pertinent</td>
+            <td>Exclure</td>
+        </tr>
+    </table>
+
+    <h3>Exemple de résultat</h3>
+
+    <div class="orange-box">
+        <strong>Requête :</strong> "OneDrive ne synchronise plus"<br><br>
+        <strong>Résultats RAG :</strong>
+        <ol>
+            <li><strong>PROC-O365-015</strong> - Résolution synchronisation OneDrive <span style="color: #28a745;">(95%)</span></li>
+            <li><strong>PROC-O365-012</strong> - Problèmes courants OneDrive <span style="color: #28a745;">(89%)</span></li>
+            <li><strong>PROC-O365-008</strong> - Configuration OneDrive entreprise <span style="color: #ffc107;">(72%)</span></li>
+        </ol>
+    </div>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>8</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4 : CONNEXION WIBOT -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section4">4. Connexion avec WIBOT</h1>
+
+    <h2 id="section4-1">4.1. Utilisation dans les modes de chat</h2>
+
+    <p>Tous les modes de chat de WIBOT peuvent accéder au RAG pour enrichir leurs réponses.</p>
+
+    <table>
+        <tr>
+            <th style="width:100px;">Mode</th>
+            <th>Usage RAG</th>
+            <th style="width:120px;">Top-K</th>
+        </tr>
+        <tr>
+            <td><strong>Flash</strong></td>
+            <td>Recherche rapide pour réponses factuelles (infos client, VLAN, contacts)</td>
+            <td>3 chunks</td>
+        </tr>
+        <tr>
+            <td><strong>Pro</strong></td>
+            <td>Recherche approfondie pour questions complexes, procédures détaillées</td>
+            <td>5-7 chunks</td>
+        </tr>
+        <tr>
+            <td><strong>Code</strong></td>
+            <td>Exemples de scripts, bonnes pratiques de code internes</td>
+            <td>3-5 chunks</td>
+        </tr>
+        <tr>
+            <td><strong>Agent</strong></td>
+            <td>Outil de recherche appelable - procédures pour résolution de problèmes</td>
+            <td>5-10 chunks</td>
+        </tr>
+    </table>
+
+    <h3>Injection dans le contexte LLM</h3>
+
+    <pre>
+SYSTÈME: Tu es un assistant technique pour WIDIP.
+Utilise les documents suivants pour répondre.
+
+DOCUMENTS PERTINENTS (RAG):
+---
+[Document 1: PROC-O365-015]
+Titre: Résolution synchronisation OneDrive
+Contenu: Cette procédure décrit les étapes pour résoudre
+les problèmes de synchronisation OneDrive...
+---
+[Document 2: PROC-O365-012]
+Titre: Problèmes courants OneDrive
+Contenu: Les problèmes les plus fréquents avec OneDrive
+incluent la synchronisation bloquée...
+---
+
+QUESTION UTILISATEUR:
+"Comment résoudre un problème de sync OneDrive ?"
+
+INSTRUCTIONS:
+- Base ta réponse sur les documents fournis
+- Cite tes sources [PROC-XXX]
+- Si l'information n'est pas dans les documents, indique-le
+    </pre>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>9</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4.2 : INTERFACE KNOWLEDGE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section4-2">4.2. Interface Knowledge</h2>
+
+    <p>L'onglet Knowledge de WIBOT permet de gérer la base de connaissances.</p>
+
+    <pre>
++------------------------------------------------------------------+
+|  WIBOT > Knowledge                                                |
++------------------------------------------------------------------+
+|                                                                   |
+|  [Rechercher...]                    [+ Upload]  [Stats]           |
+|                                                                   |
+|  FILTRES: [Toutes catégories v] [Tous statuts v] [Date v]         |
+|                                                                   |
+|  +------------------------------------------------------------+  |
+|  | PROCÉDURES (47)                                             |  |
+|  +------------------------------------------------------------+  |
+|  |                                                            |  |
+|  | > PROC-AD-001    Reset mot de passe AD          [Publié]   |  |
+|  |   Catégorie: Active Directory | Utilisé: 342 fois          |  |
+|  |                                                            |  |
+|  | > PROC-AD-002    Déblocage compte AD            [Publié]   |  |
+|  |   Catégorie: Active Directory | Utilisé: 187 fois          |  |
+|  |                                                            |  |
+|  | > PROC-O365-015  Sync OneDrive                  [Publié]   |  |
+|  |   Catégorie: Office 365 | Utilisé: 156 fois                |  |
+|  |                                                            |  |
+|  | > PROC-NET-008   Config VPN client              [Publié]   |  |
+|  |   Catégorie: Réseau | Utilisé: 134 fois                    |  |
+|  |                                                            |  |
+|  +------------------------------------------------------------+  |
+|                                                                   |
+|  +------------------------------------------------------------+  |
+|  | EN ATTENTE DE VALIDATION (3)                                |  |
+|  +------------------------------------------------------------+  |
+|  | > Nouvelle procédure imprimante W11             [En attente]|  |
+|  | > Nouvelle procédure Teams cache                [En attente]|  |
+|  +------------------------------------------------------------+  |
+|                                                                   |
++------------------------------------------------------------------+
+    </pre>
+
+    <h3>Fonctionnalités par niveau</h3>
+
+    <table class="table-small">
+        <tr>
+            <th>Action</th>
+            <th>N0</th>
+            <th>N1</th>
+            <th>N2</th>
+            <th>N3</th>
+            <th>N4</th>
+        </tr>
+        <tr>
+            <td>Consulter procédures</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Rechercher dans RAG</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Upload documents</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Valider procédures</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Éditer procédures</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Supprimer</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+        <tr>
+            <td>Import bulk</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">-</td>
+            <td style="text-align:center;">oui</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>10</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 4.3 : INTEGRATION WORKFLOWS -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section4-3">4.3. Intégration avec les workflows</h2>
+
+    <p>Le RAG interagit avec tous les workflows de la plateforme.</p>
+
+    <pre>
++------------------------------------------------------------------+
+|                              RAG                                  |
+|                    (Base de Connaissances)                        |
++------------------------------------------------------------------+
+        ^           ^           |           |
+        |           |           v           v
++-------+---+ +-----+-----+ +---+-------+ +-+-------------+
+| SENTINEL  | | ASSISTANT | | ENRICHIS. | |    WIBOT      |
+|           | | TICKET    | |           | |               |
++-----------+ +-----------+ +-----------+ +---------------+
+        |           |           |           |
+        |           |           |           |
+        v           v           v           v
+
+  Recherche    Recherche     ÉCRIT       Recherche
+  procédures   procédures    nouvelles   toutes
+  urgence      résolution    procédures  requêtes
+    </pre>
+
+    <h3>Interactions détaillées</h3>
+
+    <table>
+        <tr>
+            <th style="width:150px;">Workflow</th>
+            <th>Lecture RAG</th>
+            <th>Écriture RAG</th>
+        </tr>
+        <tr>
+            <td><strong>SENTINEL</strong></td>
+            <td>Recherche procédures d'urgence pour pannes détectées</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td><strong>ASSISTANT TICKET</strong></td>
+            <td>Recherche procédures pour résolution automatique</td>
+            <td>-</td>
+        </tr>
+        <tr>
+            <td><strong>ENRICHISSEUR</strong></td>
+            <td>Vérifie doublons avant génération</td>
+            <td><strong>Publie nouvelles procédures</strong></td>
+        </tr>
+        <tr>
+            <td><strong>WIBOT (tous modes)</strong></td>
+            <td>Enrichit toutes les réponses</td>
+            <td>- (via upload manuel)</td>
+        </tr>
+    </table>
+
+    <h3>Exemple : Assistant Ticket + RAG</h3>
+
+    <div class="workflow-box">
+        <p><strong>Ticket :</strong> "Mon mot de passe Windows ne fonctionne plus"</p>
+        <br>
+        <p><strong>1. Recherche RAG :</strong></p>
+        <p style="font-family: monospace; background: #fff; padding: 8px; border: 1px solid #ddd;">
+            Query: "mot de passe windows ne fonctionne plus"<br>
+            Résultats:<br>
+            - PROC-AD-001: Reset mot de passe AD (0.94)<br>
+            - PROC-AD-002: Déblocage compte AD (0.87)
+        </p>
+        <br>
+        <p><strong>2. Qualification :</strong> SIMPLE (procédure trouvée avec haute similarité)</p>
+        <br>
+        <p><strong>3. Résolution :</strong> Application de PROC-AD-001 via Safeguard</p>
+    </div>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>11</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 5 : ARCHITECTURE TECHNIQUE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section5">5. Architecture technique</h1>
+
+    <h2 id="section5-1">5.1. Stack technologique</h2>
+
+    <table>
+        <tr>
+            <th style="width:150px;">Composant</th>
+            <th>Technologie</th>
+            <th>Rôle</th>
+        </tr>
+        <tr>
+            <td><strong>Base de données</strong></td>
+            <td>PostgreSQL 14</td>
+            <td>Stockage des métadonnées et textes</td>
+        </tr>
+        <tr>
+            <td><strong>Extension vecteur</strong></td>
+            <td>pgvector</td>
+            <td>Stockage et recherche de vecteurs</td>
+        </tr>
+        <tr>
+            <td><strong>Index</strong></td>
+            <td>HNSW (pgvector)</td>
+            <td>Recherche ANN (Approximate Nearest Neighbors)</td>
+        </tr>
+        <tr>
+            <td><strong>Embedding</strong></td>
+            <td>Mistral Embed</td>
+            <td>Vectorisation des textes</td>
+        </tr>
+        <tr>
+            <td><strong>Extraction PDF</strong></td>
+            <td>PyMuPDF / pdfplumber</td>
+            <td>Extraction texte des PDF</td>
+        </tr>
+        <tr>
+            <td><strong>Extraction Word</strong></td>
+            <td>python-docx</td>
+            <td>Extraction texte des .docx</td>
+        </tr>
+    </table>
+
+    <h2 id="section5-2">5.2. Modèle de données</h2>
+
+    <pre>
++------------------------------------------------------------------+
+|                     TABLE: knowledge_documents                    |
++------------------------------------------------------------------+
+| id            | UUID PRIMARY KEY                                  |
+| title         | VARCHAR(255) NOT NULL                             |
+| source_type   | ENUM('upload', 'enrichisseur', 'import')          |
+| source_ref    | VARCHAR(100)  -- ex: ticket_id, file_name         |
+| category      | VARCHAR(100)                                      |
+| status        | ENUM('draft', 'published', 'archived')            |
+| content_raw   | TEXT          -- texte brut complet               |
+| metadata      | JSONB         -- tags, auteur, version, etc.      |
+| created_at    | TIMESTAMP                                         |
+| updated_at    | TIMESTAMP                                         |
+| usage_count   | INTEGER DEFAULT 0                                 |
++------------------------------------------------------------------+
+
++------------------------------------------------------------------+
+|                     TABLE: knowledge_chunks                       |
++------------------------------------------------------------------+
+| id            | UUID PRIMARY KEY                                  |
+| document_id   | UUID REFERENCES knowledge_documents(id)           |
+| chunk_index   | INTEGER       -- ordre dans le document           |
+| content       | TEXT          -- texte du chunk                   |
+| embedding     | vector(1024)  -- vecteur Mistral Embed            |
+| created_at    | TIMESTAMP                                         |
++------------------------------------------------------------------+
+| INDEX: idx_chunks_embedding USING hnsw (embedding vector_cosine_ops) |
++------------------------------------------------------------------+
+    </pre>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>12</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 5.3 : INDEX ET PERFORMANCES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section5-3">5.3. Index et performances</h2>
+
+    <h3>Index HNSW (Hierarchical Navigable Small World)</h3>
+
+    <p>HNSW est un algorithme de recherche approximative de plus proches voisins, optimisé pour les espaces à haute dimension.</p>
+
+    <table>
+        <tr>
+            <th style="width:150px;">Paramètre</th>
+            <th>Valeur</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>m</code></td>
+            <td>16</td>
+            <td>Nombre de connexions par noeud</td>
+        </tr>
+        <tr>
+            <td><code>ef_construction</code></td>
+            <td>64</td>
+            <td>Précision lors de la construction de l'index</td>
+        </tr>
+        <tr>
+            <td><code>ef_search</code></td>
+            <td>40</td>
+            <td>Précision lors de la recherche</td>
+        </tr>
+    </table>
+
+    <h3>Requête de recherche optimisée</h3>
+
+    <pre>
+-- Recherche des 5 chunks les plus similaires
+SELECT
+    c.id,
+    c.content,
+    d.title,
+    d.category,
+    1 - (c.embedding <=> $1) AS similarity
+FROM knowledge_chunks c
+JOIN knowledge_documents d ON c.document_id = d.id
+WHERE d.status = 'published'
+ORDER BY c.embedding <=> $1
+LIMIT 5;
+
+-- $1 = vecteur de la question (1024 dimensions)
+-- <=> = opérateur distance cosinus (pgvector)
+    </pre>
+
+    <h3>Performances attendues</h3>
+
+    <table>
+        <tr>
+            <th>Métrique</th>
+            <th style="width:120px;">Objectif</th>
+            <th>Notes</th>
+        </tr>
+        <tr>
+            <td>Temps de recherche (5 chunks)</td>
+            <td>< 50 ms</td>
+            <td>Avec index HNSW, jusqu'à 100k chunks</td>
+        </tr>
+        <tr>
+            <td>Temps d'ingestion (1 doc)</td>
+            <td>< 5 s</td>
+            <td>Dépend de la taille du document</td>
+        </tr>
+        <tr>
+            <td>Précision recherche</td>
+            <td>> 95%</td>
+            <td>Recall@5 sur requêtes de test</td>
+        </tr>
+        <tr>
+            <td>Capacité maximale</td>
+            <td>500k chunks</td>
+            <td>Avant dégradation significative</td>
+        </tr>
+    </table>
+
+    <div class="info">
+        <strong>Scaling :</strong> Pour des volumes plus importants (> 500k chunks), envisager une migration vers une base vectorielle dédiée (Pinecone, Weaviate, Qdrant).
+    </div>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>13</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 6 : DIAGRAMMES -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section6">6. Diagrammes de flux</h1>
+
+    <h2 id="section6-1">6.1. Flux d'ingestion</h2>
+
+    <pre>
+    Document uploadé
+    (PDF, Word, MD)
+            |
+            v
+    +------------------------------------------+
+    | 1. Validation format                     |
+    |    - Extension supportée ?               |
+    |    - Taille < 10 MB ?                    |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 2. Extraction texte                      |
+    |    - PyMuPDF (PDF)                       |
+    |    - python-docx (Word)                  |
+    |    - Direct (MD, TXT)                    |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 3. Nettoyage                             |
+    |    - Suppression caractères spéciaux    |
+    |    - Normalisation espaces               |
+    |    - Détection langue                    |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 4. Création document                     |
+    |    INSERT knowledge_documents            |
+    |    status = 'draft'                      |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 5. Chunking                              |
+    |    - Découpage 500 car / 50 overlap      |
+    |    - Génération N chunks                 |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 6. Vectorisation batch                   |
+    |    - API Mistral Embed                   |
+    |    - 1024 dimensions par chunk           |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 7. Stockage chunks                       |
+    |    INSERT knowledge_chunks               |
+    |    (avec embeddings)                     |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 8. Update document                       |
+    |    status = 'published'                  |
+    +------------------------------------------+
+    </pre>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>14</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 6.2 : FLUX RECHERCHE -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h2 id="section6-2">6.2. Flux de recherche</h2>
+
+    <pre>
+    Question utilisateur
+    "Comment configurer le VPN ?"
+            |
+            v
+    +------------------------------------------+
+    | 1. Réception requête                     |
+    |    - Mode: Flash/Pro/Code/Agent          |
+    |    - Top-K selon mode                    |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 2. Vectorisation question                |
+    |    - API Mistral Embed                   |
+    |    - 1024 dimensions                     |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 3. Recherche PostgreSQL                  |
+    |    SELECT ... ORDER BY embedding <=> ?   |
+    |    LIMIT top_k                           |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 4. Filtrage résultats                    |
+    |    - Seuil similarité > 0.50             |
+    |    - Dédoublonnage documents             |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 5. Enrichissement contexte               |
+    |    - Récupération métadonnées            |
+    |    - Titre, catégorie, source            |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 6. Construction prompt LLM               |
+    |    - Système + Documents + Question      |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 7. Appel LLM                             |
+    |    - Génération réponse                  |
+    |    - Citation sources                    |
+    +------------------------------------------+
+            |
+            v
+    +------------------------------------------+
+    | 8. Update statistiques                   |
+    |    - Increment usage_count               |
+    |    - Log recherche                       |
+    +------------------------------------------+
+            |
+            v
+    Réponse enrichie + sources
+    </pre>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>15</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ============================================ -->
+<!-- SECTION 7 : CONFIGURATION -->
+<!-- ============================================ -->
+<div class="page">
+    <div class="header">
+        <div class="header-left">
+            <span class="header-icon">&#129504;</span>
+            <span>RAG - Base de Connaissances</span>
+        </div>
+        <span>WIDIP</span>
+    </div>
+
+    <h1 id="section7">7. Configuration et évolutions</h1>
+
+    <h2>7.1. Paramètres configurables</h2>
+
+    <table>
+        <tr>
+            <th>Paramètre</th>
+            <th style="width:100px;">Défaut</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><code>CHUNK_SIZE</code></td>
+            <td>500</td>
+            <td>Taille des chunks (caractères)</td>
+        </tr>
+        <tr>
+            <td><code>CHUNK_OVERLAP</code></td>
+            <td>50</td>
+            <td>Chevauchement entre chunks</td>
+        </tr>
+        <tr>
+            <td><code>SIMILARITY_THRESHOLD</code></td>
+            <td>0.50</td>
+            <td>Seuil minimum de similarité</td>
+        </tr>
+        <tr>
+            <td><code>TOP_K_DEFAULT</code></td>
+            <td>5</td>
+            <td>Nombre de résultats par défaut</td>
+        </tr>
+        <tr>
+            <td><code>MAX_FILE_SIZE_MB</code></td>
+            <td>10</td>
+            <td>Taille max des fichiers uploadés</td>
+        </tr>
+        <tr>
+            <td><code>EMBEDDING_MODEL</code></td>
+            <td>mistral-embed</td>
+            <td>Modèle de vectorisation</td>
+        </tr>
+        <tr>
+            <td><code>EMBEDDING_DIMENSIONS</code></td>
+            <td>1024</td>
+            <td>Dimensions des vecteurs</td>
+        </tr>
+    </table>
+
+    <h2>7.2. Évolutions prévues</h2>
+
+    <table>
+        <tr>
+            <th>Évolution</th>
+            <th style="width:80px;">Priorité</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><strong>Reranking</strong></td>
+            <td>Haute</td>
+            <td>Ajouter un modèle de reranking pour affiner les résultats</td>
+        </tr>
+        <tr>
+            <td><strong>Chunking intelligent</strong></td>
+            <td>Moyenne</td>
+            <td>Découper par sections sémantiques plutôt que par taille</td>
+        </tr>
+        <tr>
+            <td><strong>Recherche hybride</strong></td>
+            <td>Moyenne</td>
+            <td>Combiner recherche vectorielle et full-text (BM25)</td>
+        </tr>
+        <tr>
+            <td><strong>Multi-tenant</strong></td>
+            <td>Basse</td>
+            <td>Isolation des connaissances par client/entité</td>
+        </tr>
+        <tr>
+            <td><strong>OCR images</strong></td>
+            <td>Basse</td>
+            <td>Extraction texte des images dans les PDF</td>
+        </tr>
+    </table>
+
+    <div class="success">
+        <strong>Métriques de succès :</strong>
+        <ul>
+            <li>Précision recherche (Recall@5) > 95%</li>
+            <li>Temps de réponse < 100ms</li>
+            <li>Couverture des sujets > 80% des demandes</li>
+            <li>Satisfaction utilisateurs > 4/5 sur la pertinence</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <span>Base de Connaissances RAG</span>
+        <span>Documentation Technique et Fonctionnelle</span>
+        <span>16</span>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flux Alerte SMS - WIDIP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #10b981;
+            --secondary-light: #34d399;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #8b5cf6;
+            --cyan: #06b6d4;
+            --pink: #ec4899;
+
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-subtle: #f1f5f9;
+            --border: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            min-height: 100vh;
+            color: var(--text-primary);
+            line-height: 1.5;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.9);
+            font-weight: 400;
+        }
+
+        .header .badges {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .header .badge {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Navigation */
+        .tab-nav {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .tab-btn.active.sentinel {
+            background: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        /* Content */
+        .content {
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        .flow-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .flow-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Flow Title */
+        .flow-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .flow-title h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .flow-title p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Step Cards */
+        .step-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 0;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .step-card:hover {
+            box-shadow: var(--shadow);
+            border-color: var(--primary-light);
+        }
+
+        .step-card.sentinel:hover {
+            border-color: var(--secondary-light);
+        }
+
+        .step-card.safeguard {
+            border-left: 4px solid var(--pink);
+        }
+
+        .step-card.api {
+            border-left: 4px solid var(--cyan);
+        }
+
+        .step-card.glpi {
+            border-left: 4px solid var(--purple);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .step-card.sentinel .step-number {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--secondary-light) 100%);
+        }
+
+        .step-card.safeguard .step-number {
+            background: linear-gradient(135deg, var(--pink) 0%, #f472b6 100%);
+        }
+
+        .step-card.api .step-number {
+            background: linear-gradient(135deg, var(--cyan) 0%, #22d3ee 100%);
+        }
+
+        .step-card.glpi .step-number {
+            background: linear-gradient(135deg, var(--purple) 0%, #a78bfa 100%);
+        }
+
+        .step-title h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .step-title .component {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'SF Mono', 'Consolas', monospace;
+        }
+
+        .level-badge {
+            margin-left: auto;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .level-badge.l0 {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .level-badge.l4 {
+            background: #fce7f3;
+            color: #9d174d;
+        }
+
+        .step-content {
+            padding-left: 44px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Data Block */
+        .data-block {
+            background: var(--bg-subtle);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+        }
+
+        .data-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .data-key {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .data-value {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-weight: 500;
+        }
+
+        .data-value.success { color: var(--secondary); }
+        .data-value.warning { color: var(--warning); }
+        .data-value.danger { color: var(--danger); }
+        .data-value.purple { color: var(--purple); }
+
+        /* Arrow Connectors */
+        .arrow-connector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 35px;
+            position: relative;
+        }
+
+        .arrow-line {
+            width: 2px;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            background: var(--border);
+        }
+
+        .arrow-line::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: var(--primary);
+            animation: flowDown 0.8s linear infinite;
+        }
+
+        .arrow-connector.sentinel .arrow-line::before {
+            background: var(--secondary);
+        }
+
+        .arrow-connector.glpi .arrow-line::before {
+            background: var(--purple);
+        }
+
+        @keyframes flowDown {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(55px); }
+        }
+
+        .arrow-head {
+            position: absolute;
+            bottom: 0;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid var(--primary);
+        }
+
+        .arrow-connector.sentinel .arrow-head {
+            border-top-color: var(--secondary);
+        }
+
+        .arrow-connector.glpi .arrow-head {
+            border-top-color: var(--purple);
+        }
+
+        /* Branch Container */
+        .branch-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            position: relative;
+        }
+
+        .branch-container::before {
+            content: '';
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--purple), var(--primary));
+        }
+
+        .branch {
+            position: relative;
+        }
+
+        .branch::before {
+            content: '';
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            width: 2px;
+            height: 18px;
+        }
+
+        .branch.left::before {
+            background: var(--purple);
+        }
+
+        .branch.right::before {
+            background: var(--primary);
+        }
+
+        .branch-label {
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .branch.left .branch-label {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(139, 92, 246, 0.05));
+            color: var(--purple);
+        }
+
+        .branch.right .branch-label {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
+            color: var(--primary);
+        }
+
+        /* Merge point */
+        .merge-point {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px 0;
+            position: relative;
+        }
+
+        .merge-point::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--purple), var(--cyan));
+        }
+
+        .merge-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--cyan), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* SMS Preview */
+        .sms-preview {
+            background: linear-gradient(135deg, #fefce8, #fef9c3);
+            border: 1px solid #fde047;
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 0.8rem;
+            color: #713f12;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .sms-preview::before {
+            content: '📱 SMS';
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: #fde047;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sms-preview .ticket-ref {
+            background: #fde047;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* UI Preview */
+        .ui-preview {
+            background: var(--bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .ui-header {
+            background: var(--bg-subtle);
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .ui-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #fca5a5;
+        }
+
+        .ui-dot:nth-child(2) { background: #fcd34d; }
+        .ui-dot:nth-child(3) { background: #6ee7b7; }
+
+        .ui-title {
+            margin-left: 8px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .ui-body {
+            padding: 15px;
+        }
+
+        .ui-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--bg-subtle);
+            font-size: 0.85rem;
+        }
+
+        .ui-label {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .ui-value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .ui-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .ui-status.down {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Contact list */
+        .contact-list {
+            margin: 12px 0;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-subtle);
+            border-radius: 8px;
+            margin-bottom: 6px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .contact-item:hover {
+            border-color: var(--primary-light);
+        }
+
+        .contact-item.selected {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .contact-radio {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .contact-item.selected .contact-radio {
+            border-color: var(--primary);
+            background: var(--primary);
+            box-shadow: inset 0 0 0 3px white;
+        }
+
+        .contact-info { flex: 1; }
+
+        .contact-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .contact-phone {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        .contact-badge {
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .contact-badge.recommended {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .contact-badge.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .ui-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .ui-btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .ui-btn.primary {
+            background: var(--primary);
+            color: white;
+            flex: 1;
+        }
+
+        .ui-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .ui-btn.secondary {
+            background: var(--bg-subtle);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        /* Comparison */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .comparison-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .comparison-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+        }
+
+        .comparison-card h3 .icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .comparison-card.sentinel h3 .icon {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+        }
+
+        .comparison-list {
+            list-style: none;
+        }
+
+        .comparison-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--bg-subtle);
+            font-size: 0.85rem;
+        }
+
+        .comparison-list li:last-child {
+            border-bottom: none;
+        }
+
+        .comparison-list li strong {
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 2px;
+            font-weight: 500;
+        }
+
+        .comparison-list li span {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        /* Common Section */
+        .common-section {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(16, 185, 129, 0.05));
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid var(--border);
+        }
+
+        .common-section h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .common-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .common-item {
+            text-align: center;
+            padding: 15px 10px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .common-item .icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .common-item h4 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .common-item p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        /* Architecture */
+        .arch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .arch-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+        }
+
+        .arch-card.api { border-left-color: var(--cyan); }
+        .arch-card.cache { border-left-color: var(--warning); }
+        .arch-card.glpi { border-left-color: var(--purple); }
+
+        .arch-card h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .arch-card code {
+            font-size: 0.75rem;
+            background: var(--bg-subtle);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--primary);
+            font-family: 'SF Mono', monospace;
+        }
+
+        .arch-card p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 25px 20px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 700px) {
+            .branch-container {
+                grid-template-columns: 1fr;
+            }
+            .branch-container::before {
+                display: none;
+            }
+            .branch::before {
+                display: none;
+            }
+            .step-content {
+                padding-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>Flux Alerte SMS - Device DOWN</h1>
+            <p class="subtitle">Notification referent + Creation ticket GLPI automatique</p>
+            <div class="badges">
+                <span class="badge">AllMySMS v9.0</span>
+                <span class="badge">GLPI Ticket</span>
+                <span class="badge">SAFEGUARD L4</span>
+                <span class="badge">Mistral Large</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="tab-nav">
+        <button class="tab-btn active" onclick="showTab('agent')">
+            <span>💬</span> Mode Agent
+        </button>
+        <button class="tab-btn" onclick="showTab('sentinel')">
+            <span>🔄</span> Workflow Sentinel
+        </button>
+        <button class="tab-btn" onclick="showTab('comparison')">
+            <span>📊</span> Comparaison
+        </button>
+    </nav>
+
+    <main class="content">
+
+        <!-- FLUX 1: Mode Agent -->
+        <section id="agent-section" class="flow-section active">
+            <div class="flow-title">
+                <h2>Mode Agent WIBOT</h2>
+                <p>Interaction utilisateur via le chatbot intelligent</p>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">
+                        <h3>Demande Utilisateur</h3>
+                        <span class="component">Chat WIBOT</span>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <div class="sms-preview" style="background: linear-gradient(135deg, #ede9fe, #ddd6fe); border-color: #a78bfa;">
+                        "Verifie les devices down sur Observium et alerte le referent"
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">
+                        <h3>Backend + LLM Mistral</h3>
+                        <span class="component">agent_streaming_service.py</span>
+                    </div>
+                </div>
+                <div class="step-content">
+                    Session SSE active. Le LLM analyse la demande et orchestre les outils MCP.
+                </div>
+            </div>
+
+            <div class="arrow-connector">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div class="step-title">
+                        <h3>Detection Devices DOWN</h3>
+                        <span class="component">observium_get_devices_down</span>
+                    </div>
+                    <span class="level-badge l0">L0 AUTO</span>
+                </div>
+                <div class="step-content">
+                    <div class="data-block">
+                        <div class="data-item">
+                            <span class="data-key">Hostname</span>
+                            <span class="data-value">mfi-3a-smh-sw02</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Status</span>
+                            <span class="data-value danger">DOWN</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Duree</span>
+                            <span class="data-value warning">25 min</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Type</span>
+                            <span class="data-value">Switch reseau</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+
+            <!-- Step 4: Creation Ticket GLPI (AVANT SAFEGUARD) -->
+            <div class="step-card glpi">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <div class="step-title">
+                        <h3>Creation Ticket GLPI</h3>
+                        <span class="component">glpi_create_ticket</span>
+                    </div>
+                    <span class="level-badge l0">L0 AUTO</span>
+                </div>
+                <div class="step-content">
+                    <strong style="color: var(--purple);">Ticket cree automatiquement</strong> des la detection de la panne (+20min DOWN).
+                    <div class="data-block">
+                        <div class="data-item">
+                            <span class="data-key">Titre</span>
+                            <span class="data-value">Panne SW02 - MFI-SMH</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Categorie</span>
+                            <span class="data-value">Incident Reseau</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Priorite</span>
+                            <span class="data-value danger">Haute</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Numero</span>
+                            <span class="data-value purple" style="font-weight: 700;">#INC-2024-00847</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector glpi">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+
+            <!-- Step 5: SAFEGUARD -->
+            <div class="step-card safeguard">
+                <div class="step-header">
+                    <div class="step-number">5</div>
+                    <div class="step-title">
+                        <h3>SAFEGUARD - Validation SMS</h3>
+                        <span class="component">sms_alert_device_down</span>
+                    </div>
+                    <span class="level-badge l4">L4_SMS</span>
+                </div>
+                <div class="step-content">
+                    <strong style="color: var(--pink);">Validation humaine requise</strong> pour l'envoi du SMS. Le ticket est deja cree.
+                    <div class="data-block">
+                        <div class="data-item">
+                            <span class="data-key">Ticket</span>
+                            <span class="data-value purple">#INC-2024-00847</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Entite</span>
+                            <span class="data-value">MFI (ID: 66)</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Contacts</span>
+                            <span class="data-value">3 trouves</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Status</span>
+                            <span class="data-value warning">En attente</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+
+            <!-- Step 6: Interface Validation -->
+            <div class="step-card">
+                <div class="step-header">
+                    <div class="step-number">6</div>
+                    <div class="step-title">
+                        <h3>Interface de Validation</h3>
+                        <span class="component">Modal SAFEGUARD L4_SMS</span>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <div class="ui-preview">
+                        <div class="ui-header">
+                            <span class="ui-dot"></span>
+                            <span class="ui-dot"></span>
+                            <span class="ui-dot"></span>
+                            <span class="ui-title">ALERTE SMS - Ticket #INC-2024-00847</span>
+                        </div>
+                        <div class="ui-body">
+                            <div class="ui-row">
+                                <span class="ui-label">Device</span>
+                                <span class="ui-value">mfi-3a-smh-sw02 (Switch)</span>
+                            </div>
+                            <div class="ui-row">
+                                <span class="ui-label">Status</span>
+                                <span class="ui-status down">🔴 DOWN 25min</span>
+                            </div>
+                            <div class="ui-row">
+                                <span class="ui-label">Ticket GLPI</span>
+                                <span class="ui-value" style="color: var(--purple); font-weight: 600;">#INC-2024-00847</span>
+                            </div>
+
+                            <div class="contact-list">
+                                <div class="contact-item selected">
+                                    <div class="contact-radio"></div>
+                                    <div class="contact-info">
+                                        <div class="contact-name">Jean Dupont</div>
+                                        <div class="contact-phone">06 12 34 56 78</div>
+                                    </div>
+                                    <span class="contact-badge recommended">Recommande</span>
+                                </div>
+                                <div class="contact-item">
+                                    <div class="contact-radio"></div>
+                                    <div class="contact-info">
+                                        <div class="contact-name">Marie Martin</div>
+                                        <div class="contact-phone">07 98 76 54 32</div>
+                                    </div>
+                                    <span class="contact-badge active">Actif</span>
+                                </div>
+                            </div>
+
+                            <div class="ui-buttons">
+                                <button class="ui-btn secondary">❌ Annuler</button>
+                                <button class="ui-btn primary">📱 Envoyer SMS</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+
+            <!-- Step 7: Envoi SMS -->
+            <div class="step-card api">
+                <div class="step-header">
+                    <div class="step-number">7</div>
+                    <div class="step-title">
+                        <h3>Envoi SMS avec Numero Ticket</h3>
+                        <span class="component">AllMySMS v9.0 - sms_alert_send</span>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <div class="data-block">
+                        <div class="data-item">
+                            <span class="data-key">Destinataire</span>
+                            <span class="data-value">Jean Dupont</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Telephone</span>
+                            <span class="data-value">336123456789</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Sender</span>
+                            <span class="data-value">WIDIP</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Ticket inclus</span>
+                            <span class="data-value purple">#INC-2024-00847</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+
+            <!-- Final: SMS Example -->
+            <div class="step-card" style="border: 2px solid var(--secondary); background: linear-gradient(135deg, rgba(16, 185, 129, 0.03), rgba(6, 182, 212, 0.03));">
+                <div class="step-header">
+                    <div class="step-number" style="background: linear-gradient(135deg, var(--secondary), var(--cyan));">✓</div>
+                    <div class="step-title">
+                        <h3>SMS Envoye au Referent</h3>
+                        <span class="component">Confirmation - Campaign ID: abc123</span>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <div style="background: #fefce8; border: 2px solid #facc15; border-radius: 12px; padding: 20px; margin-bottom: 15px; position: relative;">
+                        <div style="position: absolute; top: -12px; left: 15px; background: #facc15; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; color: #713f12;">
+                            📱 EXEMPLE DE SMS RECU
+                        </div>
+                        <div style="font-family: 'SF Mono', 'Consolas', monospace; font-size: 0.9rem; color: #1e293b; line-height: 1.6; margin-top: 5px;">
+                            <strong>ALERTE WIDIP - MFI</strong><br><br>
+                            🔴 <strong>Equipement DOWN</strong><br>
+                            Switch SW02 (Saint-Martin-d'Heres)<br>
+                            Indisponible depuis 25 minutes<br><br>
+                            📋 <strong>Ticket:</strong> <span style="background: #fde047; padding: 2px 8px; border-radius: 4px; font-weight: 700;">#INC-2024-00847</span><br><br>
+                            Une intervention est en cours.<br>
+                            Contact: support@widip.fr
+                        </div>
+                    </div>
+                    <div class="data-block">
+                        <div class="data-item">
+                            <span class="data-key">Destinataire</span>
+                            <span class="data-value success">Jean Dupont (Referent MFI)</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Status AllMySMS</span>
+                            <span class="data-value success">100 (Sent)</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Credits utilises</span>
+                            <span class="data-value">1</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Cache referent</span>
+                            <span class="data-value success">TTL 14j</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FLUX 2: Workflow Sentinel -->
+        <section id="sentinel-section" class="flow-section">
+            <div class="flow-title">
+                <h2>Workflow Sentinel</h2>
+                <p>Surveillance automatique et alertes proactives</p>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="step-card sentinel">
+                <div class="step-header">
+                    <div class="step-number">1</div>
+                    <div class="step-title">
+                        <h3>Polling Observium</h3>
+                        <span class="component">workflow_engine.py</span>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <div class="data-block">
+                        <div class="data-item">
+                            <span class="data-key">Intervalle</span>
+                            <span class="data-value">5 minutes</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Mode</span>
+                            <span class="data-value">Background continu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector sentinel">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step-card sentinel">
+                <div class="step-header">
+                    <div class="step-number">2</div>
+                    <div class="step-title">
+                        <h3>Device Tracker Redis</h3>
+                        <span class="component">device_down_tracker.py</span>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <div class="data-block">
+                        <div class="data-item">
+                            <span class="data-key">Duree DOWN</span>
+                            <span class="data-value warning">25 min</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Seuil alerte</span>
+                            <span class="data-value">20 min</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">SMS envoye</span>
+                            <span class="data-value danger">false</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Ticket cree</span>
+                            <span class="data-value danger">false</span>
+                        </div>
+                    </div>
+                    <p style="margin-top: 10px; color: var(--secondary); font-weight: 500;">
+                        ✓ 25min >= 20min → ALERTE REQUISE
+                    </p>
+                </div>
+            </div>
+
+            <div class="arrow-connector sentinel">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+
+            <!-- Step 3: Creation Ticket GLPI (AVANT SAFEGUARD) -->
+            <div class="step-card glpi">
+                <div class="step-header">
+                    <div class="step-number">3</div>
+                    <div class="step-title">
+                        <h3>Creation Ticket GLPI</h3>
+                        <span class="component">glpi_create_ticket</span>
+                    </div>
+                    <span class="level-badge l0">L0 AUTO</span>
+                </div>
+                <div class="step-content">
+                    <strong style="color: var(--purple);">Ticket cree automatiquement</strong> des le depassement du seuil.
+                    <div class="data-block">
+                        <div class="data-item">
+                            <span class="data-key">Numero</span>
+                            <span class="data-value purple" style="font-weight: 700;">#INC-2024-00848</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Status</span>
+                            <span class="data-value success">Ouvert</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Priorite</span>
+                            <span class="data-value danger">Haute</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector glpi">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+
+            <!-- Step 4: SAFEGUARD -->
+            <div class="step-card safeguard">
+                <div class="step-header">
+                    <div class="step-number">4</div>
+                    <div class="step-title">
+                        <h3>SAFEGUARD - Validation SMS</h3>
+                        <span class="component">sms_alert_device_down</span>
+                    </div>
+                    <span class="level-badge l4">L4_SMS</span>
+                </div>
+                <div class="step-content">
+                    <strong style="color: var(--pink);">Validation humaine requise.</strong> Le ticket #INC-2024-00848 est deja cree.
+                    <div class="data-block">
+                        <div class="data-item">
+                            <span class="data-key">Status</span>
+                            <span class="data-value warning">En attente</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Ticket</span>
+                            <span class="data-value purple">#INC-2024-00848</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Storage</span>
+                            <span class="data-value">PostgreSQL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector sentinel">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+
+            <!-- Step 5: Dashboard -->
+            <div class="step-card sentinel">
+                <div class="step-header">
+                    <div class="step-number">5</div>
+                    <div class="step-title">
+                        <h3>Dashboard SAFEGUARD</h3>
+                        <span class="component">/safeguard</span>
+                    </div>
+                </div>
+                <div class="step-content">
+                    Le technicien voit la demande en attente et valide l'envoi.
+                    <div class="ui-preview">
+                        <div class="ui-header">
+                            <span class="ui-dot"></span>
+                            <span class="ui-dot"></span>
+                            <span class="ui-dot"></span>
+                            <span class="ui-title">ALERTE SMS - Ticket #INC-2024-00848</span>
+                        </div>
+                        <div class="ui-body">
+                            <div style="background: #fef2f2; border-radius: 8px; padding: 12px; border-left: 3px solid var(--danger);">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span class="level-badge l4">L4_SMS</span>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted);">09:55</span>
+                                </div>
+                                <div style="font-weight: 600; margin-bottom: 4px;">mfi-3a-smh-sw02 (DOWN 25min)</div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Ticket: <strong style="color: var(--purple);">#INC-2024-00848</strong></div>
+                                <div style="font-size: 0.8rem; color: var(--text-secondary);">Contact: Jean Dupont (recommande)</div>
+                                <button class="ui-btn primary" style="margin-top: 10px; padding: 8px 14px; font-size: 0.8rem;">
+                                    📱 Envoyer SMS
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector sentinel">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+
+            <!-- Step 6: Envoi SMS -->
+            <div class="step-card api">
+                <div class="step-header">
+                    <div class="step-number">6</div>
+                    <div class="step-title">
+                        <h3>Envoi SMS avec Ticket</h3>
+                        <span class="component">AllMySMS v9.0</span>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <div class="data-block">
+                        <div class="data-item">
+                            <span class="data-key">Destinataire</span>
+                            <span class="data-value">Marie Martin</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Telephone</span>
+                            <span class="data-value">336798765432</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Ticket inclus</span>
+                            <span class="data-value purple">#INC-2024-00848</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow-connector sentinel">
+                <div class="arrow-line"></div>
+                <div class="arrow-head"></div>
+            </div>
+
+            <!-- Final -->
+            <div class="step-card sentinel" style="border: 2px solid var(--secondary);">
+                <div class="step-header">
+                    <div class="step-number">✓</div>
+                    <div class="step-title">
+                        <h3>SMS Envoye + Tracker mis a jour</h3>
+                    </div>
+                </div>
+                <div class="step-content">
+                    <div style="background: #fefce8; border: 2px solid #facc15; border-radius: 12px; padding: 20px; margin-bottom: 15px; position: relative;">
+                        <div style="position: absolute; top: -12px; left: 15px; background: #facc15; padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; color: #713f12;">
+                            📱 EXEMPLE DE SMS RECU
+                        </div>
+                        <div style="font-family: 'SF Mono', 'Consolas', monospace; font-size: 0.9rem; color: #1e293b; line-height: 1.6; margin-top: 5px;">
+                            <strong>ALERTE WIDIP - MFI</strong><br><br>
+                            🔴 <strong>Equipement DOWN</strong><br>
+                            Switch SW02 (Saint-Martin-d'Heres)<br>
+                            Indisponible depuis 25 minutes<br><br>
+                            📋 <strong>Ticket:</strong> <span style="background: #fde047; padding: 2px 8px; border-radius: 4px; font-weight: 700;">#INC-2024-00848</span><br><br>
+                            Une intervention est en cours.<br>
+                            Contact: support@widip.fr
+                        </div>
+                    </div>
+                    <div class="data-block">
+                        <div class="data-item">
+                            <span class="data-key">alert_sms_sent</span>
+                            <span class="data-value success">true</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">ticket_created</span>
+                            <span class="data-value success">true</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Cache referent</span>
+                            <span class="data-value success">Marie (TTL 14j)</span>
+                        </div>
+                        <div class="data-item">
+                            <span class="data-key">Re-alerte</span>
+                            <span class="data-value">Bloquee</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- COMPARISON -->
+        <section id="comparison-section" class="flow-section">
+            <div class="flow-title">
+                <h2>Comparaison des Flux</h2>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <h3>
+                        <span class="icon">💬</span>
+                        Mode Agent WIBOT
+                    </h3>
+                    <ul class="comparison-list">
+                        <li>
+                            <strong>Declencheur</strong>
+                            <span>Demande explicite de l'utilisateur</span>
+                        </li>
+                        <li>
+                            <strong>Detection</strong>
+                            <span>Agent appelle Observium a la demande</span>
+                        </li>
+                        <li>
+                            <strong>Contexte</strong>
+                            <span>Conversation interactive dans le chat</span>
+                        </li>
+                        <li>
+                            <strong>Validation</strong>
+                            <span>Modal inline dans le chat</span>
+                        </li>
+                        <li>
+                            <strong>Ticket GLPI</strong>
+                            <span>Cree automatiquement avec la panne</span>
+                        </li>
+                        <li>
+                            <strong>SMS</strong>
+                            <span>Contient le numero du ticket GLPI</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="comparison-card sentinel">
+                    <h3>
+                        <span class="icon">🔄</span>
+                        Workflow Sentinel
+                    </h3>
+                    <ul class="comparison-list">
+                        <li>
+                            <strong>Declencheur</strong>
+                            <span>Polling automatique (toutes les 5 min)</span>
+                        </li>
+                        <li>
+                            <strong>Detection</strong>
+                            <span>Surveillance continue en background</span>
+                        </li>
+                        <li>
+                            <strong>Contexte</strong>
+                            <span>Execution silencieuse autonome</span>
+                        </li>
+                        <li>
+                            <strong>Validation</strong>
+                            <span>Dashboard SAFEGUARD dedie</span>
+                        </li>
+                        <li>
+                            <strong>Ticket GLPI</strong>
+                            <span>Cree automatiquement avec la panne</span>
+                        </li>
+                        <li>
+                            <strong>SMS</strong>
+                            <span>Contient le numero du ticket GLPI</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="common-section">
+                <h3>🔗 Points Communs</h3>
+                <div class="common-grid">
+                    <div class="common-item">
+                        <div class="icon">🔧</div>
+                        <h4>Meme Tool MCP</h4>
+                        <p>sms_alert_device_down</p>
+                    </div>
+                    <div class="common-item">
+                        <div class="icon">🔒</div>
+                        <h4>SAFEGUARD</h4>
+                        <p>Niveau L4_SMS</p>
+                    </div>
+                    <div class="common-item">
+                        <div class="icon">🎫</div>
+                        <h4>Ticket GLPI</h4>
+                        <p>Cree automatiquement</p>
+                    </div>
+                    <div class="common-item">
+                        <div class="icon">📱</div>
+                        <h4>AllMySMS</h4>
+                        <p>API v9.0 directe</p>
+                    </div>
+                    <div class="common-item">
+                        <div class="icon">💾</div>
+                        <h4>Cache Redis</h4>
+                        <p>TTL 7j / 14j</p>
+                    </div>
+                    <div class="common-item">
+                        <div class="icon">🧠</div>
+                        <h4>Apprentissage</h4>
+                        <p>Cache mis a jour</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Architecture summary -->
+            <div style="margin-top: 30px;">
+                <h3 style="text-align: center; margin-bottom: 20px; font-size: 1rem;">📐 Composants Techniques</h3>
+                <div class="arch-grid">
+                    <div class="arch-card">
+                        <h4>SMS Alert Tools</h4>
+                        <code>sms_alert_tools.py</code>
+                        <p>3 tools MCP exposes</p>
+                    </div>
+                    <div class="arch-card api">
+                        <h4>AllMySMS Client</h4>
+                        <code>allmysms.py</code>
+                        <p>API v9.0 envoi cible</p>
+                    </div>
+                    <div class="arch-card glpi">
+                        <h4>GLPI Client</h4>
+                        <code>glpi_client.py</code>
+                        <p>Creation tickets auto</p>
+                    </div>
+                    <div class="arch-card cache">
+                        <h4>Referent Cache</h4>
+                        <code>referent_cache.py</code>
+                        <p>Redis TTL 7j/14j</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <strong>WIDIP</strong> - Flux Alerte SMS + Ticket GLPI | AllMySMS v9.0 | Mistral Large 2512
+    </footer>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.flow-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'sentinel'));
+
+            document.getElementById(tabName + '-section').classList.add('active');
+
+            const btns = document.querySelectorAll('.tab-btn');
+            if (tabName === 'agent') btns[0].classList.add('active');
+            else if (tabName === 'sentinel') { btns[1].classList.add('active', 'sentinel'); }
+            else btns[2].classList.add('active');
+        }
+
+        document.querySelectorAll('.contact-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.contact-item').forEach(i => i.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+    </script>
+</body>
+</html>

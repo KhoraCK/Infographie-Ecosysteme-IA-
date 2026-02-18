@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dossier CIR Condense - Plateforme IA WIDIP</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2c5282;
+            --accent-color: #3182ce;
+            --success-color: #38a169;
+            --warning-color: #d69e2e;
+            --text-color: #2d3748;
+            --light-bg: #f7fafc;
+            --border-color: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.5;
+            color: var(--text-color);
+            background-color: #fff;
+            font-size: 10pt;
+        }
+
+        @page { size: A4; margin: 1.5cm; }
+        @media print { .page-break { page-break-before: always; } }
+
+        .container { max-width: 210mm; margin: 0 auto; padding: 15px 30px; }
+
+        .document-header {
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .document-header h1 {
+            color: var(--primary-color);
+            font-size: 18pt;
+            margin-bottom: 5px;
+        }
+
+        .document-header .subtitle {
+            color: var(--secondary-color);
+            font-size: 11pt;
+        }
+
+        .document-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 9pt;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .document-meta span {
+            background: var(--light-bg);
+            padding: 3px 8px;
+            border-radius: 3px;
+        }
+
+        section { margin-bottom: 25px; }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 12pt;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 5px;
+            margin-bottom: 12px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 10pt;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        p { margin-bottom: 8px; text-align: justify; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 9pt;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 6px 8px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) { background: var(--light-bg); }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 8pt;
+            font-weight: 600;
+        }
+
+        .badge.fort { background: #c6f6d5; color: #22543d; }
+        .badge.moyen { background: #fefcbf; color: #744210; }
+        .badge.faible { background: #fed7d7; color: #742a2a; }
+
+        .summary-box {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+
+        .summary-box h3 { color: white; margin-top: 0; }
+
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 12px;
+        }
+
+        .stat-item { text-align: center; }
+        .stat-number { font-size: 18pt; font-weight: 700; }
+        .stat-label { font-size: 8pt; opacity: 0.9; }
+
+        .info-box {
+            padding: 12px;
+            border-radius: 6px;
+            margin: 12px 0;
+            font-size: 9pt;
+        }
+
+        .info-box.warning {
+            background: #fffaf0;
+            border-left: 3px solid var(--warning-color);
+        }
+
+        .info-box.success {
+            background: #f0fff4;
+            border-left: 3px solid var(--success-color);
+        }
+
+        .or-card {
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px;
+            margin: 10px 0;
+        }
+
+        .or-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .or-title {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        ul { margin: 8px 0 8px 20px; }
+        li { margin-bottom: 4px; }
+
+        .document-footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+            font-size: 8pt;
+            color: #666;
+            text-align: center;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        blockquote {
+            background: var(--light-bg);
+            border-left: 3px solid var(--accent-color);
+            padding: 8px 12px;
+            margin: 10px 0;
+            font-style: italic;
+            font-size: 9pt;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tete -->
+        <header class="document-header">
+            <h1>Dossier CIR - Plateforme IA WIDIP</h1>
+            <div class="subtitle">Systeme multi-agents pour le support informatique</div>
+            <div class="document-meta">
+                <span><strong>Periode :</strong> Nov. 2025 - Fev. 2026</span>
+                <span><strong>Date :</strong> 3 fevrier 2026</span>
+                <span><strong>Referentiel :</strong> Manuel de Frascati (OCDE)</span>
+            </div>
+        </header>
+
+        <!-- Resume executif -->
+        <div class="summary-box">
+            <h3>Resume executif</h3>
+            <p>Plateforme IA multi-agents pour le support IT : interface conversationnelle (WIBOT), workflows autonomes (Sentinel, Assistant Ticket, Enrichisseur), framework de securite (SAFEGUARD) et base de connaissances evolutive (RAG). Pivot technologique N8N → Python en janvier 2026.</p>
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Operations R&D</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">11</div>
+                    <div class="stat-label">Verrous techniques</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5/5</div>
+                    <div class="stat-label">Criteres Frascati</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1 : Contexte -->
+        <section>
+            <h2>1. Contexte et objectifs</h2>
+            <p>WIDIP gere le support IT pour un portefeuille de PME. Le projet vise a resoudre 4 defis : perte de connaissances, traitement reactif, taches repetitives, risque d'erreur sur actions critiques.</p>
+
+            <h3>Historique du projet</h3>
+            <table>
+                <thead>
+                    <tr><th>Periode</th><th>Phase</th><th>Resultat</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Nov. 2025</td><td>Prototype N8N</td><td>Validation du concept</td></tr>
+                    <tr><td>Dec. 2025</td><td>Limites N8N</td><td>Orchestration trop complexe</td></tr>
+                    <tr><td>Jan. 2026</td><td>Migration Python</td><td>Architecture modulaire, SAFEGUARD operationnel</td></tr>
+                    <tr><td>Fev. 2026</td><td>Stabilisation</td><td>OR3 quasi finalise, OR1/OR2 en cours</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Section 2 : Les 3 OR -->
+        <section>
+            <h2>2. Les 3 Operations de Recherche</h2>
+
+            <!-- OR1 -->
+            <div class="or-card">
+                <div class="or-header">
+                    <span class="or-title">OR1 - Capitalisation automatique des connaissances IT</span>
+                    <span class="badge moyen">EN COURS</span>
+                </div>
+                <blockquote>Comment transformer l'historique operationnel non structure en base de connaissances fiable et evolutive ?</blockquote>
+
+                <p><strong>Composants :</strong> Enrichisseur + RAG evolutif | <strong>Verrous :</strong> 3</p>
+
+                <table>
+                    <thead><tr><th>Verrou</th><th>Hypothese testee</th><th>Resultat</th></tr></thead>
+                    <tbody>
+                        <tr><td>Extraction procedures</td><td>Prompt LLM sur ticket individuel</td><td><span class="badge moyen">Partiel</span> - Echec sur tickets succincts</td></tr>
+                        <tr><td>Qualite RAG</td><td>Detection obsolescence par similarite > 0.85</td><td><span class="badge moyen">En cours</span></td></tr>
+                        <tr><td>Boucle feedback</td><td>Validation humaine 100% via SAFEGUARD L2</td><td><span class="badge fort">Retenu</span></td></tr>
+                    </tbody>
+                </table>
+                <p><strong>Metriques N8N :</strong> Taux de validation ~40% (objectif > 70%)</p>
+            </div>
+
+            <!-- OR2 -->
+            <div class="or-card">
+                <div class="or-header">
+                    <span class="or-title">OR2 - Qualification et resolution autonome de tickets</span>
+                    <span class="badge moyen">EN COURS</span>
+                </div>
+                <blockquote>Comment qualifier la difficulte d'un ticket et resoudre les cas simples avec un indice de confiance calibre ?</blockquote>
+
+                <p><strong>Composants :</strong> Assistant Ticket + Sentinel | <strong>Verrous :</strong> 4</p>
+
+                <table>
+                    <thead><tr><th>Verrou</th><th>Hypothese testee</th><th>Resultat</th></tr></thead>
+                    <tbody>
+                        <tr><td>Classification 4 niveaux</td><td>LLM avec contexte client</td><td><span class="badge fort">Ameliore</span></td></tr>
+                        <tr><td><strong>Calibration confiance</strong></td><td>Auto-evaluation LLM (0-100%)</td><td><span class="badge faible">ECHEC</span> - Scores > 85% non discriminants</td></tr>
+                        <tr><td>Actions irreversibles</td><td>Validation SAFEGUARD L3 obligatoire</td><td><span class="badge fort">Retenu</span></td></tr>
+                        <tr><td>Parsing hostname</td><td>Fallback LLM pour cas non conformes</td><td><span class="badge fort">OK</span></td></tr>
+                    </tbody>
+                </table>
+                <p><strong>Metriques :</strong> Precision 65% → 75% | Faux SIMPLE 15% → 8% | Detection Sentinel ~90%</p>
+            </div>
+
+            <!-- OR3 -->
+            <div class="or-card">
+                <div class="or-header">
+                    <span class="or-title">OR3 - Gouvernance de securite multi-agents</span>
+                    <span class="badge fort">QUASI FINALISE</span>
+                </div>
+                <blockquote>Comment garantir la securite d'un systeme multi-agents operant sur des systemes IT de production ?</blockquote>
+
+                <p><strong>Composant :</strong> SAFEGUARD (6 niveaux L0-L4_SMS) | <strong>Verrous :</strong> 4</p>
+
+                <table>
+                    <thead><tr><th>Verrou</th><th>Hypothese testee</th><th>Resultat</th></tr></thead>
+                    <tbody>
+                        <tr><td>Modele multi-niveaux</td><td>4 niveaux initiaux</td><td><span class="badge moyen">Insuffisant</span> → Ajout L4 + L4_SMS</td></tr>
+                        <tr><td><strong>Coherence distribuee</strong></td><td>Synchronisation par polling</td><td><span class="badge faible">ECHEC</span> - Latence, race conditions</td></tr>
+                        <tr><td>Bug double-blocage</td><td>Mecanisme _bypass_safeguard</td><td><span class="badge fort">RESOLU</span></td></tr>
+                        <tr><td>Recommandation contact</td><td>Score activite + apprentissage</td><td><span class="badge fort">OK</span> - 78% precision</td></tr>
+                    </tbody>
+                </table>
+                <p><strong>Metriques production (6 sem.) :</strong> 200 demandes | 92% approbation L3 | 0 incident securite</p>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Section 3 : Synthese Frascati -->
+        <section>
+            <h2>3. Evaluation selon les criteres de Frascati</h2>
+
+            <table>
+                <thead>
+                    <tr><th>Critere</th><th>OR1</th><th>OR2</th><th>OR3</th><th>Justification</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nouveaute</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Pas de solution etablie dans l'etat de l'art pour ces problematiques specifiques</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creativite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Architectures originales : boucle feedback, L0-L4_SMS, bypass post-approbation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incertitude</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>11 verrous, echecs documentes (auto-eval confiance, polling, pivot N8N)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Systematisation</strong></td>
+                        <td><span class="badge moyen">En cours</span></td>
+                        <td><span class="badge moyen">En cours</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>OR3 : metriques sur 6 sem., 200 demandes, 3 near-misses documentes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transferabilite</strong></td>
+                        <td><span class="badge moyen">Moyen</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Methodologies generalisables (support, industrie, sante, finance)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Preuves d'incertitude scientifique</h3>
+            <ul>
+                <li><strong>OR2</strong> : L'auto-evaluation de confiance par LLM a echoue (scores > 85% meme sur erreurs)</li>
+                <li><strong>OR3</strong> : La synchronisation par polling a echoue, necessitant le mecanisme de bypass</li>
+                <li><strong>Pivot N8N → Python</strong> : L'approche low-code s'est averee inadaptee pour les cas complexes</li>
+            </ul>
+        </section>
+
+        <!-- Section 4 : Points forts et points a renforcer -->
+        <section>
+            <h2>4. Verdict d'eligibilite</h2>
+
+            <div class="two-col">
+                <div class="info-box success">
+                    <h3 style="color: #22543d; margin-top: 0;">Points forts</h3>
+                    <ul>
+                        <li>Problemes de recherche legitimes (3 OR)</li>
+                        <li>11 verrous techniques documentes</li>
+                        <li>Echecs d'hypotheses demontrant l'incertitude</li>
+                        <li>OR3 en production avec metriques</li>
+                        <li>Pivot N8N → Python = demarche experimentale</li>
+                    </ul>
+                </div>
+                <div class="info-box warning">
+                    <h3 style="color: #744210; margin-top: 0;">A renforcer</h3>
+                    <ul>
+                        <li>Etat de l'art formel pour OR1 et OR2</li>
+                        <li>Journal de bord R&D structure</li>
+                        <li>Metriques quantifiees pour OR1/OR2</li>
+                        <li>Matrice de confusion complete (OR2)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="summary-box" style="margin-top: 15px;">
+                <h3>Conclusion : Eligibilite POSITIVE sous conditions</h3>
+                <p>Le projet presente un potentiel CIR significatif sur les 3 operations de recherche. Les verrous techniques sont reels et les incertitudes documentables. L'eligibilite est conditionnee a la production de la documentation R&D manquante pour OR1 et OR2.</p>
+            </div>
+        </section>
+
+        <!-- Section 5 : Documentation -->
+        <section>
+            <h2>5. Documentation de reference</h2>
+            <table>
+                <thead><tr><th>Document</th><th>Contenu</th></tr></thead>
+                <tbody>
+                    <tr><td>DOSSIER_CIR_WIDIP.html</td><td>Version complete du dossier justificatif</td></tr>
+                    <tr><td>OR1_CAPITALISATION_AUTOMATIQUE_COMPLET.html</td><td>Detail OR1 : verrous, hypotheses, resultats</td></tr>
+                    <tr><td>OR2_QUALIFICATION_AUTONOME_COMPLET.html</td><td>Detail OR2 : verrous, hypotheses, resultats</td></tr>
+                    <tr><td>OR3_GOUVERNANCE_SECURITE_COMPLET.html</td><td>Detail OR3 : verrous, hypotheses, metriques production</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Footer -->
+        <footer class="document-footer">
+            <p>Document condense genere le 3 fevrier 2026 | Referentiel : Manuel de Frascati (OCDE)</p>
+            <p>Version condensee - Dossier CIR Plateforme IA WIDIP</p>
+        </footer>
+    </div>
+</body>
+</html>

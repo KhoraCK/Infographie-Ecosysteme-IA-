@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OR3 - Gouvernance de securite multi-agents IA</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2c5282;
+            --accent-color: #9f7aea;
+            --success-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --text-color: #2d3748;
+            --light-bg: #f7fafc;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #fff;
+            font-size: 11pt;
+        }
+
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        @media print {
+            body { font-size: 10pt; }
+            .page-break { page-break-before: always; }
+            .no-break { page-break-inside: avoid; }
+        }
+
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20px 40px;
+        }
+
+        /* Header */
+        .document-header {
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .document-header .or-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12pt;
+            margin-bottom: 10px;
+        }
+
+        .document-header h1 {
+            color: var(--primary-color);
+            font-size: 20pt;
+            margin-bottom: 10px;
+        }
+
+        .document-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 10pt;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        .document-meta span {
+            background: var(--light-bg);
+            padding: 5px 12px;
+            border-radius: 4px;
+        }
+
+        .potentiel-badge {
+            background: #c6f6d5 !important;
+            color: #22543d !important;
+            font-weight: 600;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 35px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 14pt;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 12pt;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: var(--text-color);
+            font-size: 11pt;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        /* Problematique box */
+        .problematique {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 12pt;
+            font-style: italic;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        /* Verrou cards */
+        .verrou {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .verrou-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .verrou-number {
+            background: var(--accent-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14pt;
+            margin-right: 15px;
+        }
+
+        .verrou-title {
+            font-weight: 600;
+            font-size: 12pt;
+            color: var(--primary-color);
+        }
+
+        .incertitudes {
+            background: #faf5ff;
+            border-left: 3px solid #805ad5;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .incertitudes h5 {
+            color: #553c9a;
+            font-size: 10pt;
+            margin-bottom: 10px;
+        }
+
+        .incertitudes ul {
+            margin: 0 0 0 20px;
+            font-size: 10pt;
+        }
+
+        .incertitudes li {
+            margin-bottom: 6px;
+        }
+
+        /* Hypotheses table */
+        .hypotheses-table {
+            background: #fffaf0;
+            border: 1px solid #ed8936;
+        }
+
+        .hypotheses-table th {
+            background: #ed8936;
+        }
+
+        /* Info boxes */
+        .info-box {
+            padding: 18px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box.etat-art {
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+        }
+
+        .info-box.resultats {
+            background: #f0fff4;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .info-box.warning {
+            background: #fffaf0;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .info-box.bug {
+            background: #fff5f5;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .info-box.innovation {
+            background: #faf5ff;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .info-box h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        /* Diagram */
+        .diagram {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+            margin: 20px 0;
+        }
+
+        /* Frascati evaluation */
+        .frascati-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .frascati-item {
+            text-align: center;
+            padding: 15px 8px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .frascati-item .criterion {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .frascati-item .evaluation {
+            font-weight: 700;
+            font-size: 11pt;
+        }
+
+        .frascati-item .evaluation.fort {
+            color: #22543d;
+        }
+
+        .frascati-item .evaluation.moyen {
+            color: #744210;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 9pt;
+            font-weight: 600;
+        }
+
+        .badge.fort {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge.moyen {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .badge.a-completer {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        /* Niveau SAFEGUARD */
+        .niveau-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .niveau-card {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .niveau-card.l0 {
+            background: #e6fffa;
+            border: 2px solid #38b2ac;
+        }
+
+        .niveau-card.l1 {
+            background: #c6f6d5;
+            border: 2px solid #38a169;
+        }
+
+        .niveau-card.l2 {
+            background: #fefcbf;
+            border: 2px solid #d69e2e;
+        }
+
+        .niveau-card.l3 {
+            background: #fed7aa;
+            border: 2px solid #dd6b20;
+        }
+
+        .niveau-card.l4 {
+            background: #fed7d7;
+            border: 2px solid #e53e3e;
+        }
+
+        .niveau-card.l4sms {
+            background: #e9d8fd;
+            border: 2px solid #9f7aea;
+        }
+
+        .niveau-card h5 {
+            margin-bottom: 8px;
+            font-size: 11pt;
+        }
+
+        .niveau-card p {
+            font-size: 9pt;
+            margin: 0;
+            text-align: center;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 12px 0 12px 25px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .checklist li:before {
+            content: "☐ ";
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .document-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 9pt;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Metrics placeholder */
+        .metric-placeholder {
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        /* Code */
+        code {
+            background: #edf2f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tete -->
+        <header class="document-header">
+            <span class="or-badge">OPERATION DE RECHERCHE 3</span>
+            <h1>Gouvernance de securite pour systeme multi-agents IA operationnel</h1>
+            <div class="document-meta">
+                <span><strong>Projet :</strong> WIDIP / WIBOT</span>
+                <span><strong>Composant :</strong> SAFEGUARD (framework complet)</span>
+                <span class="potentiel-badge">Potentiel CIR : FORT</span>
+            </div>
+        </header>
+
+        <!-- Problematique -->
+        <section>
+            <h2>1. Problematique scientifique</h2>
+            <div class="problematique">
+                Comment concevoir un framework de gouvernance garantissant la securite d'un systeme multi-agents IA (3 workflows autonomes + 1 agent conversationnel) operant sur des systemes de production IT (Active Directory, ticketing, monitoring reseau) avec des actions pouvant etre irreversibles ?
+            </div>
+        </section>
+
+        <!-- Etat de l'art -->
+        <section>
+            <h2>2. Etat de l'art</h2>
+
+            <div class="info-box etat-art">
+                <h4>Contexte scientifique</h4>
+                <p>La securite des agents IA autonomes est un domaine emergent. Si des frameworks de guardrails existent pour le filtrage de contenu, tres peu de solutions adressent la gouvernance d'agents multi-agents operant sur des systemes IT de production avec actions consequentes.</p>
+            </div>
+
+            <h3>2.1 Solutions existantes et leurs limites</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Solution / Approche</th>
+                        <th>Description</th>
+                        <th>Limites identifiees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>LangChain Guardrails</td>
+                        <td>Filtrage de contenu et validation de sortie</td>
+                        <td>Limite au filtrage textuel, pas de gestion multi-niveaux d'actions</td>
+                    </tr>
+                    <tr>
+                        <td>Microsoft AutoGen Safety</td>
+                        <td>Controles pour agents autonomes</td>
+                        <td>Oriente conversation, peu adapte aux actions IT operationnelles</td>
+                    </tr>
+                    <tr>
+                        <td>RBAC classique</td>
+                        <td>Controle d'acces base sur les roles</td>
+                        <td>Statique, ne prend pas en compte la confiance de l'IA</td>
+                    </tr>
+                    <tr>
+                        <td>Human-in-the-loop simple</td>
+                        <td>Validation humaine de toutes les actions</td>
+                        <td>Friction excessive, non viable pour operations frequentes</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.2 Positionnement du projet</h3>
+            <p>Le framework SAFEGUARD se distingue par :</p>
+            <ul>
+                <li><strong>Granularite multi-niveaux</strong> : 6 niveaux de sensibilite (L0 a L4_SMS) adaptes aux actions IT</li>
+                <li><strong>Confiance dynamique</strong> : le niveau d'autonomie varie selon la confiance de l'IA</li>
+                <li><strong>Integration asynchrone</strong> : approbation inline via SSE sans bloquer les workflows</li>
+                <li><strong>Apprentissage du referent</strong> : le systeme apprend les preferences humaines (L4_SMS)</li>
+            </ul>
+        </section>
+
+        <!-- Architecture SAFEGUARD -->
+        <section>
+            <h2>3. Architecture SAFEGUARD</h2>
+
+            <h3>3.1 Matrice des niveaux de sensibilite</h3>
+
+            <div class="niveau-grid">
+                <div class="niveau-card l0">
+                    <h5>L0 - READ_ONLY</h5>
+                    <p>Lecture seule</p>
+                    <p><em>Execution auto</em></p>
+                </div>
+                <div class="niveau-card l1">
+                    <h5>L1 - MINOR</h5>
+                    <p>Modif. mineure</p>
+                    <p><em>Auto si conf. > 80%</em></p>
+                </div>
+                <div class="niveau-card l2">
+                    <h5>L2 - MODERATE</h5>
+                    <p>Impact modere</p>
+                    <p><em>Notification requise</em></p>
+                </div>
+                <div class="niveau-card l3">
+                    <h5>L3 - SENSITIVE</h5>
+                    <p>Action sensible</p>
+                    <p><em>Validation OBLIGATOIRE</em></p>
+                </div>
+                <div class="niveau-card l4">
+                    <h5>L4 - DEFERRED</h5>
+                    <p>Action differee</p>
+                    <p><em>Differee, annulable</em></p>
+                </div>
+                <div class="niveau-card l4sms">
+                    <h5>L4_SMS - SPECIAL</h5>
+                    <p>Alerte SMS client</p>
+                    <p><em>Interface specialisee</em></p>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Niveau</th>
+                        <th>Nom</th>
+                        <th>Description</th>
+                        <th>Comportement</th>
+                        <th>Exemples</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>L0</strong></td>
+                        <td>READ_ONLY</td>
+                        <td>Lecture seule</td>
+                        <td>Execution automatique</td>
+                        <td>Consulter ticket, lire config</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L1</strong></td>
+                        <td>MINOR</td>
+                        <td>Modification mineure, reversible</td>
+                        <td>Auto si confiance > 80%</td>
+                        <td>Ajouter commentaire ticket</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L2</strong></td>
+                        <td>MODERATE</td>
+                        <td>Impact modere</td>
+                        <td>Notification technicien</td>
+                        <td>Modifier statut ticket</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L3</strong></td>
+                        <td>SENSITIVE</td>
+                        <td>Action sensible</td>
+                        <td><strong>Validation humaine OBLIGATOIRE</strong></td>
+                        <td>Reset mot de passe AD</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L4</strong></td>
+                        <td>DEFERRED</td>
+                        <td>Action differee</td>
+                        <td><strong>Execution differee avec delai d'annulation</strong></td>
+                        <td>Supprimer compte AD</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L4_SMS</strong></td>
+                        <td>SMS_ALERT</td>
+                        <td>Alerte SMS client</td>
+                        <td>Interface specialisee avec selection contact</td>
+                        <td>Alerter referent client</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box innovation">
+                <h4>Innovation : Niveau L4_SMS</h4>
+                <p>Le niveau L4_SMS a ete cree pour un cas ou ni L3 (validation simple) ni L4 (blocage total) ne convenaient. Il integre :</p>
+                <ul>
+                    <li>Une interface de selection de contact avec recommandation IA</li>
+                    <li>Un apprentissage par feedback humain (si l'humain choisit un autre contact, le cache est mis a jour)</li>
+                    <li>Un TTL variable selon la source (7j si calcule, 14j si confirme par humain)</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Verrous techniques -->
+        <section>
+            <h2>4. Verrous techniques identifies</h2>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">1</span>
+                    <span class="verrou-title">Modele de securite multi-niveaux pour agents IA</span>
+                </div>
+                <p>Le framework SAFEGUARD definit 6 niveaux de sensibilite (L0 a L4_SMS) croises avec 5 niveaux d'accreditation utilisateur (N0 a N4). Cette matrice determine dynamiquement ce qu'un agent IA peut faire, ce qu'il doit demander, et ce qu'il ne peut jamais faire.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment definir la bonne granularite de niveaux ? Trop peu = risque de securite, trop = friction operationnelle</li>
+                        <li>Comment gerer les cas limites entre deux niveaux ?</li>
+                        <li>Le modele est-il stable lorsque de nouveaux outils MCP sont ajoutes, ou necessite-t-il une reevaluation globale ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">2</span>
+                    <span class="verrou-title">Coherence dans une architecture distribuee</span>
+                </div>
+                <p>Le double systeme SAFEGUARD (backend PostgreSQL + MCP Server Python) a genere un probleme concret : apres approbation humaine cote backend, le MCP Server re-bloquait l'action. La solution (<code>_bypass_safeguard</code>) implique de maintenir la coherence d'etat entre deux systemes independants dans un contexte asynchrone.</p>
+
+                <div class="info-box bug">
+                    <h4>Bug rencontre : Double blocage</h4>
+                    <p><strong>Symptome</strong> : Apres approbation humaine via l'interface, l'action etait a nouveau bloquee lors de l'execution.</p>
+                    <p><strong>Cause</strong> : Le MCP Server ne savait pas que l'action avait ete approuvee cote backend.</p>
+                    <p><strong>Solution</strong> : Implementation d'un mecanisme <code>_bypass_safeguard</code> avec token d'approbation.</p>
+                    <p><em>Ce bug et sa resolution constituent une preuve de demarche experimentale.</em></p>
+                </div>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment garantir la synchronisation des niveaux de securite entre deux systemes independants ?</li>
+                        <li>Comment prevenir les race conditions entre l'approbation et l'execution dans un flux SSE asynchrone ?</li>
+                        <li>Comment auditer de maniere fiable les actions executees via bypass dans un systeme distribue ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Synchronisation via base de donnees partagee</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Mecanisme de bypass avec token d'approbation</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">3</span>
+                    <span class="verrou-title">Orchestration securisee de workflows autonomes chaines</span>
+                </div>
+                <p>Sentinel peut declencher l'Assistant Ticket, qui peut generer des actions necessitant des validations SAFEGUARD. Cette chaine cree des scenarios complexes ou un workflow declenche un autre workflow qui declenche une action L3 necessitant validation humaine.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment gerer les dependances entre actions dans une chaine de workflows ?</li>
+                        <li>Comment eviter les deadlocks quand un workflow attend une approbation pendant qu'un autre genere de nouvelles demandes ?</li>
+                        <li>Comment prioriser les demandes SAFEGUARD quand plusieurs workflows sollicitent simultanement l'humain ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">4</span>
+                    <span class="verrou-title">Confiance dynamique et niveau L4_SMS specialise</span>
+                </div>
+                <p>Le niveau L4_SMS a ete cree specifiquement pour l'alerte SMS client - un cas ou ni le blocage total (L4) ni la simple validation (L3) ne suffisaient. Il integre une interface de selection de contact avec recommandation IA et apprentissage par feedback humain.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment le systeme apprend-il quel contact recommander au fil du temps ?</li>
+                        <li>Le score d'activite DirEnt est-il un proxy fiable pour la pertinence du contact ?</li>
+                        <li>Comment gerer la degradation de la recommandation quand les contacts changent de poste ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Score base sur l'activite recente dans GLPI</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Cache Redis avec TTL variable selon confirmation humaine</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Flux SAFEGUARD -->
+        <section>
+            <h2>5. Flux d'approbation SAFEGUARD</h2>
+
+            <svg viewBox="0 0 700 520" style="width: 100%; max-width: 700px; height: auto; display: block; margin: 20px auto;">
+                <defs>
+                    <linearGradient id="gradStepSGt" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#5a67d8;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradL0L1t" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#48bb78;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#38a169;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradL2t" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ecc94b;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#d69e2e;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradL3L4t" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#fc8181;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#e53e3e;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradL4SMSt" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#b794f4;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#9f7aea;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="shadowSGt" x="-10%" y="-10%" width="120%" height="120%">
+                        <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.15"/>
+                    </filter>
+                    <marker id="arrowSGt" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#718096"/>
+                    </marker>
+                </defs>
+
+                <!-- Source -->
+                <rect x="225" y="5" width="250" height="30" rx="15" fill="#e2e8f0" filter="url(#shadowSGt)"/>
+                <text x="350" y="25" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#4a5568">🤖 Agent IA demande action</text>
+
+                <line x1="350" y1="35" x2="350" y2="50" stroke="#718096" stroke-width="2" marker-end="url(#arrowSGt)"/>
+
+                <!-- Etape 1 -->
+                <g filter="url(#shadowSGt)">
+                    <rect x="150" y="55" width="400" height="55" rx="8" fill="url(#gradStepSGt)"/>
+                    <circle cx="175" cy="72" r="10" fill="white"/>
+                    <text x="175" y="76" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="#5a67d8">1</text>
+                    <text x="205" y="75" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">Classification de l'action</text>
+                    <text x="175" y="95" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">• Tool MCP • Niveau (L0-L4_SMS) • Accreditation user</text>
+                </g>
+
+                <line x1="350" y1="110" x2="350" y2="125" stroke="#718096" stroke-width="2" marker-end="url(#arrowSGt)"/>
+
+                <!-- Etape 2 -->
+                <g filter="url(#shadowSGt)">
+                    <rect x="200" y="130" width="300" height="35" rx="8" fill="url(#gradStepSGt)"/>
+                    <circle cx="225" cy="147" r="10" fill="white"/>
+                    <text x="225" y="151" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="#5a67d8">2</text>
+                    <text x="350" y="152" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">Evaluation selon le niveau</text>
+                </g>
+
+                <!-- Niveaux -->
+                <line x1="350" y1="165" x2="350" y2="180" stroke="#718096" stroke-width="2"/>
+                <line x1="100" y1="180" x2="600" y2="180" stroke="#718096" stroke-width="1"/>
+
+                <!-- L0-L4_SMS boxes -->
+                <line x1="120" y1="180" x2="120" y2="195" stroke="#718096" stroke-width="1" marker-end="url(#arrowSGt)"/>
+                <rect x="85" y="200" width="70" height="45" rx="6" fill="url(#gradL0L1t)" filter="url(#shadowSGt)"/>
+                <text x="120" y="218" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="white">L0</text>
+                <text x="120" y="232" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white">AUTO</text>
+
+                <line x1="210" y1="180" x2="210" y2="195" stroke="#718096" stroke-width="1" marker-end="url(#arrowSGt)"/>
+                <rect x="175" y="200" width="70" height="45" rx="6" fill="url(#gradL0L1t)" filter="url(#shadowSGt)"/>
+                <text x="210" y="218" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="white">L1</text>
+                <text x="210" y="232" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white">si >80%</text>
+
+                <line x1="300" y1="180" x2="300" y2="195" stroke="#718096" stroke-width="1" marker-end="url(#arrowSGt)"/>
+                <rect x="265" y="200" width="70" height="45" rx="6" fill="url(#gradL2t)" filter="url(#shadowSGt)"/>
+                <text x="300" y="218" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="white">L2</text>
+                <text x="300" y="232" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white">NOTIF</text>
+
+                <line x1="390" y1="180" x2="390" y2="195" stroke="#718096" stroke-width="1" marker-end="url(#arrowSGt)"/>
+                <rect x="355" y="200" width="70" height="45" rx="6" fill="url(#gradL3L4t)" filter="url(#shadowSGt)"/>
+                <text x="390" y="218" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="white">L3</text>
+                <text x="390" y="232" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white">VALID.</text>
+
+                <line x1="480" y1="180" x2="480" y2="195" stroke="#718096" stroke-width="1" marker-end="url(#arrowSGt)"/>
+                <rect x="445" y="200" width="70" height="45" rx="6" fill="url(#gradL3L4t)" filter="url(#shadowSGt)"/>
+                <text x="480" y="218" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="white">L4</text>
+                <text x="480" y="232" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white">DIFFERE</text>
+
+                <line x1="570" y1="180" x2="570" y2="195" stroke="#718096" stroke-width="1" marker-end="url(#arrowSGt)"/>
+                <rect x="535" y="200" width="70" height="45" rx="6" fill="url(#gradL4SMSt)" filter="url(#shadowSGt)"/>
+                <text x="570" y="218" text-anchor="middle" font-family="Segoe UI" font-size="9" font-weight="700" fill="white">L4_SMS</text>
+                <text x="570" y="232" text-anchor="middle" font-family="Segoe UI" font-size="7" fill="white">SPECIAL</text>
+
+                <!-- Convergence -->
+                <line x1="300" y1="245" x2="300" y2="260" stroke="#718096" stroke-width="1"/>
+                <line x1="390" y1="245" x2="390" y2="260" stroke="#718096" stroke-width="1"/>
+                <line x1="570" y1="245" x2="570" y2="260" stroke="#718096" stroke-width="1"/>
+                <line x1="300" y1="260" x2="570" y2="260" stroke="#718096" stroke-width="1"/>
+                <line x1="435" y1="260" x2="435" y2="275" stroke="#718096" stroke-width="2" marker-end="url(#arrowSGt)"/>
+
+                <!-- Etape 3 -->
+                <g filter="url(#shadowSGt)">
+                    <rect x="235" y="280" width="400" height="50" rx="8" fill="#38b2ac"/>
+                    <circle cx="260" cy="297" r="10" fill="white"/>
+                    <text x="260" y="301" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="#38b2ac">3</text>
+                    <text x="435" y="300" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">📡 Interface d'approbation</text>
+                    <text x="435" y="318" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">Details • Approuver/Refuser • L4_SMS: selection contact</text>
+                </g>
+
+                <!-- Decision -->
+                <line x1="435" y1="330" x2="435" y2="345" stroke="#718096" stroke-width="2"/>
+                <line x1="435" y1="345" x2="350" y2="345" stroke="#718096" stroke-width="2"/>
+                <line x1="435" y1="345" x2="520" y2="345" stroke="#718096" stroke-width="2"/>
+                <line x1="350" y1="345" x2="350" y2="360" stroke="#718096" stroke-width="2" marker-end="url(#arrowSGt)"/>
+                <line x1="520" y1="345" x2="520" y2="360" stroke="#718096" stroke-width="2" marker-end="url(#arrowSGt)"/>
+
+                <rect x="280" y="365" width="140" height="35" rx="17" fill="#38a169" filter="url(#shadowSGt)"/>
+                <text x="350" y="388" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">✓ APPROUVE</text>
+
+                <rect x="450" y="365" width="140" height="35" rx="17" fill="#e53e3e" filter="url(#shadowSGt)"/>
+                <text x="520" y="388" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">✗ REFUSE</text>
+
+                <!-- Etape 4 -->
+                <line x1="350" y1="400" x2="350" y2="415" stroke="#718096" stroke-width="2" marker-end="url(#arrowSGt)"/>
+                <g filter="url(#shadowSGt)">
+                    <rect x="260" y="420" width="180" height="40" rx="8" fill="url(#gradStepSGt)"/>
+                    <circle cx="280" cy="435" r="8" fill="white"/>
+                    <text x="280" y="438" text-anchor="middle" font-family="Segoe UI" font-size="9" font-weight="700" fill="#5a67d8">4</text>
+                    <text x="350" y="438" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="600" fill="white">Execution + bypass</text>
+                </g>
+
+                <line x1="520" y1="400" x2="520" y2="420" stroke="#718096" stroke-width="2" marker-end="url(#arrowSGt)"/>
+                <rect x="450" y="420" width="140" height="40" rx="8" fill="#a0aec0" filter="url(#shadowSGt)"/>
+                <text x="520" y="440" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white">Annule + log</text>
+
+                <!-- Etape 5 -->
+                <line x1="350" y1="460" x2="350" y2="475" stroke="#718096" stroke-width="2" marker-end="url(#arrowSGt)"/>
+                <g filter="url(#shadowSGt)">
+                    <rect x="200" y="480" width="300" height="35" rx="8" fill="#1a365d"/>
+                    <circle cx="225" cy="497" r="8" fill="white"/>
+                    <text x="225" y="500" text-anchor="middle" font-family="Segoe UI" font-size="9" font-weight="700" fill="#1a365d">5</text>
+                    <text x="350" y="502" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="600" fill="white">📋 Audit Trail PostgreSQL</text>
+                </g>
+            </svg>
+        </section>
+
+        <!-- Experimentations -->
+        <section>
+            <h2>6. Experimentations et resultats</h2>
+
+            <h3>6.1 Protocole de test</h3>
+            <div class="info-box warning">
+                <h4>A documenter</h4>
+                <p>Description du protocole d'experimentation : scenarios de test, cas limites, mesure de la friction operationnelle, analyse des near-misses.</p>
+            </div>
+
+            <h3>6.2 Metriques collectees</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metrique</th>
+                        <th>Description</th>
+                        <th>Valeur initiale</th>
+                        <th>Valeur actuelle</th>
+                        <th>Objectif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Demandes par niveau</strong></td>
+                        <td>Repartition des demandes SAFEGUARD</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Temps de reponse humain</strong></td>
+                        <td>Delai entre demande et approbation</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>< 5 min</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Taux d'approbation</strong></td>
+                        <td>% de demandes approuvees</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>> 80%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Near-misses</strong></td>
+                        <td>Actions dangereuses bloquees</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>Documenter</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Precision recommandation L4_SMS</strong></td>
+                        <td>% de fois ou le contact recommande est choisi</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>> 70%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>6.3 Resultats</h3>
+            <div class="info-box resultats">
+                <h4>Resultats des experimentations</h4>
+                <p class="metric-placeholder">A completer : statistiques SAFEGUARD, analyse des near-misses, evolution de la precision de recommandation L4_SMS.</p>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Iterations -->
+        <section>
+            <h2>7. Iterations et historique des travaux</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 12%">Version</th>
+                        <th style="width: 15%">Date</th>
+                        <th style="width: 45%">Modifications / Hypothese testee</th>
+                        <th style="width: 28%">Resultat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>v1</td>
+                        <td class="metric-placeholder">-</td>
+                        <td>Modele initial L0-L3</td>
+                        <td class="metric-placeholder">A completer</td>
+                    </tr>
+                    <tr>
+                        <td>v2</td>
+                        <td class="metric-placeholder">-</td>
+                        <td>Ajout du niveau L4 (DEFERRED)</td>
+                        <td class="metric-placeholder">A completer</td>
+                    </tr>
+                    <tr>
+                        <td>v3</td>
+                        <td class="metric-placeholder">-</td>
+                        <td>Creation du niveau L4_SMS specialise</td>
+                        <td class="metric-placeholder">A completer</td>
+                    </tr>
+                    <tr>
+                        <td>v4</td>
+                        <td class="metric-placeholder">-</td>
+                        <td>Resolution du bug double-blocage (bypass)</td>
+                        <td class="metric-placeholder">A completer</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Preuves -->
+        <section>
+            <h2>8. Preuves materielles a constituer</h2>
+
+            <ul class="checklist">
+                <li>Etat de l'art : frameworks de controle d'agents IA existants (LangChain, AutoGen, etc.) et leurs limites</li>
+                <li>Historique des iterations sur le modele de niveaux (ajouts, modifications, le cas L4_SMS)</li>
+                <li>Documentation complete du bug double-blocage : analyse, hypotheses testees, solution retenue</li>
+                <li>Logs SAFEGUARD : demandes approuvees/rejetees, temps de reponse, taux d'utilisation par niveau</li>
+                <li>Analyse des near-misses : cas ou SAFEGUARD a bloque une action potentiellement dangereuse</li>
+                <li>Evolution du cache referent : pertinence des recommandations au fil du temps</li>
+                <li>Diagrammes d'architecture et schemas de flux</li>
+            </ul>
+        </section>
+
+        <!-- Evaluation Frascati -->
+        <section>
+            <h2>9. Evaluation selon les criteres de Frascati</h2>
+
+            <div class="frascati-grid">
+                <div class="frascati-item">
+                    <div class="criterion">Nouveaute</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Creativite</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Incertitude</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Systematisation</div>
+                    <div class="evaluation moyen">MOYEN</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Transferabilite</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Critere</th>
+                        <th>Evaluation</th>
+                        <th>Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nouveaute</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Tres peu de frameworks de controle d'agents IA en production documentes dans la litterature, a fortiori pour du multi-agents sur systemes IT critiques</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creativite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>L'architecture L0-L4_SMS avec confiance dynamique, approbation inline SSE, bypass post-approbation et apprentissage du contact recommande est une conception originale</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incertitude</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Quatre verrous identifies, dont le probleme de coherence distribuee qui a ete rencontre et resolu experimentalement (double blocage)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Systematisation</strong></td>
+                        <td><span class="badge moyen">Moyen</span></td>
+                        <td>Le bug double-blocage et sa resolution constituent une trace d'experimentation documentee ; l'audit trail fournit des donnees</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transferabilite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Le framework est generalisable a tout contexte d'agents IA operant sur des systemes avec actions a risque (industrie, sante, finance)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Footer -->
+        <footer class="document-footer">
+            <p>Operation de Recherche 3 - Gouvernance de securite multi-agents IA</p>
+            <p>Projet WIDIP - Dossier Credit d'Impot Recherche</p>
+            <p><em>Document a completer au fil des travaux de recherche</em></p>
+        </footer>
+    </div>
+</body>
+</html>

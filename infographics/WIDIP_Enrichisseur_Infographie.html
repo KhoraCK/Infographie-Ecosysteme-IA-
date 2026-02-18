@@ -1,0 +1,2476 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIDIP - ENRICHISSEUR Workflow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+/* ============================================
+   VARIABLES & RESET
+   ============================================ */
+:root {
+    --primary: #f59e0b;
+    --primary-light: #fbbf24;
+    --primary-dark: #d97706;
+    --primary-glow: rgba(245, 158, 11, 0.4);
+    --accent: #10b981;
+    --accent-light: #34d399;
+    --secondary: #8b5cf6;
+    --secondary-light: #a78bfa;
+    --safeguard: #10b981;
+    --rag: #8b5cf6;
+    --wibot: #0ea5e9;
+    --ticket: #6366f1;
+    --dark: #0a0a0f;
+    --dark-100: #0f172a;
+    --dark-200: #1e293b;
+    --gray: #64748b;
+    --gray-light: #94a3b8;
+    --gray-lighter: #cbd5e1;
+    --white: #ffffff;
+    --font-main: 'Inter', -apple-system, sans-serif;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 30px;
+    --transition-base: 0.3s ease;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+}
+
+body {
+    font-family: var(--font-main);
+    background: var(--dark);
+    color: var(--white);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 20px var(--primary-glow); }
+    50% { box-shadow: 0 0 40px var(--primary-glow), 0 0 60px var(--primary-glow); }
+}
+
+@keyframes cycle {
+    0%, 100% { stroke-dashoffset: 0; }
+    50% { stroke-dashoffset: 100; }
+}
+
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+.delay-5 { transition-delay: 0.5s; }
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    z-index: 1000;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.nav-dots {
+    position: fixed;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-dot::before {
+    content: attr(data-label);
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--dark-200);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.nav-dot:hover::before { opacity: 1; }
+.nav-dot:hover { background: rgba(255,255,255,0.5); transform: scale(1.2); }
+.nav-dot.active { background: var(--primary); transform: scale(1.3); }
+
+/* ============================================
+   SLIDES BASE
+   ============================================ */
+.slide {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 80px;
+    position: relative;
+    scroll-snap-align: start;
+    overflow: hidden;
+}
+
+.slide-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(245, 158, 11, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245, 158, 11, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+}
+
+.slide-content {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+.section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary-light);
+    margin-bottom: 20px;
+}
+
+.section-label .icon {
+    width: 18px;
+    height: 18px;
+}
+
+.section-label.safeguard {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: var(--safeguard);
+}
+
+.section-label.rag {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.3);
+    color: var(--rag);
+}
+
+.section-label.ticket {
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.3);
+    color: var(--ticket);
+}
+
+.slide-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.slide-title span {
+    background: linear-gradient(135deg, var(--primary-light), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.slide-subtitle {
+    font-size: 1.3rem;
+    color: var(--gray-light);
+    max-width: 700px;
+}
+
+.text-center { text-align: center; margin-left: auto; margin-right: auto; }
+
+/* ============================================
+   SLIDE 1: HERO
+   ============================================ */
+.slide-hero {
+    background: radial-gradient(ellipse at center, rgba(245, 158, 11, 0.15) 0%, var(--dark) 70%);
+}
+
+.hero-content {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hero-icon {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 30px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-icon-inner {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite;
+}
+
+.hero-icon-inner svg {
+    width: 50px;
+    height: 50px;
+    color: white;
+}
+
+.orbit-ring {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border: 2px dashed rgba(245, 158, 11, 0.3);
+    border-radius: 50%;
+    animation: rotate 20s linear infinite;
+}
+
+.orbit-dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--primary);
+    border-radius: 50%;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.hero-badge {
+    display: inline-block;
+    background: rgba(245, 158, 11, 0.2);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-light);
+    margin-bottom: 25px;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+    line-height: 1.1;
+    letter-spacing: -2px;
+}
+
+.hero-title span {
+    background: linear-gradient(135deg, var(--primary-light), var(--accent-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1.4rem;
+    color: var(--gray-light);
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+.hero-tagline {
+    font-size: 1.1rem;
+    color: var(--primary-light);
+    font-weight: 600;
+    margin-top: 30px;
+    padding: 15px 30px;
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: var(--radius-lg);
+    display: inline-block;
+}
+
+.scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: var(--gray);
+    font-size: 0.85rem;
+    animation: float 2s ease-in-out infinite;
+}
+
+.scroll-hint svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* ============================================
+   SLIDE 2: CERCLE VERTUEUX
+   ============================================ */
+.cycle-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.cycle-visual {
+    position: relative;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cycle-center {
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    position: relative;
+}
+
+.cycle-center svg {
+    width: 50px;
+    height: 50px;
+    color: white;
+}
+
+.cycle-orbit {
+    position: absolute;
+    width: 350px;
+    height: 350px;
+    border: 3px dashed rgba(245, 158, 11, 0.2);
+    border-radius: 50%;
+}
+
+.cycle-item {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+}
+
+.cycle-item-icon {
+    width: 70px;
+    height: 70px;
+    background: var(--dark-100);
+    border: 3px solid var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.cycle-item-icon svg {
+    width: 30px;
+    height: 30px;
+    color: var(--primary-light);
+}
+
+.cycle-item:hover .cycle-item-icon {
+    background: var(--primary);
+    transform: scale(1.1);
+}
+
+.cycle-item:hover .cycle-item-icon svg {
+    color: white;
+}
+
+.cycle-item span {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray-lighter);
+    max-width: 100px;
+}
+
+.cycle-item.top { top: 0; left: 50%; transform: translateX(-50%); }
+.cycle-item.right { top: 50%; right: 0; transform: translateY(-50%); }
+.cycle-item.bottom { bottom: 0; left: 50%; transform: translateX(-50%); }
+.cycle-item.left { top: 50%; left: 0; transform: translateY(-50%); }
+
+.cycle-item.ticket .cycle-item-icon { border-color: var(--ticket); }
+.cycle-item.ticket .cycle-item-icon svg { color: var(--ticket); }
+.cycle-item.ticket:hover .cycle-item-icon { background: var(--ticket); }
+
+.cycle-item.rag .cycle-item-icon { border-color: var(--rag); }
+.cycle-item.rag .cycle-item-icon svg { color: var(--rag); }
+.cycle-item.rag:hover .cycle-item-icon { background: var(--rag); }
+
+.cycle-item.wibot .cycle-item-icon { border-color: var(--wibot); }
+.cycle-item.wibot .cycle-item-icon svg { color: var(--wibot); }
+.cycle-item.wibot:hover .cycle-item-icon { background: var(--wibot); }
+
+.cycle-arrows {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.cycle-arrow {
+    position: absolute;
+    color: var(--primary);
+    opacity: 0.5;
+}
+
+.cycle-arrow svg {
+    width: 24px;
+    height: 24px;
+}
+
+.cycle-arrow.top-right { top: 15%; right: 15%; transform: rotate(45deg); }
+.cycle-arrow.right-bottom { bottom: 15%; right: 15%; transform: rotate(135deg); }
+.cycle-arrow.bottom-left { bottom: 15%; left: 15%; transform: rotate(225deg); }
+.cycle-arrow.left-top { top: 15%; left: 15%; transform: rotate(315deg); }
+
+.cycle-explanation h3 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.cycle-explanation h3 span {
+    background: linear-gradient(135deg, var(--primary-light), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.cycle-explanation > p {
+    color: var(--gray-light);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    line-height: 1.7;
+}
+
+.cycle-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.cycle-step {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background: var(--dark-100);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--primary);
+    transition: all 0.3s ease;
+}
+
+.cycle-step:hover {
+    transform: translateX(10px);
+}
+
+.cycle-step-num {
+    width: 35px;
+    height: 35px;
+    background: rgba(245, 158, 11, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: var(--primary-light);
+    flex-shrink: 0;
+}
+
+.cycle-step p {
+    font-size: 0.95rem;
+    color: var(--gray-lighter);
+}
+
+/* ============================================
+   SLIDE 3: SOURCES DE DONNÉES
+   ============================================ */
+.sources-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.source-card {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    padding: 35px;
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.source-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.source-card.tickets::before { background: var(--ticket); }
+.source-card.flagged::before { background: var(--primary); }
+.source-card.recurrent::before { background: var(--accent); }
+
+.source-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(255,255,255,0.2);
+}
+
+.source-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 25px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.source-card.tickets .source-icon { background: rgba(99, 102, 241, 0.15); }
+.source-card.flagged .source-icon { background: rgba(245, 158, 11, 0.15); }
+.source-card.recurrent .source-icon { background: rgba(16, 185, 129, 0.15); }
+
+.source-icon svg {
+    width: 36px;
+    height: 36px;
+}
+
+.source-card.tickets .source-icon svg { color: var(--ticket); }
+.source-card.flagged .source-icon svg { color: var(--primary); }
+.source-card.recurrent .source-icon svg { color: var(--accent); }
+
+.source-card h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.source-card p {
+    font-size: 0.9rem;
+    color: var(--gray-light);
+    line-height: 1.6;
+}
+
+.source-badge {
+    margin-top: 20px;
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.source-card.tickets .source-badge { background: rgba(99, 102, 241, 0.2); color: var(--ticket); }
+.source-card.flagged .source-badge { background: rgba(245, 158, 11, 0.2); color: var(--primary); }
+.source-card.recurrent .source-badge { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
+
+/* ============================================
+   SLIDE 4: FLUX DE TRAITEMENT
+   ============================================ */
+.flux-container {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    padding: 50px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.flux-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.flux-header h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.flux-header p {
+    color: var(--gray-light);
+    margin-top: 10px;
+}
+
+.flux-steps {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+
+.flux-steps::before {
+    content: '';
+    position: absolute;
+    top: 45px;
+    left: 70px;
+    right: 70px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--ticket), var(--primary), var(--rag), var(--safeguard), var(--accent));
+    border-radius: 4px;
+}
+
+.flux-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 150px;
+    position: relative;
+    z-index: 1;
+}
+
+.flux-step-icon {
+    width: 90px;
+    height: 90px;
+    background: var(--dark-200);
+    border: 4px solid var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.flux-step-icon svg {
+    width: 36px;
+    height: 36px;
+    color: var(--primary-light);
+}
+
+.flux-step:hover .flux-step-icon {
+    transform: scale(1.1);
+    background: var(--primary);
+}
+
+.flux-step:hover .flux-step-icon svg {
+    color: white;
+}
+
+.flux-step h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.flux-step p {
+    font-size: 0.8rem;
+    color: var(--gray);
+    line-height: 1.5;
+}
+
+.flux-step.ticket .flux-step-icon { border-color: var(--ticket); }
+.flux-step.ticket .flux-step-icon svg { color: var(--ticket); }
+.flux-step.ticket:hover .flux-step-icon { background: var(--ticket); }
+
+.flux-step.rag .flux-step-icon { border-color: var(--rag); }
+.flux-step.rag .flux-step-icon svg { color: var(--rag); }
+.flux-step.rag:hover .flux-step-icon { background: var(--rag); }
+
+.flux-step.safeguard .flux-step-icon { border-color: var(--safeguard); }
+.flux-step.safeguard .flux-step-icon svg { color: var(--safeguard); }
+.flux-step.safeguard:hover .flux-step-icon { background: var(--safeguard); }
+
+.flux-step.success .flux-step-icon { border-color: var(--accent); }
+.flux-step.success .flux-step-icon svg { color: var(--accent); }
+.flux-step.success:hover .flux-step-icon { background: var(--accent); }
+
+/* ============================================
+   SLIDE 5: EXEMPLE CONCRET
+   ============================================ */
+.example-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.example-timeline {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.example-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.example-header svg {
+    width: 35px;
+    height: 35px;
+    color: white;
+}
+
+.example-header-text h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+}
+
+.example-header-text p {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.8);
+}
+
+.example-content {
+    padding: 25px;
+}
+
+.timeline-day {
+    margin-bottom: 25px;
+}
+
+.timeline-day:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-day-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.timeline-day-header .day-badge {
+    padding: 4px 12px;
+    background: rgba(245, 158, 11, 0.2);
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary-light);
+}
+
+.timeline-day-header h5 {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.timeline-event {
+    display: flex;
+    gap: 15px;
+    padding: 15px;
+    background: var(--dark-200);
+    border-radius: var(--radius-md);
+    margin-bottom: 10px;
+    border-left: 3px solid var(--gray);
+}
+
+.timeline-event:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-event.problem { border-left-color: #ef4444; }
+.timeline-event.fail { border-left-color: var(--primary); }
+.timeline-event.resolution { border-left-color: var(--ticket); }
+.timeline-event.enrichisseur { border-left-color: var(--primary); }
+.timeline-event.validation { border-left-color: var(--safeguard); }
+.timeline-event.success { border-left-color: var(--accent); }
+
+.timeline-event-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.timeline-event.problem .timeline-event-icon { background: rgba(239, 68, 68, 0.2); }
+.timeline-event.problem .timeline-event-icon svg { color: #ef4444; }
+.timeline-event.fail .timeline-event-icon { background: rgba(245, 158, 11, 0.2); }
+.timeline-event.fail .timeline-event-icon svg { color: var(--primary); }
+.timeline-event.resolution .timeline-event-icon { background: rgba(99, 102, 241, 0.2); }
+.timeline-event.resolution .timeline-event-icon svg { color: var(--ticket); }
+.timeline-event.enrichisseur .timeline-event-icon { background: rgba(245, 158, 11, 0.2); }
+.timeline-event.enrichisseur .timeline-event-icon svg { color: var(--primary); }
+.timeline-event.validation .timeline-event-icon { background: rgba(16, 185, 129, 0.2); }
+.timeline-event.validation .timeline-event-icon svg { color: var(--safeguard); }
+.timeline-event.success .timeline-event-icon { background: rgba(16, 185, 129, 0.2); }
+.timeline-event.success .timeline-event-icon svg { color: var(--accent); }
+
+.timeline-event-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.timeline-event-content h6 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.timeline-event-content p {
+    font-size: 0.8rem;
+    color: var(--gray-light);
+    line-height: 1.5;
+}
+
+.example-procedure {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.procedure-header {
+    background: linear-gradient(135deg, var(--rag), var(--secondary-light));
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.procedure-header svg {
+    width: 35px;
+    height: 35px;
+    color: white;
+}
+
+.procedure-header h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+}
+
+.procedure-content {
+    padding: 25px;
+}
+
+.procedure-section {
+    margin-bottom: 20px;
+}
+
+.procedure-section:last-child {
+    margin-bottom: 0;
+}
+
+.procedure-section h5 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--rag);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.procedure-section p {
+    font-size: 0.9rem;
+    color: var(--gray-lighter);
+    line-height: 1.6;
+}
+
+.procedure-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.procedure-section li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+    color: var(--gray-lighter);
+}
+
+.procedure-section li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--rag);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 8px;
+}
+
+.procedure-meta {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    gap: 20px;
+}
+
+.procedure-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--gray);
+}
+
+.procedure-meta-item svg {
+    width: 16px;
+    height: 16px;
+    color: var(--rag);
+}
+
+/* ============================================
+   SLIDE 6: GÉNÉRATION PROCÉDURE
+   ============================================ */
+.generation-container {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 50px;
+    align-items: start;
+}
+
+.generation-explanation h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.generation-explanation h3 span {
+    color: var(--rag);
+}
+
+.generation-explanation > p {
+    color: var(--gray-light);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    line-height: 1.7;
+}
+
+.generation-features {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.generation-feature {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+    background: var(--dark-100);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+.generation-feature:hover {
+    border-color: var(--rag);
+    transform: translateX(10px);
+}
+
+.generation-feature-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(139, 92, 246, 0.15);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.generation-feature-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--rag);
+}
+
+.generation-feature-content h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.generation-feature-content p {
+    font-size: 0.85rem;
+    color: var(--gray-light);
+}
+
+.generation-preview {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.preview-header {
+    background: var(--dark-200);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.preview-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.preview-header-left svg {
+    width: 20px;
+    height: 20px;
+    color: var(--rag);
+}
+
+.preview-header-left span {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.preview-badge {
+    padding: 4px 12px;
+    background: rgba(245, 158, 11, 0.2);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.preview-content {
+    padding: 25px;
+}
+
+.preview-field {
+    margin-bottom: 20px;
+}
+
+.preview-field:last-child {
+    margin-bottom: 0;
+}
+
+.preview-field label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.preview-field-value {
+    padding: 12px 15px;
+    background: var(--dark-200);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    color: var(--gray-lighter);
+    line-height: 1.6;
+}
+
+.preview-field-value.title {
+    font-weight: 600;
+    color: white;
+}
+
+.preview-field-value ol {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.preview-field-value li {
+    margin-bottom: 8px;
+}
+
+.preview-field-value li:last-child {
+    margin-bottom: 0;
+}
+
+/* ============================================
+   SLIDE 7: VALIDATION SAFEGUARD
+   ============================================ */
+.validation-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+}
+
+.validation-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.validation-step {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 25px;
+    background: var(--dark-100);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--primary);
+    transition: all 0.3s ease;
+}
+
+.validation-step:hover {
+    transform: translateX(10px);
+}
+
+.validation-step-icon {
+    width: 55px;
+    height: 55px;
+    background: rgba(245, 158, 11, 0.15);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.validation-step-icon svg {
+    width: 26px;
+    height: 26px;
+    color: var(--primary);
+}
+
+.validation-step-content h4 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.validation-step-content p {
+    font-size: 0.9rem;
+    color: var(--gray-light);
+}
+
+.validation-step.safeguard { border-left-color: var(--safeguard); }
+.validation-step.safeguard .validation-step-icon { background: rgba(16, 185, 129, 0.15); }
+.validation-step.safeguard .validation-step-icon svg { color: var(--safeguard); }
+
+.validation-step.rag { border-left-color: var(--rag); }
+.validation-step.rag .validation-step-icon { background: rgba(139, 92, 246, 0.15); }
+.validation-step.rag .validation-step-icon svg { color: var(--rag); }
+
+.validation-demo {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.validation-demo-header {
+    background: linear-gradient(135deg, var(--safeguard), var(--accent-light));
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.validation-demo-header svg {
+    width: 30px;
+    height: 30px;
+    color: white;
+}
+
+.validation-demo-header h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+}
+
+.validation-demo-content {
+    padding: 25px;
+}
+
+.validation-alert {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.validation-alert-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.validation-alert-header svg {
+    width: 22px;
+    height: 22px;
+    color: var(--primary);
+}
+
+.validation-alert-header span {
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.validation-alert-content h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.validation-alert-content p {
+    font-size: 0.85rem;
+    color: var(--gray-lighter);
+    margin-bottom: 5px;
+}
+
+.validation-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.validation-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.validation-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.validation-btn.approve {
+    background: var(--safeguard);
+    color: white;
+}
+
+.validation-btn.approve:hover {
+    background: var(--accent-light);
+    transform: translateY(-2px);
+}
+
+.validation-btn.modify {
+    background: rgba(139, 92, 246, 0.2);
+    color: var(--rag);
+    border: 2px solid var(--rag);
+}
+
+.validation-btn.modify:hover {
+    background: var(--rag);
+    color: white;
+}
+
+.validation-btn.reject {
+    background: transparent;
+    border: 2px solid var(--gray);
+    color: var(--gray-light);
+}
+
+.validation-btn.reject:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+/* ============================================
+   SLIDE 8: BÉNÉFICES
+   ============================================ */
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.benefit-card {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    padding: 35px;
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.benefit-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+.benefit-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(255,255,255,0.2);
+}
+
+.benefit-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 25px;
+    background: rgba(245, 158, 11, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.benefit-icon svg {
+    width: 36px;
+    height: 36px;
+    color: var(--primary-light);
+}
+
+.benefit-card h4 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.benefit-card p {
+    font-size: 0.95rem;
+    color: var(--gray-light);
+    line-height: 1.6;
+}
+
+.benefit-stat {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.benefit-stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+}
+
+.benefit-stat-label {
+    font-size: 0.8rem;
+    color: var(--gray);
+}
+
+/* ============================================
+   SLIDE 9: RÉSUMÉ
+   ============================================ */
+.summary-container {
+    text-align: center;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.summary-cycle {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    margin: 50px auto;
+}
+
+.summary-cycle-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.summary-cycle-center svg {
+    width: 50px;
+    height: 50px;
+    color: white;
+}
+
+.summary-cycle-orbit {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 3px dashed rgba(245, 158, 11, 0.3);
+    border-radius: 50%;
+}
+
+.summary-cycle-item {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.summary-cycle-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.summary-cycle-icon svg {
+    width: 30px;
+    height: 30px;
+    color: white;
+}
+
+.summary-cycle-item.tickets { top: -35px; left: 50%; transform: translateX(-50%); }
+.summary-cycle-item.tickets .summary-cycle-icon { background: linear-gradient(135deg, var(--ticket), #818cf8); }
+
+.summary-cycle-item.enrichisseur { top: 50%; right: -35px; transform: translateY(-50%); }
+.summary-cycle-item.enrichisseur .summary-cycle-icon { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+
+.summary-cycle-item.rag { bottom: -35px; left: 50%; transform: translateX(-50%); }
+.summary-cycle-item.rag .summary-cycle-icon { background: linear-gradient(135deg, var(--rag), var(--secondary-light)); }
+
+.summary-cycle-item.wibot { top: 50%; left: -35px; transform: translateY(-50%); }
+.summary-cycle-item.wibot .summary-cycle-icon { background: linear-gradient(135deg, var(--wibot), #38bdf8); }
+
+.summary-cycle-item span {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray-lighter);
+}
+
+.summary-message {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(16, 185, 129, 0.1));
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    margin-top: 40px;
+}
+
+.summary-message p {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.summary-message strong {
+    color: var(--primary-light);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1200px) {
+    .slide { padding: 40px; }
+    .hero-title { font-size: 3rem; }
+    .cycle-container { grid-template-columns: 1fr; }
+    .example-container { grid-template-columns: 1fr; }
+    .generation-container { grid-template-columns: 1fr; }
+    .validation-container { grid-template-columns: 1fr; }
+    .sources-grid { grid-template-columns: repeat(2, 1fr); }
+    .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .nav-dots { display: none; }
+    .slide { padding: 30px 20px; }
+    .hero-title { font-size: 2.2rem; }
+    .cycle-visual { height: 300px; }
+    .cycle-orbit { width: 250px; height: 250px; }
+    .flux-steps { flex-direction: column; align-items: center; }
+    .flux-steps::before { display: none; }
+    .sources-grid { grid-template-columns: 1fr; }
+    .benefits-grid { grid-template-columns: 1fr; }
+    .summary-cycle { width: 300px; height: 300px; }
+    .validation-buttons { flex-direction: column; }
+}
+    </style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<!-- Navigation Dots -->
+<div class="nav-dots" id="navDots">
+    <div class="nav-dot active" data-slide="1" data-label="Introduction"></div>
+    <div class="nav-dot" data-slide="2" data-label="Cercle vertueux"></div>
+    <div class="nav-dot" data-slide="3" data-label="Sources"></div>
+    <div class="nav-dot" data-slide="4" data-label="Flux"></div>
+    <div class="nav-dot" data-slide="5" data-label="Exemple"></div>
+    <div class="nav-dot" data-slide="6" data-label="Génération"></div>
+    <div class="nav-dot" data-slide="7" data-label="Validation"></div>
+    <div class="nav-dot" data-slide="8" data-label="Bénéfices"></div>
+    <div class="nav-dot" data-slide="9" data-label="Résumé"></div>
+</div>
+
+<!-- SLIDE 1: HERO -->
+<section class="slide slide-hero" id="slide-1">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="hero-content">
+            <div class="hero-icon animate-on-scroll">
+                <div class="orbit-ring">
+                    <div class="orbit-dot"></div>
+                </div>
+                <div class="hero-icon-inner">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 2v4"/>
+                        <path d="M12 18v4"/>
+                        <path d="m4.93 4.93 2.83 2.83"/>
+                        <path d="m16.24 16.24 2.83 2.83"/>
+                        <path d="M2 12h4"/>
+                        <path d="M18 12h4"/>
+                        <path d="m4.93 19.07 2.83-2.83"/>
+                        <path d="m16.24 7.76 2.83-2.83"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="hero-badge animate-on-scroll delay-1">Boucle d'Apprentissage</div>
+            <h1 class="hero-title animate-on-scroll delay-2">
+                <span>ENRICHISSEUR</span>
+            </h1>
+            <p class="hero-subtitle animate-on-scroll delay-3">
+                Transforme l'expérience des techniciens<br>
+                en connaissances réutilisables pour toute l'équipe
+            </p>
+            <div class="hero-tagline animate-on-scroll delay-4">
+                L'IA qui <strong>apprend</strong> de vos résolutions
+            </div>
+        </div>
+    </div>
+    <div class="scroll-hint">
+        <span>Défiler pour découvrir</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12l7 7 7-7"/>
+        </svg>
+    </div>
+</section>
+
+<!-- SLIDE 2: CERCLE VERTUEUX -->
+<section class="slide slide-cycle" id="slide-2">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="cycle-container">
+            <div class="cycle-visual animate-on-scroll">
+                <div class="cycle-orbit"></div>
+                <div class="cycle-center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 2v4"/>
+                        <path d="M12 18v4"/>
+                        <path d="m4.93 4.93 2.83 2.83"/>
+                        <path d="m16.24 16.24 2.83 2.83"/>
+                        <path d="M2 12h4"/>
+                        <path d="M18 12h4"/>
+                    </svg>
+                </div>
+                <div class="cycle-item top ticket">
+                    <div class="cycle-item-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                            <rect x="9" y="3" width="6" height="4" rx="1"/>
+                        </svg>
+                    </div>
+                    <span>Tickets résolus</span>
+                </div>
+                <div class="cycle-item right">
+                    <div class="cycle-item-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v4"/>
+                            <path d="M12 18v4"/>
+                            <path d="m4.93 4.93 2.83 2.83"/>
+                            <path d="M2 12h4"/>
+                            <path d="M18 12h4"/>
+                        </svg>
+                    </div>
+                    <span>Enrichisseur</span>
+                </div>
+                <div class="cycle-item bottom rag">
+                    <div class="cycle-item-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                    </div>
+                    <span>Base RAG</span>
+                </div>
+                <div class="cycle-item left wibot">
+                    <div class="cycle-item-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="6" width="16" height="12" rx="2"/>
+                            <circle cx="9" cy="12" r="1.5" fill="currentColor"/>
+                            <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <span>WIBOT + IA</span>
+                </div>
+                <div class="cycle-arrows">
+                    <div class="cycle-arrow top-right">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                    <div class="cycle-arrow right-bottom">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                    <div class="cycle-arrow bottom-left">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                    <div class="cycle-arrow left-top">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class="cycle-explanation">
+                <span class="section-label animate-on-scroll">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                    </svg>
+                    Cercle vertueux
+                </span>
+                <h3 class="animate-on-scroll delay-1">
+                    Plus vous résolvez,<br><span>plus l'IA apprend</span>
+                </h3>
+                <p class="animate-on-scroll delay-2">
+                    Chaque ticket résolu par un technicien est une opportunité d'apprentissage.
+                    L'Enrichisseur analyse ces résolutions et génère des procédures qui enrichissent
+                    la base de connaissances.
+                </p>
+                <div class="cycle-steps animate-on-scroll delay-3">
+                    <div class="cycle-step">
+                        <div class="cycle-step-num">1</div>
+                        <p>Technicien résout un ticket complexe</p>
+                    </div>
+                    <div class="cycle-step">
+                        <div class="cycle-step-num">2</div>
+                        <p>Enrichisseur analyse la résolution</p>
+                    </div>
+                    <div class="cycle-step">
+                        <div class="cycle-step-num">3</div>
+                        <p>Procédure générée et validée</p>
+                    </div>
+                    <div class="cycle-step">
+                        <div class="cycle-step-num">4</div>
+                        <p>Toute l'équipe en bénéficie</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 3: SOURCES DE DONNÉES -->
+<section class="slide slide-sources" id="slide-3">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center">
+            <span class="section-label animate-on-scroll">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Sources de données
+            </span>
+            <h2 class="slide-title animate-on-scroll delay-1">D'où viennent les <span>connaissances</span> ?</h2>
+            <p class="slide-subtitle animate-on-scroll delay-2">
+                L'Enrichisseur analyse 3 types de tickets pour générer des procédures
+            </p>
+        </div>
+        <div class="sources-grid">
+            <div class="source-card tickets animate-on-scroll delay-1">
+                <div class="source-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                        <rect x="9" y="3" width="6" height="4" rx="1"/>
+                        <polyline points="9 14 11 16 15 12"/>
+                    </svg>
+                </div>
+                <h4>Tickets clôturés</h4>
+                <p>Tickets du jour ou de la semaine, bien documentés avec un suivi technique détaillé.</p>
+                <span class="source-badge">Batch quotidien</span>
+            </div>
+            <div class="source-card flagged animate-on-scroll delay-2">
+                <div class="source-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                        <line x1="4" y1="22" x2="4" y2="15"/>
+                    </svg>
+                </div>
+                <h4>Tickets IA_NON_RESOLU</h4>
+                <p>Tickets que l'IA n'avait pas su résoudre, maintenant traités par un technicien. <strong>Prioritaires pour l'apprentissage.</strong></p>
+                <span class="source-badge">Apprentissage ciblé</span>
+            </div>
+            <div class="source-card recurrent animate-on-scroll delay-3">
+                <div class="source-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+                    </svg>
+                </div>
+                <h4>Tickets récurrents</h4>
+                <p>Même type de problème résolu de la même manière. Pattern détecté = procédure standard.</p>
+                <span class="source-badge">Détection pattern</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 4: FLUX DE TRAITEMENT -->
+<section class="slide slide-flux" id="slide-4">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center">
+            <span class="section-label animate-on-scroll">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Flux de traitement
+            </span>
+            <h2 class="slide-title animate-on-scroll delay-1">De la résolution à la <span>procédure</span></h2>
+        </div>
+        <div class="flux-container animate-on-scroll delay-2">
+            <div class="flux-header">
+                <h3>Batch quotidien - Fin de journée</h3>
+                <p>L'Enrichisseur s'exécute automatiquement chaque soir</p>
+            </div>
+            <div class="flux-steps">
+                <div class="flux-step ticket">
+                    <div class="flux-step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                            <rect x="9" y="3" width="6" height="4" rx="1"/>
+                        </svg>
+                    </div>
+                    <h4>Collecte</h4>
+                    <p>Tickets clôturés du jour</p>
+                </div>
+                <div class="flux-step">
+                    <div class="flux-step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                        </svg>
+                    </div>
+                    <h4>Filtrage</h4>
+                    <p>Bien documentés, réussites</p>
+                </div>
+                <div class="flux-step">
+                    <div class="flux-step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v4"/>
+                            <path d="M12 18v4"/>
+                            <path d="m4.93 4.93 2.83 2.83"/>
+                            <path d="M2 12h4"/>
+                            <path d="M18 12h4"/>
+                        </svg>
+                    </div>
+                    <h4>Analyse LLM</h4>
+                    <p>Extraction des étapes</p>
+                </div>
+                <div class="flux-step rag">
+                    <div class="flux-step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                        </svg>
+                    </div>
+                    <h4>Génération</h4>
+                    <p>Procédure structurée</p>
+                </div>
+                <div class="flux-step safeguard">
+                    <div class="flux-step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <h4>Validation</h4>
+                    <p>Safeguard technicien</p>
+                </div>
+                <div class="flux-step success">
+                    <div class="flux-step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <h4>RAG enrichi</h4>
+                    <p>Disponible pour tous</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 5: EXEMPLE CONCRET -->
+<section class="slide slide-example" id="slide-5">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center">
+            <span class="section-label animate-on-scroll">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Scénario concret
+            </span>
+            <h2 class="slide-title animate-on-scroll delay-1">De l'échec IA à <span>l'apprentissage</span></h2>
+        </div>
+        <div class="example-container" style="margin-top: 30px;">
+            <div class="example-timeline animate-on-scroll delay-2">
+                <div class="example-header">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <div class="example-header-text">
+                        <h4>Chronologie</h4>
+                        <p>Problème imprimante après Windows Update</p>
+                    </div>
+                </div>
+                <div class="example-content">
+                    <div class="timeline-day">
+                        <div class="timeline-day-header">
+                            <span class="day-badge">Jour 1</span>
+                            <h5>Le problème arrive</h5>
+                        </div>
+                        <div class="timeline-event problem">
+                            <div class="timeline-event-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                </svg>
+                            </div>
+                            <div class="timeline-event-content">
+                                <h6>Client ADAPEI appelle</h6>
+                                <p>"Plus d'accès à l'imprimante réseau depuis ce matin"</p>
+                            </div>
+                        </div>
+                        <div class="timeline-event fail">
+                            <div class="timeline-event-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="15" y1="9" x2="9" y2="15"/>
+                                    <line x1="9" y1="9" x2="15" y2="15"/>
+                                </svg>
+                            </div>
+                            <div class="timeline-event-content">
+                                <h6>L'IA ne sait pas résoudre</h6>
+                                <p>Pas de procédure connue. Ticket flaggé "IA_NON_RESOLU"</p>
+                            </div>
+                        </div>
+                        <div class="timeline-event resolution">
+                            <div class="timeline-event-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="9" cy="7" r="4"/>
+                                </svg>
+                            </div>
+                            <div class="timeline-event-content">
+                                <h6>Technicien résout le problème</h6>
+                                <p>Diagnostic : Driver incompatible après Windows Update. Solution : Réinstallation driver universel HP.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-day">
+                        <div class="timeline-day-header">
+                            <span class="day-badge">Jour 1 - Soir</span>
+                            <h5>L'Enrichisseur se déclenche</h5>
+                        </div>
+                        <div class="timeline-event enrichisseur">
+                            <div class="timeline-event-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2v4"/>
+                                    <path d="M12 18v4"/>
+                                    <path d="M2 12h4"/>
+                                    <path d="M18 12h4"/>
+                                </svg>
+                            </div>
+                            <div class="timeline-event-content">
+                                <h6>Analyse du ticket résolu</h6>
+                                <p>Détecte le ticket IA_NON_RESOLU maintenant clôturé. Génère une procédure.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-event validation">
+                            <div class="timeline-event-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                            </div>
+                            <div class="timeline-event-content">
+                                <h6>Validation technicien</h6>
+                                <p>Le technicien valide la procédure générée. Ajoutée au RAG.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-day">
+                        <div class="timeline-day-header">
+                            <span class="day-badge">Jour 5</span>
+                            <h5>Le même problème revient</h5>
+                        </div>
+                        <div class="timeline-event success">
+                            <div class="timeline-event-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                            </div>
+                            <div class="timeline-event-content">
+                                <h6>Client MFI a le même souci</h6>
+                                <p>L'IA trouve la procédure ! Résolution en 2 minutes au lieu de 30.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="example-procedure animate-on-scroll delay-3">
+                <div class="procedure-header">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    <h4>Procédure générée</h4>
+                </div>
+                <div class="procedure-content">
+                    <div class="procedure-section">
+                        <h5>Titre</h5>
+                        <p>Imprimante inaccessible après mise à jour Windows</p>
+                    </div>
+                    <div class="procedure-section">
+                        <h5>Symptômes</h5>
+                        <ul>
+                            <li>Imprimante réseau non détectée</li>
+                            <li>Erreur "Le pilote n'est pas disponible"</li>
+                            <li>Apparaît après Windows Update</li>
+                        </ul>
+                    </div>
+                    <div class="procedure-section">
+                        <h5>Étapes de résolution</h5>
+                        <ul>
+                            <li>Supprimer l'imprimante existante (Paramètres > Imprimantes)</li>
+                            <li>Télécharger driver universel HP (support.hp.com)</li>
+                            <li>Installer le driver en mode administrateur</li>
+                            <li>Réajouter l'imprimante par IP</li>
+                            <li>Tester avec page de test</li>
+                        </ul>
+                    </div>
+                    <div class="procedure-meta">
+                        <div class="procedure-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                                <rect x="9" y="3" width="6" height="4" rx="1"/>
+                            </svg>
+                            <span>Basée sur ticket #4521</span>
+                        </div>
+                        <div class="procedure-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            <span>Validée par Marc D.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 6: GÉNÉRATION PROCÉDURE -->
+<section class="slide slide-generation" id="slide-6">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="generation-container">
+            <div class="generation-explanation">
+                <span class="section-label rag animate-on-scroll">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    Génération intelligente
+                </span>
+                <h3 class="animate-on-scroll delay-1">Le LLM rédige la <span>procédure</span></h3>
+                <p class="animate-on-scroll delay-2">
+                    L'IA analyse le ticket résolu, extrait les étapes de résolution,
+                    identifie le pattern, et rédige une procédure structurée
+                    prête à être validée.
+                </p>
+                <div class="generation-features animate-on-scroll delay-3">
+                    <div class="generation-feature">
+                        <div class="generation-feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                        </div>
+                        <div class="generation-feature-content">
+                            <h4>Extraction des étapes</h4>
+                            <p>Analyse le suivi technique pour identifier chaque action réalisée</p>
+                        </div>
+                    </div>
+                    <div class="generation-feature">
+                        <div class="generation-feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                        </div>
+                        <div class="generation-feature-content">
+                            <h4>Identification du pattern</h4>
+                            <p>Catégorise le problème et sa solution pour un accès rapide</p>
+                        </div>
+                    </div>
+                    <div class="generation-feature">
+                        <div class="generation-feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                        </div>
+                        <div class="generation-feature-content">
+                            <h4>Rédaction structurée</h4>
+                            <p>Titre, contexte, symptômes, étapes détaillées, vérification</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="generation-preview animate-on-scroll delay-2">
+                <div class="preview-header">
+                    <div class="preview-header-left">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <span>Aperçu procédure générée</span>
+                    </div>
+                    <span class="preview-badge">En attente validation</span>
+                </div>
+                <div class="preview-content">
+                    <div class="preview-field">
+                        <label>Titre</label>
+                        <div class="preview-field-value title">Diagnostic lenteur VPN site distant</div>
+                    </div>
+                    <div class="preview-field">
+                        <label>Contexte</label>
+                        <div class="preview-field-value">Utilisateurs d'un site distant signalent des lenteurs lors de l'accès aux ressources centrales via VPN.</div>
+                    </div>
+                    <div class="preview-field">
+                        <label>Étapes</label>
+                        <div class="preview-field-value">
+                            <ol>
+                                <li>Vérifier charge CPU du firewall (cible < 80%)</li>
+                                <li>Contrôler nombre de tunnels VPN actifs (limite 50)</li>
+                                <li>Si saturation → Redémarrer service IPSec</li>
+                                <li>Tester latence avec traceroute (cible < 100ms)</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="preview-field">
+                        <label>Basée sur</label>
+                        <div class="preview-field-value">3 tickets similaires (#4521, #4678, #4812)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 7: VALIDATION SAFEGUARD -->
+<section class="slide slide-validation" id="slide-7">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center">
+            <span class="section-label safeguard animate-on-scroll">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                Validation SAFEGUARD
+            </span>
+            <h2 class="slide-title animate-on-scroll delay-1">Le technicien <span>valide</span> ou <span>modifie</span></h2>
+        </div>
+        <div class="validation-container" style="margin-top: 40px;">
+            <div class="validation-flow animate-on-scroll delay-2">
+                <div class="validation-step">
+                    <div class="validation-step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
+                    <div class="validation-step-content">
+                        <h4>Procédure générée</h4>
+                        <p>L'Enrichisseur soumet la nouvelle procédure au dashboard SAFEGUARD</p>
+                    </div>
+                </div>
+                <div class="validation-step safeguard">
+                    <div class="validation-step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </div>
+                    <div class="validation-step-content">
+                        <h4>Revue par le technicien</h4>
+                        <p>Le technicien peut valider, modifier ou rejeter la procédure</p>
+                    </div>
+                </div>
+                <div class="validation-step rag">
+                    <div class="validation-step-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                    </div>
+                    <div class="validation-step-content">
+                        <h4>Ajout au RAG</h4>
+                        <p>Procédure vectorisée et immédiatement disponible pour toute l'équipe</p>
+                    </div>
+                </div>
+            </div>
+            <div class="validation-demo animate-on-scroll delay-3">
+                <div class="validation-demo-header">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    <h4>Dashboard SAFEGUARD</h4>
+                </div>
+                <div class="validation-demo-content">
+                    <div class="validation-alert">
+                        <div class="validation-alert-header">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                            </svg>
+                            <span>Nouvelle procédure détectée</span>
+                        </div>
+                        <div class="validation-alert-content">
+                            <h5>"Diagnostic lenteur VPN site distant"</h5>
+                            <p><strong>Catégorie :</strong> Réseau / VPN / Troubleshooting</p>
+                            <p><strong>Basée sur :</strong> 3 tickets similaires</p>
+                            <p><strong>Confiance :</strong> 94%</p>
+                        </div>
+                    </div>
+                    <div class="validation-buttons">
+                        <button class="validation-btn approve">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Valider
+                        </button>
+                        <button class="validation-btn modify">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                            Modifier
+                        </button>
+                        <button class="validation-btn reject">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="15" y1="9" x2="9" y2="15"/>
+                                <line x1="9" y1="9" x2="15" y2="15"/>
+                            </svg>
+                            Rejeter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 8: BÉNÉFICES -->
+<section class="slide slide-benefits" id="slide-8">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center">
+            <span class="section-label animate-on-scroll">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20V10"/>
+                    <path d="M18 20V4"/>
+                    <path d="M6 20v-4"/>
+                </svg>
+                Les bénéfices
+            </span>
+            <h2 class="slide-title animate-on-scroll delay-1">Ce que ça <span>change</span></h2>
+        </div>
+        <div class="benefits-grid">
+            <div class="benefit-card animate-on-scroll delay-1">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v4"/>
+                        <path d="M12 18v4"/>
+                        <path d="m4.93 4.93 2.83 2.83"/>
+                        <path d="M2 12h4"/>
+                        <path d="M18 12h4"/>
+                    </svg>
+                </div>
+                <h4>IA plus intelligente</h4>
+                <p>Chaque résolution enrichit la base. L'IA s'améliore continuellement.</p>
+                <div class="benefit-stat">
+                    <div class="benefit-stat-value">+15%</div>
+                    <div class="benefit-stat-label">résolutions auto / mois</div>
+                </div>
+            </div>
+            <div class="benefit-card animate-on-scroll delay-2">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                <h4>Partage de l'expertise</h4>
+                <p>Ce qu'un technicien apprend profite à toute l'équipe immédiatement.</p>
+                <div class="benefit-stat">
+                    <div class="benefit-stat-value">100%</div>
+                    <div class="benefit-stat-label">équipe bénéficiaire</div>
+                </div>
+            </div>
+            <div class="benefit-card animate-on-scroll delay-3">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                </div>
+                <h4>Base qui grandit</h4>
+                <p>Capitalisation automatique. Rien ne se perd, tout s'accumule.</p>
+                <div class="benefit-stat">
+                    <div class="benefit-stat-value">+20</div>
+                    <div class="benefit-stat-label">procédures / mois</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 9: RÉSUMÉ -->
+<section class="slide slide-summary" id="slide-9">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="summary-container">
+            <span class="section-label animate-on-scroll">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+                En résumé
+            </span>
+            <h2 class="slide-title animate-on-scroll delay-1">Le cercle <span>vertueux</span></h2>
+
+            <div class="summary-cycle animate-on-scroll delay-2">
+                <div class="summary-cycle-orbit"></div>
+                <div class="summary-cycle-center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 2v4"/>
+                        <path d="M12 18v4"/>
+                        <path d="m4.93 4.93 2.83 2.83"/>
+                        <path d="M2 12h4"/>
+                        <path d="M18 12h4"/>
+                    </svg>
+                </div>
+                <div class="summary-cycle-item tickets">
+                    <div class="summary-cycle-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                            <rect x="9" y="3" width="6" height="4" rx="1"/>
+                        </svg>
+                    </div>
+                    <span>Tickets résolus</span>
+                </div>
+                <div class="summary-cycle-item enrichisseur">
+                    <div class="summary-cycle-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v4"/>
+                            <path d="M12 18v4"/>
+                            <path d="M2 12h4"/>
+                            <path d="M18 12h4"/>
+                        </svg>
+                    </div>
+                    <span>Enrichisseur</span>
+                </div>
+                <div class="summary-cycle-item rag">
+                    <div class="summary-cycle-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                    </div>
+                    <span>Base RAG</span>
+                </div>
+                <div class="summary-cycle-item wibot">
+                    <div class="summary-cycle-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="6" width="16" height="12" rx="2"/>
+                            <circle cx="9" cy="12" r="1.5" fill="currentColor"/>
+                            <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <span>WIBOT + IA</span>
+                </div>
+            </div>
+
+            <div class="summary-message animate-on-scroll delay-3">
+                <p>L'IA qui <strong>apprend</strong> de vos résolutions</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Scroll animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.animate-on-scroll').forEach(el => {
+    observer.observe(el);
+});
+
+// Progress bar
+const progressBar = document.getElementById('progressBar');
+const slides = document.querySelectorAll('.slide');
+const navDots = document.querySelectorAll('.nav-dot');
+
+function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    progressBar.style.width = progress + '%';
+
+    // Update nav dots
+    const currentSlide = Math.round(scrollTop / window.innerHeight) + 1;
+    navDots.forEach((dot, index) => {
+        dot.classList.toggle('active', index + 1 === currentSlide);
+    });
+}
+
+window.addEventListener('scroll', updateProgress);
+
+// Nav dot click
+navDots.forEach(dot => {
+    dot.addEventListener('click', () => {
+        const slideNum = dot.getAttribute('data-slide');
+        document.getElementById('slide-' + slideNum).scrollIntoView({ behavior: 'smooth' });
+    });
+});
+
+// Initial check
+updateProgress();
+</script>
+
+</body>
+</html>

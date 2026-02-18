@@ -1,0 +1,2355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WIDIP - Assistant Ticket Workflow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+/* ============================================
+   VARIABLES & RESET
+   ============================================ */
+:root {
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --primary-dark: #4f46e5;
+    --primary-glow: rgba(99, 102, 241, 0.4);
+    --accent: #10b981;
+    --accent-light: #34d399;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --safeguard: #10b981;
+    --rag: #8b5cf6;
+    --wibot: #0ea5e9;
+    --enrichisseur: #f59e0b;
+    --dark: #0a0a0f;
+    --dark-100: #0f172a;
+    --dark-200: #1e293b;
+    --gray: #64748b;
+    --gray-light: #94a3b8;
+    --gray-lighter: #cbd5e1;
+    --white: #ffffff;
+    --font-main: 'Inter', -apple-system, sans-serif;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-xl: 30px;
+    --transition-base: 0.3s ease;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y mandatory;
+}
+
+body {
+    font-family: var(--font-main);
+    background: var(--dark);
+    color: var(--white);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes flowLine {
+    0% { stroke-dashoffset: 100; }
+    100% { stroke-dashoffset: 0; }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 20px var(--primary-glow); }
+    50% { box-shadow: 0 0 40px var(--primary-glow), 0 0 60px var(--primary-glow); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes countUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+.delay-5 { transition-delay: 0.5s; }
+
+/* ============================================
+   NAVIGATION
+   ============================================ */
+.progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    z-index: 1000;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.nav-dots {
+    position: fixed;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.nav-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-dot::before {
+    content: attr(data-label);
+    position: absolute;
+    right: 25px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--dark-200);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.nav-dot:hover::before { opacity: 1; }
+.nav-dot:hover { background: rgba(255,255,255,0.5); transform: scale(1.2); }
+.nav-dot.active { background: var(--primary); transform: scale(1.3); }
+
+/* ============================================
+   SLIDES BASE
+   ============================================ */
+.slide {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 80px;
+    position: relative;
+    scroll-snap-align: start;
+    overflow: hidden;
+}
+
+.slide-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+}
+
+.slide-content {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* ============================================
+   TYPOGRAPHY
+   ============================================ */
+.section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary-light);
+    margin-bottom: 20px;
+}
+
+.section-label .icon {
+    width: 18px;
+    height: 18px;
+}
+
+.section-label.safeguard {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: var(--safeguard);
+}
+
+.section-label.rag {
+    background: rgba(139, 92, 246, 0.15);
+    border-color: rgba(139, 92, 246, 0.3);
+    color: var(--rag);
+}
+
+.section-label.wibot {
+    background: rgba(14, 165, 233, 0.15);
+    border-color: rgba(14, 165, 233, 0.3);
+    color: var(--wibot);
+}
+
+.section-label.enrichisseur {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: var(--enrichisseur);
+}
+
+.slide-title {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.slide-title span {
+    background: linear-gradient(135deg, var(--primary-light), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.slide-subtitle {
+    font-size: 1.3rem;
+    color: var(--gray-light);
+    max-width: 700px;
+}
+
+.text-center { text-align: center; margin-left: auto; margin-right: auto; }
+
+/* ============================================
+   SLIDE 1: HERO
+   ============================================ */
+.slide-hero {
+    background: radial-gradient(ellipse at center, rgba(99, 102, 241, 0.1) 0%, var(--dark) 70%);
+}
+
+.hero-content {
+    text-align: center;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.hero-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 30px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: float 3s ease-in-out infinite, glow 2s ease-in-out infinite;
+}
+
+.hero-icon svg {
+    width: 60px;
+    height: 60px;
+    color: white;
+}
+
+.hero-badge {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.2);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-light);
+    margin-bottom: 25px;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+    line-height: 1.1;
+}
+
+.hero-title span {
+    background: linear-gradient(135deg, var(--primary-light), var(--accent-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-subtitle {
+    font-size: 1.4rem;
+    color: var(--gray-light);
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    margin-top: 50px;
+}
+
+.hero-stat {
+    text-align: center;
+}
+
+.hero-stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--primary-light);
+}
+
+.hero-stat-label {
+    font-size: 0.9rem;
+    color: var(--gray);
+    margin-top: 5px;
+}
+
+.scroll-hint {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: var(--gray);
+    font-size: 0.85rem;
+    animation: float 2s ease-in-out infinite;
+}
+
+.scroll-hint svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* ============================================
+   SLIDE 2: VUE D'ENSEMBLE
+   ============================================ */
+.overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.overview-left h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.overview-left h2 span {
+    background: linear-gradient(135deg, var(--primary-light), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.overview-left p {
+    color: var(--gray-light);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    line-height: 1.7;
+}
+
+.overview-features {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.overview-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--gray-lighter);
+}
+
+.overview-feature svg {
+    width: 20px;
+    height: 20px;
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.overview-diagram {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.diagram-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.diagram-step {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: var(--dark-200);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--primary);
+    transition: all 0.3s ease;
+}
+
+.diagram-step:hover {
+    transform: translateX(10px);
+    border-left-color: var(--accent);
+}
+
+.diagram-step-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(99, 102, 241, 0.2);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.diagram-step-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--primary-light);
+}
+
+.diagram-step-content h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.diagram-step-content p {
+    font-size: 0.85rem;
+    color: var(--gray-light);
+}
+
+.diagram-step.rag .diagram-step-icon { background: rgba(139, 92, 246, 0.2); }
+.diagram-step.rag .diagram-step-icon svg { color: var(--rag); }
+.diagram-step.rag { border-left-color: var(--rag); }
+
+.diagram-step.safeguard .diagram-step-icon { background: rgba(16, 185, 129, 0.2); }
+.diagram-step.safeguard .diagram-step-icon svg { color: var(--safeguard); }
+.diagram-step.safeguard { border-left-color: var(--safeguard); }
+
+.diagram-step.wibot .diagram-step-icon { background: rgba(14, 165, 233, 0.2); }
+.diagram-step.wibot .diagram-step-icon svg { color: var(--wibot); }
+.diagram-step.wibot { border-left-color: var(--wibot); }
+
+/* ============================================
+   SLIDE 3: FLUX PRINCIPAL
+   ============================================ */
+.flow-container {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    padding: 50px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.flow-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.flow-header h3 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.flow-header p {
+    color: var(--gray-light);
+}
+
+.flow-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+}
+
+.flow-steps::before {
+    content: '';
+    position: absolute;
+    top: 40px;
+    left: 60px;
+    right: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--rag), var(--safeguard), var(--accent));
+    border-radius: 3px;
+}
+
+.flow-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 180px;
+    position: relative;
+    z-index: 1;
+}
+
+.flow-step-number {
+    width: 80px;
+    height: 80px;
+    background: var(--dark-200);
+    border: 3px solid var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.flow-step-number svg {
+    width: 32px;
+    height: 32px;
+    color: var(--primary-light);
+}
+
+.flow-step:hover .flow-step-number {
+    transform: scale(1.1);
+    background: var(--primary);
+}
+
+.flow-step:hover .flow-step-number svg {
+    color: white;
+}
+
+.flow-step h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.flow-step p {
+    font-size: 0.8rem;
+    color: var(--gray-light);
+    line-height: 1.5;
+}
+
+.flow-step.rag .flow-step-number { border-color: var(--rag); }
+.flow-step.rag .flow-step-number svg { color: var(--rag); }
+.flow-step.rag:hover .flow-step-number { background: var(--rag); }
+
+.flow-step.safeguard .flow-step-number { border-color: var(--safeguard); }
+.flow-step.safeguard .flow-step-number svg { color: var(--safeguard); }
+.flow-step.safeguard:hover .flow-step-number { background: var(--safeguard); }
+
+.flow-step.success .flow-step-number { border-color: var(--accent); }
+.flow-step.success .flow-step-number svg { color: var(--accent); }
+.flow-step.success:hover .flow-step-number { background: var(--accent); }
+
+/* ============================================
+   SLIDE 4: QUALIFICATION
+   ============================================ */
+.qualification-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.qualification-card {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.qualification-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--primary);
+}
+
+.qualification-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(255,255,255,0.2);
+}
+
+.qualification-card.simple::before { background: var(--accent); }
+.qualification-card.moyen::before { background: var(--wibot); }
+.qualification-card.complexe::before { background: var(--warning); }
+.qualification-card.expert::before { background: var(--danger); }
+
+.qualification-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qualification-card.simple .qualification-icon { background: rgba(16, 185, 129, 0.2); }
+.qualification-card.moyen .qualification-icon { background: rgba(14, 165, 233, 0.2); }
+.qualification-card.complexe .qualification-icon { background: rgba(245, 158, 11, 0.2); }
+.qualification-card.expert .qualification-icon { background: rgba(239, 68, 68, 0.2); }
+
+.qualification-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
+.qualification-card.simple .qualification-icon svg { color: var(--accent); }
+.qualification-card.moyen .qualification-icon svg { color: var(--wibot); }
+.qualification-card.complexe .qualification-icon svg { color: var(--warning); }
+.qualification-card.expert .qualification-icon svg { color: var(--danger); }
+
+.qualification-card h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.qualification-card p {
+    font-size: 0.85rem;
+    color: var(--gray-light);
+    margin-bottom: 20px;
+    min-height: 40px;
+}
+
+.qualification-action {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.qualification-card.simple .qualification-action { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
+.qualification-card.moyen .qualification-action { background: rgba(14, 165, 233, 0.2); color: var(--wibot); }
+.qualification-card.complexe .qualification-action { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+.qualification-card.expert .qualification-action { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+/* ============================================
+   SLIDE 5: RAG INTERACTION
+   ============================================ */
+.rag-container {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.rag-visual {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    position: relative;
+}
+
+.rag-center {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, var(--rag), #a78bfa);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: pulse 3s ease-in-out infinite;
+}
+
+.rag-center svg {
+    width: 60px;
+    height: 60px;
+    color: white;
+}
+
+.rag-orbit {
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border: 2px dashed rgba(139, 92, 246, 0.3);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.rag-source {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: var(--dark-200);
+    border: 2px solid var(--rag);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rag-source svg {
+    width: 24px;
+    height: 24px;
+    color: var(--rag);
+}
+
+.rag-source:nth-child(1) { top: -30px; left: 50%; transform: translateX(-50%); }
+.rag-source:nth-child(2) { top: 50%; right: -30px; transform: translateY(-50%); }
+.rag-source:nth-child(3) { bottom: -30px; left: 50%; transform: translateX(-50%); }
+.rag-source:nth-child(4) { top: 50%; left: -30px; transform: translateY(-50%); }
+
+.rag-explanation h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.rag-explanation h3 span {
+    color: var(--rag);
+}
+
+.rag-explanation > p {
+    color: var(--gray-light);
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    line-height: 1.7;
+}
+
+.rag-sources-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.rag-source-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background: var(--dark-100);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+.rag-source-item:hover {
+    border-color: var(--rag);
+    transform: translateX(10px);
+}
+
+.rag-source-item svg {
+    width: 24px;
+    height: 24px;
+    color: var(--rag);
+    flex-shrink: 0;
+}
+
+.rag-source-item .source-info h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 3px;
+}
+
+.rag-source-item .source-info p {
+    font-size: 0.85rem;
+    color: var(--gray);
+}
+
+.rag-source-item.enrichisseur svg { color: var(--enrichisseur); }
+.rag-source-item.enrichisseur:hover { border-color: var(--enrichisseur); }
+
+/* ============================================
+   SLIDE 6: SAFEGUARD
+   ============================================ */
+.safeguard-container {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 50px;
+    align-items: start;
+}
+
+.safeguard-levels {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.safeguard-level {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 25px;
+    background: var(--dark-100);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+.safeguard-level:hover {
+    transform: translateX(10px);
+}
+
+.level-badge {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.safeguard-level.l0 .level-badge { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
+.safeguard-level.l1 .level-badge { background: rgba(14, 165, 233, 0.2); color: var(--wibot); }
+.safeguard-level.l2 .level-badge { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+.safeguard-level.l3 .level-badge { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+.level-info h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.level-info p {
+    font-size: 0.85rem;
+    color: var(--gray-light);
+}
+
+.level-action {
+    margin-left: auto;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.safeguard-level.l0 .level-action { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
+.safeguard-level.l1 .level-action { background: rgba(14, 165, 233, 0.2); color: var(--wibot); }
+.safeguard-level.l2 .level-action { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+.safeguard-level.l3 .level-action { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+.safeguard-demo {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.demo-header {
+    background: var(--dark-200);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.demo-header svg {
+    width: 20px;
+    height: 20px;
+    color: var(--safeguard);
+}
+
+.demo-header span {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.demo-content {
+    padding: 25px;
+}
+
+.demo-alert {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.demo-alert-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.demo-alert-header svg {
+    width: 20px;
+    height: 20px;
+    color: var(--danger);
+}
+
+.demo-alert-header span {
+    font-weight: 700;
+    color: var(--danger);
+}
+
+.demo-details {
+    font-size: 0.85rem;
+    color: var(--gray-lighter);
+}
+
+.demo-details p {
+    margin-bottom: 8px;
+}
+
+.demo-details strong {
+    color: white;
+}
+
+.demo-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.demo-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.demo-btn.approve {
+    background: var(--safeguard);
+    color: white;
+}
+
+.demo-btn.approve:hover {
+    background: var(--accent-light);
+    transform: translateY(-2px);
+}
+
+.demo-btn.reject {
+    background: transparent;
+    border: 1px solid var(--gray);
+    color: var(--gray-light);
+}
+
+.demo-btn.reject:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+/* ============================================
+   SLIDE 7: WIBOT MONITORING
+   ============================================ */
+.wibot-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.wibot-chat {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+}
+
+.chat-header {
+    background: linear-gradient(135deg, var(--wibot), #38bdf8);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.chat-avatar {
+    width: 45px;
+    height: 45px;
+    background: rgba(255,255,255,0.2);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-avatar svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+.chat-info h4 {
+    font-weight: 700;
+    color: white;
+}
+
+.chat-info p {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.8);
+}
+
+.chat-messages {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-height: 300px;
+}
+
+.chat-message {
+    max-width: 85%;
+    padding: 15px;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.chat-message.bot {
+    background: var(--dark-200);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+
+.chat-message.user {
+    background: var(--primary);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+.chat-message.system {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    align-self: center;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--safeguard);
+}
+
+.wibot-features {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.wibot-feature {
+    background: var(--dark-100);
+    border-radius: var(--radius-md);
+    padding: 25px;
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.3s ease;
+}
+
+.wibot-feature:hover {
+    border-color: var(--wibot);
+    transform: translateX(10px);
+}
+
+.wibot-feature h4 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.wibot-feature h4 svg {
+    width: 22px;
+    height: 22px;
+    color: var(--wibot);
+}
+
+.wibot-feature p {
+    font-size: 0.9rem;
+    color: var(--gray-light);
+    line-height: 1.6;
+}
+
+/* ============================================
+   SLIDE 8: EXEMPLE CONCRET
+   ============================================ */
+.example-container {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.example-header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    padding: 25px 30px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.example-header svg {
+    width: 40px;
+    height: 40px;
+    color: white;
+}
+
+.example-header-text h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+}
+
+.example-header-text p {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
+}
+
+.example-timeline {
+    padding: 30px;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 20px;
+    padding-bottom: 30px;
+    position: relative;
+}
+
+.timeline-item:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 45px;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--primary), transparent);
+}
+
+.timeline-dot {
+    width: 42px;
+    height: 42px;
+    background: var(--dark-200);
+    border: 3px solid var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.timeline-dot svg {
+    width: 18px;
+    height: 18px;
+    color: var(--primary-light);
+}
+
+.timeline-item.rag .timeline-dot { border-color: var(--rag); }
+.timeline-item.rag .timeline-dot svg { color: var(--rag); }
+
+.timeline-item.safeguard .timeline-dot { border-color: var(--safeguard); }
+.timeline-item.safeguard .timeline-dot svg { color: var(--safeguard); }
+
+.timeline-item.success .timeline-dot { border-color: var(--accent); background: var(--accent); }
+.timeline-item.success .timeline-dot svg { color: white; }
+
+.timeline-content {
+    flex: 1;
+    background: var(--dark-200);
+    border-radius: var(--radius-md);
+    padding: 20px;
+}
+
+.timeline-content h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.timeline-content h4 .time {
+    font-size: 0.75rem;
+    color: var(--gray);
+    font-weight: 500;
+}
+
+.timeline-content p {
+    font-size: 0.9rem;
+    color: var(--gray-light);
+    line-height: 1.6;
+}
+
+.timeline-content .highlight {
+    display: inline-block;
+    background: rgba(99, 102, 241, 0.2);
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: var(--primary-light);
+    font-weight: 600;
+}
+
+/* ============================================
+   SLIDE 9: BÉNÉFICES
+   ============================================ */
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.benefit-card {
+    background: var(--dark-100);
+    border-radius: var(--radius-lg);
+    padding: 35px;
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.benefit-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+.benefit-card:hover {
+    transform: translateY(-10px);
+    border-color: rgba(255,255,255,0.2);
+}
+
+.benefit-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 25px;
+    background: rgba(99, 102, 241, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.benefit-icon svg {
+    width: 36px;
+    height: 36px;
+    color: var(--primary-light);
+}
+
+.benefit-card h4 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.benefit-card p {
+    font-size: 0.95rem;
+    color: var(--gray-light);
+    line-height: 1.6;
+}
+
+.benefit-stat {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.benefit-stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+}
+
+.benefit-stat-label {
+    font-size: 0.8rem;
+    color: var(--gray);
+}
+
+/* ============================================
+   SLIDE 10: RÉSUMÉ
+   ============================================ */
+.summary-container {
+    text-align: center;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.summary-ecosystem {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin: 50px 0;
+    flex-wrap: wrap;
+}
+
+.eco-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.eco-icon {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.eco-icon svg {
+    width: 40px;
+    height: 40px;
+    color: white;
+}
+
+.eco-item:hover .eco-icon {
+    transform: scale(1.1);
+}
+
+.eco-item.assistant .eco-icon { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+.eco-item.rag .eco-icon { background: linear-gradient(135deg, var(--rag), #a78bfa); }
+.eco-item.safeguard .eco-icon { background: linear-gradient(135deg, var(--safeguard), var(--accent-light)); }
+.eco-item.wibot .eco-icon { background: linear-gradient(135deg, var(--wibot), #38bdf8); }
+.eco-item.enrichisseur .eco-icon { background: linear-gradient(135deg, var(--enrichisseur), #fbbf24); }
+
+.eco-item span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gray-lighter);
+}
+
+.eco-arrow {
+    color: var(--gray);
+}
+
+.eco-arrow svg {
+    width: 30px;
+    height: 30px;
+}
+
+.summary-message {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(16, 185, 129, 0.1));
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    margin-top: 40px;
+}
+
+.summary-message p {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.summary-message strong {
+    color: var(--primary-light);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1200px) {
+    .slide { padding: 40px; }
+    .hero-title { font-size: 3rem; }
+    .overview-grid { grid-template-columns: 1fr; }
+    .rag-container { grid-template-columns: 1fr; }
+    .safeguard-container { grid-template-columns: 1fr; }
+    .wibot-container { grid-template-columns: 1fr; }
+    .qualification-grid { grid-template-columns: repeat(2, 1fr); }
+    .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .nav-dots { display: none; }
+    .slide { padding: 30px 20px; }
+    .hero-title { font-size: 2.2rem; }
+    .hero-stats { flex-direction: column; gap: 30px; }
+    .flow-steps { flex-direction: column; align-items: center; }
+    .flow-steps::before { display: none; }
+    .qualification-grid { grid-template-columns: 1fr; }
+    .benefits-grid { grid-template-columns: 1fr; }
+    .summary-ecosystem { flex-direction: column; }
+    .eco-arrow { transform: rotate(90deg); }
+}
+    </style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<!-- Navigation Dots -->
+<div class="nav-dots" id="navDots">
+    <div class="nav-dot active" data-slide="1" data-label="Introduction"></div>
+    <div class="nav-dot" data-slide="2" data-label="Vue d'ensemble"></div>
+    <div class="nav-dot" data-slide="3" data-label="Flux principal"></div>
+    <div class="nav-dot" data-slide="4" data-label="Qualification"></div>
+    <div class="nav-dot" data-slide="5" data-label="Base RAG"></div>
+    <div class="nav-dot" data-slide="6" data-label="Safeguard"></div>
+    <div class="nav-dot" data-slide="7" data-label="Monitoring WIBOT"></div>
+    <div class="nav-dot" data-slide="8" data-label="Exemple concret"></div>
+    <div class="nav-dot" data-slide="9" data-label="Bénéfices"></div>
+    <div class="nav-dot" data-slide="10" data-label="Résumé"></div>
+</div>
+
+<!-- SLIDE 1: HERO -->
+<section class="slide slide-hero" id="slide-1">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="hero-content">
+            <div class="hero-icon animate-on-scroll">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                    <rect x="9" y="3" width="6" height="4" rx="1"/>
+                    <path d="M9 12h6"/>
+                    <path d="M9 16h6"/>
+                </svg>
+            </div>
+            <div class="hero-badge animate-on-scroll delay-1">Workflow Autonome</div>
+            <h1 class="hero-title animate-on-scroll delay-2">
+                ASSISTANT <span>TICKET</span>
+            </h1>
+            <p class="hero-subtitle animate-on-scroll delay-3">
+                Qualification et résolution automatique des tickets GLPI<br>
+                avec contrôle humain intégré
+            </p>
+            <div class="hero-stats animate-on-scroll delay-4">
+                <div class="hero-stat">
+                    <div class="hero-stat-value">3 min</div>
+                    <div class="hero-stat-label">Cycle de polling</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">24/7</div>
+                    <div class="hero-stat-label">Disponibilité</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-value">4</div>
+                    <div class="hero-stat-label">Niveaux qualification</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="scroll-hint">
+        <span>Défiler pour découvrir</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12l7 7 7-7"/>
+        </svg>
+    </div>
+</section>
+
+<!-- SLIDE 2: VUE D'ENSEMBLE -->
+<section class="slide slide-overview" id="slide-2">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="overview-grid">
+            <div class="overview-left">
+                <span class="section-label animate-on-scroll">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                    Vue d'ensemble
+                </span>
+                <h2 class="animate-on-scroll delay-1">
+                    Un workflow qui <span>surveille</span> et <span>traite</span> vos tickets
+                </h2>
+                <p class="animate-on-scroll delay-2">
+                    L'Assistant Ticket interroge GLPI toutes les 3 minutes pour détecter les nouveaux tickets.
+                    Il les analyse, les qualifie par niveau de difficulté, et peut résoudre automatiquement
+                    les demandes simples.
+                </p>
+                <div class="overview-features animate-on-scroll delay-3">
+                    <div class="overview-feature">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>Surveillance continue GLPI (polling 3 min)</span>
+                    </div>
+                    <div class="overview-feature">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>Qualification intelligente (4 niveaux)</span>
+                    </div>
+                    <div class="overview-feature">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>Résolution automatique (avec validation)</span>
+                    </div>
+                    <div class="overview-feature">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span>Apprentissage continu via l'Enrichisseur</span>
+                    </div>
+                </div>
+            </div>
+            <div class="overview-diagram animate-on-scroll delay-2">
+                <div class="diagram-flow">
+                    <div class="diagram-step">
+                        <div class="diagram-step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </div>
+                        <div class="diagram-step-content">
+                            <h4>1. Nouveau ticket GLPI</h4>
+                            <p>Détection automatique toutes les 3 minutes</p>
+                        </div>
+                    </div>
+                    <div class="diagram-step rag">
+                        <div class="diagram-step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                        </div>
+                        <div class="diagram-step-content">
+                            <h4>2. Recherche RAG</h4>
+                            <p>Consultation de la base de connaissances centralisée</p>
+                        </div>
+                    </div>
+                    <div class="diagram-step">
+                        <div class="diagram-step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14 2 14 8 20 8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                            </svg>
+                        </div>
+                        <div class="diagram-step-content">
+                            <h4>3. Qualification</h4>
+                            <p>Attribution d'un niveau : Simple, Moyen, Complexe, Expert</p>
+                        </div>
+                    </div>
+                    <div class="diagram-step safeguard">
+                        <div class="diagram-step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <div class="diagram-step-content">
+                            <h4>4. Contrôle SAFEGUARD</h4>
+                            <p>Validation selon le niveau de sensibilité de l'action</p>
+                        </div>
+                    </div>
+                    <div class="diagram-step wibot">
+                        <div class="diagram-step-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <path d="M9 9h6v6H9z"/>
+                            </svg>
+                        </div>
+                        <div class="diagram-step-content">
+                            <h4>5. Monitoring WIBOT</h4>
+                            <p>Suivi en temps réel et notifications techniciens</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 3: FLUX PRINCIPAL -->
+<section class="slide slide-flow" id="slide-3">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center">
+            <span class="section-label animate-on-scroll">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Flux de traitement
+            </span>
+            <h2 class="slide-title animate-on-scroll delay-1">Le parcours d'un <span>ticket</span></h2>
+        </div>
+        <div class="flow-container animate-on-scroll delay-2">
+            <div class="flow-header">
+                <h3>De la détection à la résolution</h3>
+                <p>Chaque ticket suit un parcours structuré avec points de contrôle</p>
+            </div>
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <div class="flow-step-number">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <h4>Détection</h4>
+                    <p>Polling GLPI toutes les 3 minutes</p>
+                </div>
+                <div class="flow-step rag">
+                    <div class="flow-step-number">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                    </div>
+                    <h4>Recherche RAG</h4>
+                    <p>Historique et procédures similaires</p>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-number">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                    </div>
+                    <h4>Qualification</h4>
+                    <p>Niveau de difficulté attribué</p>
+                </div>
+                <div class="flow-step safeguard">
+                    <div class="flow-step-number">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <h4>Safeguard</h4>
+                    <p>Validation selon sensibilité</p>
+                </div>
+                <div class="flow-step success">
+                    <div class="flow-step-number">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <h4>Résolution</h4>
+                    <p>Action exécutée et ticket mis à jour</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 4: QUALIFICATION -->
+<section class="slide slide-qualification" id="slide-4">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center">
+            <span class="section-label animate-on-scroll">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                Qualification intelligente
+            </span>
+            <h2 class="slide-title animate-on-scroll delay-1">4 niveaux de <span>difficulté</span></h2>
+            <p class="slide-subtitle animate-on-scroll delay-2">
+                Chaque ticket est analysé et classifié pour un traitement adapté
+            </p>
+        </div>
+        <div class="qualification-grid">
+            <div class="qualification-card simple animate-on-scroll delay-1">
+                <div class="qualification-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                </div>
+                <h4>SIMPLE</h4>
+                <p>Dans les compétences de l'IA</p>
+                <span class="qualification-action">L'IA peut résoudre</span>
+            </div>
+            <div class="qualification-card moyen animate-on-scroll delay-2">
+                <div class="qualification-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                </div>
+                <h4>MOYEN</h4>
+                <p>Analyse plus poussée nécessaire</p>
+                <span class="qualification-action">IA peut tenter</span>
+            </div>
+            <div class="qualification-card complexe animate-on-scroll delay-3">
+                <div class="qualification-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                </div>
+                <h4>COMPLEXE</h4>
+                <p>Dépasse les compétences IA</p>
+                <span class="qualification-action">Escalade N1</span>
+            </div>
+            <div class="qualification-card expert animate-on-scroll delay-4">
+                <div class="qualification-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <h4>EXPERT</h4>
+                <p>Expertise avancée requise</p>
+                <span class="qualification-action">Escalade N2+</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 5: RAG -->
+<section class="slide slide-rag" id="slide-5">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="rag-container">
+            <div class="rag-visual animate-on-scroll">
+                <div class="rag-orbit">
+                    <div class="rag-source">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
+                    <div class="rag-source">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                            <rect x="9" y="3" width="6" height="4" rx="1"/>
+                        </svg>
+                    </div>
+                    <div class="rag-source">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="rag-source">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="rag-center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="rag-explanation">
+                <span class="section-label rag animate-on-scroll">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                    Base de Connaissances
+                </span>
+                <h3 class="animate-on-scroll delay-1">Le <span>RAG</span> : mémoire centralisée</h3>
+                <p class="animate-on-scroll delay-2">
+                    Pour chaque ticket, l'Assistant interroge la base de connaissances vectorielle
+                    pour trouver des cas similaires et des procédures applicables.
+                </p>
+                <div class="rag-sources-list animate-on-scroll delay-3">
+                    <div class="rag-source-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <div class="source-info">
+                            <h4>Procédures techniques</h4>
+                            <p>How-to, troubleshooting, guides</p>
+                        </div>
+                    </div>
+                    <div class="rag-source-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                            <rect x="9" y="3" width="6" height="4" rx="1"/>
+                        </svg>
+                        <div class="source-info">
+                            <h4>Tickets résolus</h4>
+                            <p>Historique des résolutions passées</p>
+                        </div>
+                    </div>
+                    <div class="rag-source-item enrichisseur">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v4"/>
+                            <path d="M12 18v4"/>
+                            <path d="m4.93 4.93 2.83 2.83"/>
+                            <path d="m16.24 16.24 2.83 2.83"/>
+                            <path d="M2 12h4"/>
+                            <path d="M18 12h4"/>
+                            <path d="m4.93 19.07 2.83-2.83"/>
+                            <path d="m16.24 7.76 2.83-2.83"/>
+                        </svg>
+                        <div class="source-info">
+                            <h4>Alimenté par l'Enrichisseur</h4>
+                            <p>Nouvelles procédures générées automatiquement</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 6: SAFEGUARD -->
+<section class="slide slide-safeguard" id="slide-6">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center">
+            <span class="section-label safeguard animate-on-scroll">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                Contrôle SAFEGUARD
+            </span>
+            <h2 class="slide-title animate-on-scroll delay-1">Validation selon la <span>sensibilité</span></h2>
+            <p class="slide-subtitle animate-on-scroll delay-2">
+                Chaque action est classifiée et contrôlée selon son niveau de risque
+            </p>
+        </div>
+        <div class="safeguard-container" style="margin-top: 40px;">
+            <div class="safeguard-levels">
+                <div class="safeguard-level l0 animate-on-scroll delay-1">
+                    <div class="level-badge">L0</div>
+                    <div class="level-info">
+                        <h4>READ_ONLY</h4>
+                        <p>Consultation info, recherche RAG</p>
+                    </div>
+                    <span class="level-action">Auto</span>
+                </div>
+                <div class="safeguard-level l1 animate-on-scroll delay-2">
+                    <div class="level-badge">L1</div>
+                    <div class="level-info">
+                        <h4>MINOR</h4>
+                        <p>Ajout suivi ticket, mise à jour statut</p>
+                    </div>
+                    <span class="level-action">Auto si confiance ≥80%</span>
+                </div>
+                <div class="safeguard-level l2 animate-on-scroll delay-3">
+                    <div class="level-badge">L2</div>
+                    <div class="level-info">
+                        <h4>MODERATE</h4>
+                        <p>Déblocage compte AD, ajout groupe</p>
+                    </div>
+                    <span class="level-action">Auto + Notification</span>
+                </div>
+                <div class="safeguard-level l3 animate-on-scroll delay-4">
+                    <div class="level-badge">L3</div>
+                    <div class="level-info">
+                        <h4>SENSITIVE</h4>
+                        <p>Création compte, reset mot de passe</p>
+                    </div>
+                    <span class="level-action">Validation requise</span>
+                </div>
+            </div>
+            <div class="safeguard-demo animate-on-scroll delay-3">
+                <div class="demo-header">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                    <span>Dashboard SAFEGUARD</span>
+                </div>
+                <div class="demo-content">
+                    <div class="demo-alert">
+                        <div class="demo-alert-header">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            <span>Validation requise - L3</span>
+                        </div>
+                        <div class="demo-details">
+                            <p><strong>Action :</strong> Création compte AD</p>
+                            <p><strong>Ticket :</strong> #4521 - Nouvel arrivant</p>
+                            <p><strong>Utilisateur :</strong> Jean Dupont</p>
+                            <p><strong>OU :</strong> OU=Users,OU=ADAPEI</p>
+                        </div>
+                    </div>
+                    <div class="demo-buttons">
+                        <button class="demo-btn approve">Approuver</button>
+                        <button class="demo-btn reject">Rejeter</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 7: WIBOT MONITORING -->
+<section class="slide slide-wibot" id="slide-7">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center">
+            <span class="section-label wibot animate-on-scroll">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="4" y="6" width="16" height="12" rx="2"/>
+                    <circle cx="9" cy="12" r="1.5" fill="currentColor"/>
+                    <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+                    <path d="M12 6V3"/>
+                    <circle cx="12" cy="2" r="1" fill="currentColor"/>
+                </svg>
+                Monitoring WIBOT
+            </span>
+            <h2 class="slide-title animate-on-scroll delay-1">Suivi en <span>temps réel</span></h2>
+        </div>
+        <div class="wibot-container" style="margin-top: 40px;">
+            <div class="wibot-chat animate-on-scroll delay-2">
+                <div class="chat-header">
+                    <div class="chat-avatar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="6" width="16" height="12" rx="2"/>
+                            <circle cx="9" cy="12" r="1.5" fill="currentColor"/>
+                            <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <div class="chat-info">
+                        <h4>WIBOT - Dashboard</h4>
+                        <p>Assistant Ticket actif</p>
+                    </div>
+                </div>
+                <div class="chat-messages">
+                    <div class="chat-message system">
+                        Nouveau ticket #4521 détecté - En cours d'analyse
+                    </div>
+                    <div class="chat-message bot">
+                        <strong>Ticket #4521</strong><br>
+                        Demande : Création compte AD<br>
+                        Client : ADAPEI<br>
+                        Qualification : <span style="color: var(--accent)">SIMPLE</span>
+                    </div>
+                    <div class="chat-message bot">
+                        Procédure trouvée dans le RAG.<br>
+                        Préparation de l'action...
+                    </div>
+                    <div class="chat-message system">
+                        Action L3 - En attente de validation SAFEGUARD
+                    </div>
+                    <div class="chat-message user">
+                        Validation approuvée
+                    </div>
+                    <div class="chat-message bot">
+                        Compte créé avec succès.<br>
+                        Ticket mis à jour et clôturé.
+                    </div>
+                </div>
+            </div>
+            <div class="wibot-features">
+                <div class="wibot-feature animate-on-scroll delay-2">
+                    <h4>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        Notifications temps réel
+                    </h4>
+                    <p>Recevez une alerte dès qu'une action nécessite votre validation. Ne manquez jamais une demande critique.</p>
+                </div>
+                <div class="wibot-feature animate-on-scroll delay-3">
+                    <h4>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                        </svg>
+                        Historique complet
+                    </h4>
+                    <p>Consultez l'historique de tous les tickets traités, les actions effectuées et les validations.</p>
+                </div>
+                <div class="wibot-feature animate-on-scroll delay-4">
+                    <h4>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"/>
+                            <line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                        Statistiques
+                    </h4>
+                    <p>Suivez les KPIs : tickets traités, taux de résolution auto, temps moyen de traitement.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 8: EXEMPLE CONCRET -->
+<section class="slide slide-example" id="slide-8">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center">
+            <span class="section-label animate-on-scroll">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Exemple concret
+            </span>
+            <h2 class="slide-title animate-on-scroll delay-1">Un ticket de <span>A à Z</span></h2>
+        </div>
+        <div class="example-container animate-on-scroll delay-2" style="margin-top: 30px;">
+            <div class="example-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                    <rect x="9" y="3" width="6" height="4" rx="1"/>
+                </svg>
+                <div class="example-header-text">
+                    <h3>Ticket #4521 - Reset mot de passe</h3>
+                    <p>Client ADAPEI - Utilisateur bloqué</p>
+                </div>
+            </div>
+            <div class="example-timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-content">
+                        <h4>Détection du ticket <span class="time">09:02:15</span></h4>
+                        <p>L'Assistant Ticket détecte le nouveau ticket GLPI lors du polling. Analyse du contenu : "Utilisateur Marie Martin ne peut plus se connecter, mot de passe oublié".</p>
+                    </div>
+                </div>
+                <div class="timeline-item rag">
+                    <div class="timeline-dot">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-content">
+                        <h4>Recherche RAG <span class="time">09:02:17</span></h4>
+                        <p>Consultation de la base de connaissances. <span class="highlight">Procédure P-2024-012</span> trouvée : "Reset mot de passe Active Directory". Score de similarité : 94%.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-content">
+                        <h4>Qualification <span class="time">09:02:18</span></h4>
+                        <p>Ticket classifié <span class="highlight">SIMPLE</span>. Procédure connue, client identifié, action standard. L'IA peut traiter ce ticket.</p>
+                    </div>
+                </div>
+                <div class="timeline-item safeguard">
+                    <div class="timeline-dot">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-content">
+                        <h4>Contrôle SAFEGUARD <span class="time">09:02:19</span></h4>
+                        <p>Action "Reset mot de passe" = Niveau <span class="highlight">L3 (SENSITIVE)</span>. Demande de validation envoyée au technicien de garde via WIBOT.</p>
+                    </div>
+                </div>
+                <div class="timeline-item success">
+                    <div class="timeline-dot">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <div class="timeline-content">
+                        <h4>Résolution <span class="time">09:04:32</span></h4>
+                        <p>Validation reçue. Nouveau mot de passe généré et envoyé à l'utilisateur. Ticket mis à jour avec le suivi détaillé et clôturé automatiquement. <strong>Temps total : 2 min 17 sec</strong>.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 9: BÉNÉFICES -->
+<section class="slide slide-benefits" id="slide-9">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="text-center">
+            <span class="section-label animate-on-scroll">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 20V10"/>
+                    <path d="M18 20V4"/>
+                    <path d="M6 20v-4"/>
+                </svg>
+                Les bénéfices
+            </span>
+            <h2 class="slide-title animate-on-scroll delay-1">Ce que ça <span>change</span> pour vous</h2>
+        </div>
+        <div class="benefits-grid">
+            <div class="benefit-card animate-on-scroll delay-1">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                </div>
+                <h4>Gain de temps</h4>
+                <p>Les tickets simples sont traités en quelques minutes, même hors heures ouvrées.</p>
+                <div class="benefit-stat">
+                    <div class="benefit-stat-value">-70%</div>
+                    <div class="benefit-stat-label">temps de traitement tickets simples</div>
+                </div>
+            </div>
+            <div class="benefit-card animate-on-scroll delay-2">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                </div>
+                <h4>Focus sur l'expertise</h4>
+                <p>Les techniciens se concentrent sur les cas complexes à forte valeur ajoutée.</p>
+                <div class="benefit-stat">
+                    <div class="benefit-stat-value">+40%</div>
+                    <div class="benefit-stat-label">temps pour les cas experts</div>
+                </div>
+            </div>
+            <div class="benefit-card animate-on-scroll delay-3">
+                <div class="benefit-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                </div>
+                <h4>Contrôle garanti</h4>
+                <p>SAFEGUARD assure une validation humaine sur toutes les actions sensibles.</p>
+                <div class="benefit-stat">
+                    <div class="benefit-stat-value">100%</div>
+                    <div class="benefit-stat-label">des actions L3 validées</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDE 10: RÉSUMÉ -->
+<section class="slide slide-summary" id="slide-10">
+    <div class="slide-bg"><div class="bg-grid"></div></div>
+    <div class="slide-content">
+        <div class="summary-container">
+            <span class="section-label animate-on-scroll">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+                En résumé
+            </span>
+            <h2 class="slide-title animate-on-scroll delay-1">Un <span>écosystème</span> connecté</h2>
+            <p class="slide-subtitle animate-on-scroll delay-2">
+                L'Assistant Ticket s'intègre parfaitement avec tous les composants de la plateforme
+            </p>
+
+            <div class="summary-ecosystem animate-on-scroll delay-3">
+                <div class="eco-item assistant">
+                    <div class="eco-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/>
+                            <rect x="9" y="3" width="6" height="4" rx="1"/>
+                        </svg>
+                    </div>
+                    <span>Assistant Ticket</span>
+                </div>
+                <div class="eco-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </div>
+                <div class="eco-item rag">
+                    <div class="eco-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                    </div>
+                    <span>Base RAG</span>
+                </div>
+                <div class="eco-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </div>
+                <div class="eco-item safeguard">
+                    <div class="eco-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        </svg>
+                    </div>
+                    <span>Safeguard</span>
+                </div>
+                <div class="eco-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </div>
+                <div class="eco-item wibot">
+                    <div class="eco-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="6" width="16" height="12" rx="2"/>
+                            <circle cx="9" cy="12" r="1.5" fill="currentColor"/>
+                            <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <span>WIBOT</span>
+                </div>
+            </div>
+
+            <div class="summary-ecosystem animate-on-scroll delay-4" style="margin-top: 20px;">
+                <div class="eco-item enrichisseur">
+                    <div class="eco-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2v4"/>
+                            <path d="M12 18v4"/>
+                            <path d="m4.93 4.93 2.83 2.83"/>
+                            <path d="m16.24 16.24 2.83 2.83"/>
+                            <path d="M2 12h4"/>
+                            <path d="M18 12h4"/>
+                        </svg>
+                    </div>
+                    <span>Enrichisseur</span>
+                </div>
+                <div class="eco-arrow" style="transform: rotate(180deg);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </div>
+                <span style="color: var(--gray-light); font-size: 0.9rem;">Alimente le RAG avec les tickets résolus</span>
+            </div>
+
+            <div class="summary-message animate-on-scroll delay-5">
+                <p>L'IA qui <strong>facilite la vie</strong></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Scroll animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, observerOptions);
+
+document.querySelectorAll('.animate-on-scroll').forEach(el => {
+    observer.observe(el);
+});
+
+// Progress bar
+const progressBar = document.getElementById('progressBar');
+const slides = document.querySelectorAll('.slide');
+const navDots = document.querySelectorAll('.nav-dot');
+
+function updateProgress() {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = (scrollTop / docHeight) * 100;
+    progressBar.style.width = progress + '%';
+
+    // Update nav dots
+    const currentSlide = Math.round(scrollTop / window.innerHeight) + 1;
+    navDots.forEach((dot, index) => {
+        dot.classList.toggle('active', index + 1 === currentSlide);
+    });
+}
+
+window.addEventListener('scroll', updateProgress);
+
+// Nav dot click
+navDots.forEach(dot => {
+    dot.addEventListener('click', () => {
+        const slideNum = dot.getAttribute('data-slide');
+        document.getElementById('slide-' + slideNum).scrollIntoView({ behavior: 'smooth' });
+    });
+});
+
+// Initial check
+updateProgress();
+</script>
+
+</body>
+</html>

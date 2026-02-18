@@ -1,0 +1,396 @@
+{
+  "name": "WIDIP_RAG_Ingest_Docs_v2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 3 * * 0"
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Weekly Sunday 03:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "operation": "list",
+        "folderPath": "/opt/widip/docs",
+        "options": {}
+      },
+      "id": "list-docs",
+      "name": "List Documents",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "is-pdf",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": ".pdf",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            },
+            {
+              "id": "is-md",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": ".md",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            },
+            {
+              "id": "is-txt",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": ".txt",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            },
+            {
+              "id": "is-docx",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": ".docx",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "filter-supported",
+      "name": "Filter Supported Files",
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2,
+      "position": [750, 300]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "filePath": "={{ $json.path }}",
+        "options": {}
+      },
+      "id": "read-file",
+      "name": "Read File Content",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract text and chunk documents\nconst item = $input.first().json;\nconst fileName = item.fileName || item.name;\nconst content = item.data ? item.data.toString('utf8') : item.content || '';\n\n// Determine document type and category\nfunction getDocType(name) {\n  const lowerName = name.toLowerCase();\n  if (lowerName.includes('procedure') || lowerName.includes('proc_')) return 'procedure';\n  if (lowerName.includes('faq')) return 'faq';\n  if (lowerName.includes('guide')) return 'guide';\n  if (lowerName.includes('troubleshoot') || lowerName.includes('depannage')) return 'troubleshooting';\n  if (lowerName.includes('contrat') || lowerName.includes('contract')) return 'contract';\n  return 'documentation';\n}\n\nfunction getCategory(name, content) {\n  const text = (name + ' ' + content).toLowerCase();\n  if (text.includes('réseau') || text.includes('network') || text.includes('routeur') || text.includes('switch')) return 'Réseau';\n  if (text.includes('active directory') || text.includes(' ad ') || text.includes('ldap')) return 'Active Directory';\n  if (text.includes('mail') || text.includes('exchange') || text.includes('o365')) return 'Messagerie';\n  if (text.includes('backup') || text.includes('sauvegarde') || text.includes('veeam')) return 'Sauvegarde';\n  if (text.includes('securité') || text.includes('firewall') || text.includes('fortinet')) return 'Sécurité';\n  if (text.includes('imprimante') || text.includes('printer')) return 'Impression';\n  return 'Général';\n}\n\nfunction getConfidentiality(name) {\n  const lowerName = name.toLowerCase();\n  if (lowerName.includes('confidentiel') || lowerName.includes('contrat') || lowerName.includes('tarif')) return 'confidentiel';\n  if (lowerName.includes('interne') || lowerName.includes('internal')) return 'interne';\n  return 'public';\n}\n\n// Chunking function (512 tokens ~ 2000 chars, 50 token overlap ~ 200 chars)\nfunction chunkText(text, chunkSize = 2000, overlap = 200) {\n  const chunks = [];\n  let start = 0;\n  \n  while (start < text.length) {\n    let end = start + chunkSize;\n    \n    // Try to break at sentence boundary\n    if (end < text.length) {\n      const lastPeriod = text.lastIndexOf('.', end);\n      const lastNewline = text.lastIndexOf('\\n', end);\n      const breakPoint = Math.max(lastPeriod, lastNewline);\n      if (breakPoint > start + chunkSize / 2) {\n        end = breakPoint + 1;\n      }\n    }\n    \n    chunks.push(text.slice(start, end).trim());\n    start = end - overlap;\n  }\n  \n  return chunks.filter(c => c.length > 50); // Filter tiny chunks\n}\n\nconst docType = getDocType(fileName);\nconst category = getCategory(fileName, content);\nconst confidentiality = getConfidentiality(fileName);\nconst chunks = chunkText(content);\n\n// Create output for each chunk\nconst results = chunks.map((chunk, index) => ({\n  json: {\n    doc_id: `DOC-${fileName.replace(/[^a-zA-Z0-9]/g, '_')}-${index}`,\n    file_name: fileName,\n    chunk_index: index,\n    total_chunks: chunks.length,\n    text: chunk,\n    metadata: {\n      doc_type: docType,\n      category: category,\n      confidentiality: confidentiality,\n      file_name: fileName,\n      chunk_index: index,\n      source: 'filesystem'\n    }\n  }\n}));\n\nreturn results;"
+      },
+      "id": "chunk-docs",
+      "name": "Chunk Documents",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "batchSize": 10,
+        "options": {}
+      },
+      "id": "batch-chunks",
+      "name": "Batch Chunks",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [1500, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://{{ $env.OLLAMA_HOST }}:11434/api/embeddings",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"bge-m3\",\n  \"prompt\": {{ JSON.stringify($json.text) }}\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "generate-embeddings",
+      "name": "Generate BGE-M3 Embeddings",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1750, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepare points for Qdrant with hybrid vectors\nconst items = $input.all();\nconst points = [];\n\nfor (let i = 0; i < items.length; i++) {\n  const embedding = items[i].json.embedding;\n  const chunk = $('Batch Chunks').all()[i].json;\n  \n  points.push({\n    id: chunk.doc_id.replace(/[^a-zA-Z0-9_]/g, ''),\n    vector: {\n      dense: embedding\n    },\n    payload: {\n      text: chunk.text,\n      ...chunk.metadata\n    }\n  });\n}\n\nreturn [{ json: { points } }];"
+      },
+      "id": "prepare-qdrant",
+      "name": "Prepare Qdrant Points",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, 300]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "http://localhost:6333/collections/widip_docs/points",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ points: $json.points }) }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "qdrant-upsert",
+      "name": "Qdrant Upsert Docs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Create document nodes in Neo4j for procedure linking\nconst chunks = $('Chunk Documents').all();\nconst seenDocs = new Set();\nconst queries = [];\n\nfor (const item of chunks) {\n  const chunk = item.json;\n  const docKey = chunk.file_name;\n  \n  // Only create one Document node per file\n  if (!seenDocs.has(docKey)) {\n    seenDocs.add(docKey);\n    \n    if (chunk.metadata.doc_type === 'procedure') {\n      queries.push({\n        query: `\n          MERGE (p:Procedure {name: $name})\n          SET p.category = $category,\n              p.file_name = $file_name,\n              p.confidentiality = $confidentiality,\n              p.updated_at = datetime()\n          \n          // Link to category\n          MERGE (cat:Category {name: $category})\n          MERGE (p)-[:BELONGS_TO]->(cat)\n          \n          RETURN p\n        `,\n        params: {\n          name: chunk.file_name.replace(/\\.[^.]+$/, ''),\n          category: chunk.metadata.category,\n          file_name: chunk.file_name,\n          confidentiality: chunk.metadata.confidentiality\n        }\n      });\n    }\n  }\n}\n\nreturn queries.map(q => ({ json: q }));"
+      },
+      "id": "prepare-neo4j-procedures",
+      "name": "Prepare Neo4j Procedures",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, 500]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "={{ $json.query }}",
+        "parameters": "={{ JSON.stringify($json.params) }}"
+      },
+      "id": "neo4j-upsert",
+      "name": "Neo4j Upsert Procedures",
+      "type": "n8n-nodes-base.neo4j",
+      "typeVersion": 1,
+      "position": [2250, 500],
+      "credentials": {
+        "neo4j": {
+          "id": "neo4j-widip",
+          "name": "Neo4j WIDIP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate summary\nconst qdrantResult = $('Qdrant Upsert Docs').first()?.json;\nconst neo4jResults = $('Neo4j Upsert Procedures').all();\n\nconst summary = {\n  timestamp: new Date().toISOString(),\n  workflow: 'WIDIP_RAG_Ingest_Docs_v2',\n  qdrant: {\n    collection: 'widip_docs',\n    status: qdrantResult?.status || 'unknown'\n  },\n  neo4j: {\n    procedures_created: neo4jResults.length\n  },\n  status: 'success'\n};\n\nreturn [{ json: summary }];"
+      },
+      "id": "summary",
+      "name": "Generate Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2500, 400]
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "rag_ingest_docs_last_run",
+        "value": "={{ JSON.stringify($json) }}",
+        "expireTime": 604800
+      },
+      "id": "redis-log",
+      "name": "Log to Redis",
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [2750, 400],
+      "credentials": {
+        "redis": {
+          "id": "redis-widip",
+          "name": "Redis WIDIP"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## WIDIP RAG Ingest Docs v2\n\n### Description\nCe workflow s'exécute chaque dimanche à 03:00 pour:\n1. Scanner le répertoire /opt/widip/docs\n2. Extraire et chunker les documents (PDF, MD, TXT, DOCX)\n3. Générer des embeddings BGE-M3\n4. Indexer dans Qdrant (collection: widip_docs)\n5. Créer les nodes Procedure dans Neo4j\n\n### Formats supportés\n- PDF (extraction texte)\n- Markdown (.md)\n- Texte (.txt)\n- Word (.docx)\n\n### Chunking\n- Taille: ~512 tokens (2000 chars)\n- Overlap: ~50 tokens (200 chars)\n- Coupure intelligente (phrases)\n\n### Catégories auto-détectées\n- Réseau, Active Directory, Messagerie\n- Sauvegarde, Sécurité, Impression\n- Général (défaut)",
+        "height": 480,
+        "width": 350
+      },
+      "id": "sticky-note",
+      "name": "Documentation",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [250, 500]
+    }
+  ],
+  "connections": {
+    "Weekly Sunday 03:00": {
+      "main": [
+        [
+          {
+            "node": "List Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Documents": {
+      "main": [
+        [
+          {
+            "node": "Filter Supported Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Supported Files": {
+      "main": [
+        [
+          {
+            "node": "Read File Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read File Content": {
+      "main": [
+        [
+          {
+            "node": "Chunk Documents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Chunk Documents": {
+      "main": [
+        [
+          {
+            "node": "Batch Chunks",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Neo4j Procedures",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Batch Chunks": {
+      "main": [
+        [
+          {
+            "node": "Generate BGE-M3 Embeddings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate BGE-M3 Embeddings": {
+      "main": [
+        [
+          {
+            "node": "Prepare Qdrant Points",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Qdrant Points": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Upsert Docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Upsert Docs": {
+      "main": [
+        [
+          {
+            "node": "Generate Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Neo4j Procedures": {
+      "main": [
+        [
+          {
+            "node": "Neo4j Upsert Procedures",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Neo4j Upsert Procedures": {
+      "main": [
+        [
+          {
+            "node": "Generate Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Summary": {
+      "main": [
+        [
+          {
+            "node": "Log to Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "widip-rag-ingest-docs"
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "RAG",
+      "createdAt": "2025-12-10T00:00:00.000Z",
+      "updatedAt": "2025-12-10T00:00:00.000Z"
+    },
+    {
+      "name": "Ingestion",
+      "createdAt": "2025-12-10T00:00:00.000Z",
+      "updatedAt": "2025-12-10T00:00:00.000Z"
+    }
+  ]
+}

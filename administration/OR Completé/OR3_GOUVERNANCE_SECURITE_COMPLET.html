@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OR3 - Gouvernance de securite multi-agents IA</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2c5282;
+            --accent-color: #9f7aea;
+            --success-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --text-color: #2d3748;
+            --light-bg: #f7fafc;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #fff;
+            font-size: 11pt;
+        }
+
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        @media print {
+            body { font-size: 10pt; }
+            .page-break { page-break-before: always; }
+            .no-break { page-break-inside: avoid; }
+        }
+
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20px 40px;
+        }
+
+        .document-header {
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .document-header .or-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12pt;
+            margin-bottom: 10px;
+        }
+
+        .document-header .status-badge {
+            display: inline-block;
+            background: var(--success-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 10pt;
+            margin-left: 10px;
+        }
+
+        .document-header h1 {
+            color: var(--primary-color);
+            font-size: 20pt;
+            margin-bottom: 10px;
+        }
+
+        .document-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 10pt;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        .document-meta span {
+            background: var(--light-bg);
+            padding: 5px 12px;
+            border-radius: 4px;
+        }
+
+        .potentiel-badge {
+            background: #c6f6d5 !important;
+            color: #22543d !important;
+            font-weight: 600;
+        }
+
+        section {
+            margin-bottom: 35px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 14pt;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 12pt;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: var(--text-color);
+            font-size: 11pt;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        .problematique {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 12pt;
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        .verrou {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .verrou-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .verrou-number {
+            background: var(--accent-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14pt;
+            margin-right: 15px;
+        }
+
+        .verrou-title {
+            font-weight: 600;
+            font-size: 12pt;
+            color: var(--primary-color);
+        }
+
+        .incertitudes {
+            background: #faf5ff;
+            border-left: 3px solid #805ad5;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .incertitudes h5 {
+            color: #553c9a;
+            font-size: 10pt;
+            margin-bottom: 10px;
+        }
+
+        .incertitudes ul {
+            margin: 0 0 0 20px;
+            font-size: 10pt;
+        }
+
+        .incertitudes li {
+            margin-bottom: 6px;
+        }
+
+        .hypotheses-table {
+            background: #fffaf0;
+            border: 1px solid #ed8936;
+        }
+
+        .hypotheses-table th {
+            background: #ed8936;
+        }
+
+        .info-box {
+            padding: 18px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box.etat-art {
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+        }
+
+        .info-box.resultats {
+            background: #f0fff4;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .info-box.warning {
+            background: #fffaf0;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .info-box.bug {
+            background: #fff5f5;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .info-box.innovation {
+            background: #faf5ff;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .info-box.success {
+            background: #f0fff4;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .info-box h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        .diagram {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+            margin: 20px 0;
+        }
+
+        .frascati-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .frascati-item {
+            text-align: center;
+            padding: 15px 8px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .frascati-item .criterion {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .frascati-item .evaluation {
+            font-weight: 700;
+            font-size: 11pt;
+        }
+
+        .frascati-item .evaluation.fort {
+            color: #22543d;
+        }
+
+        .frascati-item .evaluation.moyen {
+            color: #744210;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 9pt;
+            font-weight: 600;
+        }
+
+        .badge.fort { background: #c6f6d5; color: #22543d; }
+        .badge.moyen { background: #fefcbf; color: #744210; }
+        .badge.en-cours { background: #bee3f8; color: #2b6cb0; }
+        .badge.valide { background: #c6f6d5; color: #22543d; }
+        .badge.echec { background: #fed7d7; color: #742a2a; }
+        .badge.partiel { background: #fefcbf; color: #744210; }
+        .badge.resolu { background: #c6f6d5; color: #22543d; }
+
+        .niveau-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .niveau-card {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .niveau-card.l0 { background: #e6fffa; border: 2px solid #38b2ac; }
+        .niveau-card.l1 { background: #c6f6d5; border: 2px solid #38a169; }
+        .niveau-card.l2 { background: #fefcbf; border: 2px solid #d69e2e; }
+        .niveau-card.l3 { background: #fed7aa; border: 2px solid #dd6b20; }
+        .niveau-card.l4 { background: #fed7d7; border: 2px solid #e53e3e; }
+        .niveau-card.l4sms { background: #e9d8fd; border: 2px solid #9f7aea; }
+
+        .niveau-card h5 {
+            margin-bottom: 8px;
+            font-size: 11pt;
+        }
+
+        .niveau-card p {
+            font-size: 9pt;
+            margin: 0;
+            text-align: center;
+        }
+
+        ul, ol {
+            margin: 12px 0 12px 25px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .checklist li:before {
+            content: "☐ ";
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .checklist li.done:before {
+            content: "☑ ";
+            color: var(--success-color);
+        }
+
+        .document-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 9pt;
+            color: #666;
+            text-align: center;
+        }
+
+        .timeline {
+            border-left: 3px solid var(--accent-color);
+            padding-left: 20px;
+            margin: 20px 0;
+        }
+
+        .timeline-item {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-item:before {
+            content: "";
+            width: 12px;
+            height: 12px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            position: absolute;
+            left: -26px;
+            top: 5px;
+        }
+
+        .timeline-date {
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
+        code {
+            background: #edf2f7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="document-header">
+            <span class="or-badge">OPERATION DE RECHERCHE 3</span>
+            <span class="status-badge">QUASI FINALISE</span>
+            <h1>Gouvernance de securite pour systeme multi-agents IA operationnel</h1>
+            <div class="document-meta">
+                <span><strong>Projet :</strong> WIDIP / WIBOT</span>
+                <span><strong>Composant :</strong> SAFEGUARD (framework complet)</span>
+                <span><strong>Periode :</strong> Novembre 2025 - Fevrier 2026</span>
+                <span class="potentiel-badge">Potentiel CIR : FORT</span>
+            </div>
+        </header>
+
+        <section>
+            <h2>1. Problematique scientifique</h2>
+            <div class="problematique">
+                Comment concevoir un framework de gouvernance garantissant la securite d'un systeme multi-agents IA (3 workflows autonomes + 1 agent conversationnel) operant sur des systemes de production IT (Active Directory, ticketing, monitoring reseau) avec des actions pouvant etre irreversibles ?
+            </div>
+
+            <div class="info-box success">
+                <h4>Statut actuel : Quasi finalise</h4>
+                <p>Le framework SAFEGUARD est operationnel et en production. Les 6 niveaux de securite (L0 a L4_SMS) sont implementes. Le mecanisme de bypass post-approbation fonctionne. Le systeme d'alerte SMS avec apprentissage du referent est deploye. Des ajustements mineurs sont encore en cours.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>2. Etat de l'art</h2>
+
+            <div class="info-box etat-art">
+                <h4>Contexte scientifique</h4>
+                <p>La securite des agents IA autonomes est un domaine emergent. Si des frameworks de guardrails existent pour le filtrage de contenu (toxicite, biais), tres peu de solutions adressent la gouvernance d'agents multi-agents operant sur des systemes IT de production avec actions consequentes. La litterature academique est rare sur ce sujet specifique.</p>
+            </div>
+
+            <h3>2.1 Solutions existantes et leurs limites</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Solution / Approche</th>
+                        <th>Description</th>
+                        <th>Limites identifiees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>LangChain Guardrails</td>
+                        <td>Filtrage de contenu et validation de sortie LLM</td>
+                        <td>Limite au filtrage textuel, pas de gestion multi-niveaux d'actions IT</td>
+                    </tr>
+                    <tr>
+                        <td>Microsoft AutoGen Safety</td>
+                        <td>Controles pour agents conversationnels autonomes</td>
+                        <td>Oriente conversation multi-agents, peu adapte aux actions IT operationnelles</td>
+                    </tr>
+                    <tr>
+                        <td>RBAC classique (Role-Based Access Control)</td>
+                        <td>Controle d'acces base sur les roles utilisateur</td>
+                        <td>Statique, ne prend pas en compte la confiance de l'IA ni le contexte</td>
+                    </tr>
+                    <tr>
+                        <td>Human-in-the-loop simple</td>
+                        <td>Validation humaine de toutes les actions</td>
+                        <td>Friction excessive, non viable pour operations frequentes, fatigue de validation</td>
+                    </tr>
+                    <tr>
+                        <td>Audit trail classique</td>
+                        <td>Log des actions pour tracabilite</td>
+                        <td>Reactif (post-action), ne previent pas les erreurs</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.2 Positionnement du projet WIDIP</h3>
+            <p>Le framework SAFEGUARD se distingue par plusieurs innovations :</p>
+            <ul>
+                <li><strong>Granularite multi-niveaux</strong> : 6 niveaux de sensibilite (L0 a L4_SMS) adaptes aux actions IT specifiques</li>
+                <li><strong>Confiance dynamique</strong> : le niveau d'autonomie varie selon la confiance de l'IA et le contexte</li>
+                <li><strong>Integration asynchrone SSE</strong> : approbation inline sans bloquer les workflows, flux temps reel</li>
+                <li><strong>Apprentissage du referent</strong> : le systeme apprend les preferences humaines pour les alertes (L4_SMS)</li>
+                <li><strong>Architecture distribuee</strong> : coherence entre backend PostgreSQL et MCP Server Python</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>3. Architecture SAFEGUARD</h2>
+
+            <h3>3.1 Matrice des niveaux de sensibilite</h3>
+
+            <div class="niveau-grid">
+                <div class="niveau-card l0">
+                    <h5>L0 - READ_ONLY</h5>
+                    <p>Lecture seule</p>
+                    <p><em>Execution auto</em></p>
+                </div>
+                <div class="niveau-card l1">
+                    <h5>L1 - MINOR</h5>
+                    <p>Modif. mineure</p>
+                    <p><em>Auto si conf. > 80%</em></p>
+                </div>
+                <div class="niveau-card l2">
+                    <h5>L2 - MODERATE</h5>
+                    <p>Impact modere</p>
+                    <p><em>Notification requise</em></p>
+                </div>
+                <div class="niveau-card l3">
+                    <h5>L3 - SENSITIVE</h5>
+                    <p>Action sensible</p>
+                    <p><em>Validation OBLIGATOIRE</em></p>
+                </div>
+                <div class="niveau-card l4">
+                    <h5>L4 - DEFERRED</h5>
+                    <p>Action differee</p>
+                    <p><em>Execution differee, annulable</em></p>
+                </div>
+                <div class="niveau-card l4sms">
+                    <h5>L4_SMS - SPECIAL</h5>
+                    <p>Alerte SMS client</p>
+                    <p><em>Interface specialisee</em></p>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Niveau</th>
+                        <th>Nom</th>
+                        <th>Comportement</th>
+                        <th>Exemples d'outils MCP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>L0</strong></td>
+                        <td>READ_ONLY</td>
+                        <td>Execution automatique, pas de validation</td>
+                        <td>glpi_get_ticket, observium_get_devices, ad_get_user</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L1</strong></td>
+                        <td>MINOR</td>
+                        <td>Auto si confiance > 80%, sinon notification</td>
+                        <td>glpi_add_comment, glpi_update_status</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L2</strong></td>
+                        <td>MODERATE</td>
+                        <td>Notification technicien, execution apres delai</td>
+                        <td>rag_add_procedure, enrichisseur_submit</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L3</strong></td>
+                        <td>SENSITIVE</td>
+                        <td><strong>Validation humaine OBLIGATOIRE avant execution</strong></td>
+                        <td>ad_reset_password, ad_unlock_account, ad_add_group</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L4</strong></td>
+                        <td>DEFERRED</td>
+                        <td><strong>Execution differee avec delai d'annulation</strong></td>
+                        <td>ad_delete_user, ad_delete_ou, suppression definitive</td>
+                    </tr>
+                    <tr>
+                        <td><strong>L4_SMS</strong></td>
+                        <td>SMS_ALERT</td>
+                        <td>Interface specialisee avec selection du contact referent</td>
+                        <td>sms_alert_device_down</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="info-box innovation">
+                <h4>Innovation : Niveau L4_SMS</h4>
+                <p>Le niveau L4_SMS a ete cree pour un cas ou ni L3 (validation simple) ni L4 (execution differee) ne convenaient. Une alerte SMS client necessite :</p>
+                <ul>
+                    <li>Une validation humaine (comme L3)</li>
+                    <li>Un choix du contact destinataire (interface specialisee)</li>
+                    <li>Une recommandation IA basee sur l'historique (scoring DirEnt)</li>
+                    <li>Un apprentissage : si l'humain choisit un autre contact, le cache est mis a jour (TTL 14j au lieu de 7j)</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>4. Verrous techniques identifies</h2>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">1</span>
+                    <span class="verrou-title">Modele de securite multi-niveaux pour agents IA</span>
+                </div>
+                <p>Le framework SAFEGUARD definit 6 niveaux de sensibilite (L0 a L4_SMS) croises avec les niveaux d'accreditation utilisateur. Cette matrice determine dynamiquement ce qu'un agent IA peut faire, ce qu'il doit demander, et ce qu'il ne peut jamais faire.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques (resolues)</h5>
+                    <ul>
+                        <li>Comment definir la bonne granularite de niveaux ? → <strong>6 niveaux se sont averes suffisants</strong></li>
+                        <li>Comment gerer les cas limites entre deux niveaux ? → <strong>Escalade vers le niveau superieur par defaut</strong></li>
+                        <li>Le modele est-il stable avec de nouveaux outils ? → <strong>Oui, chaque outil MCP declare son niveau</strong></li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Modele initial a 4 niveaux (L0-L3)</td>
+                            <td><span class="badge partiel">Insuffisant</span> - Besoin d'un niveau "differe" (L4)</td>
+                            <td>Dec. 2025</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Ajout niveau L4 (DEFERRED)</td>
+                            <td><span class="badge valide">OK</span> - Actions sensibles differees avec possibilite d'annulation</td>
+                            <td>Dec. 2025</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Creation niveau L4_SMS specialise pour alertes</td>
+                            <td><span class="badge valide">OK</span> - Resout le cas des alertes SMS</td>
+                            <td>Jan. 2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">2</span>
+                    <span class="verrou-title">Coherence dans une architecture distribuee</span>
+                </div>
+                <p>Le double systeme SAFEGUARD (backend PostgreSQL + MCP Server Python) a genere un probleme concret : apres approbation humaine cote backend, le MCP Server re-bloquait l'action car il ne savait pas qu'elle avait ete approuvee.</p>
+
+                <div class="info-box bug">
+                    <h4>Bug rencontre : Double blocage</h4>
+                    <p><strong>Symptome</strong> : Apres approbation humaine via l'interface frontend, l'action etait a nouveau bloquee lors de l'execution par le MCP Server.</p>
+                    <p><strong>Cause identifiee</strong> : Le MCP Server appliquait sa propre verification SAFEGUARD sans savoir que l'action avait deja ete approuvee cote backend.</p>
+                    <p><strong>Analyse</strong> : Probleme de coherence d'etat entre deux systemes independants dans un flux asynchrone (SSE).</p>
+                    <p><strong>Solution implementee</strong> : Mecanisme <code>_bypass_safeguard</code> avec token d'approbation transmis du backend vers le MCP Server.</p>
+                </div>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques (resolues)</h5>
+                    <ul>
+                        <li>Comment garantir la synchronisation ? → <strong>Token de bypass avec validation</strong></li>
+                        <li>Comment prevenir les race conditions ? → <strong>Verrouillage optimiste + idempotence</strong></li>
+                        <li>Comment auditer les actions bypass ? → <strong>Log explicite avec approval_id</strong></li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Synchronisation via base de donnees partagee (polling)</td>
+                            <td><span class="badge echec">Echec</span> - Latence trop elevee, race conditions</td>
+                            <td>Jan. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Mecanisme de bypass avec parametre _bypass_safeguard</td>
+                            <td><span class="badge resolu">RESOLU</span> - Fonctionne, deploye en production</td>
+                            <td>Jan. 2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">3</span>
+                    <span class="verrou-title">Orchestration securisee de workflows autonomes chaines</span>
+                </div>
+                <p>Sentinel peut declencher l'Assistant Ticket, qui peut generer des actions necessitant des validations SAFEGUARD. Cette chaine cree des scenarios complexes ou un workflow declenche un autre workflow qui declenche une action L3 necessitant validation humaine.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment gerer les dependances entre actions ? → <strong>File d'attente avec priorites</strong></li>
+                        <li>Comment eviter les deadlocks ? → <strong>Timeout + mode non-bloquant pour workflows</strong></li>
+                        <li>Comment prioriser les demandes ? → <strong>Score de criticite (niveau + anciennete)</strong></li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Workflows bloquants (attente synchrone de l'approbation)</td>
+                            <td><span class="badge echec">Echec</span> - Bloque les autres surveillances</td>
+                            <td>Dec. 2025</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Mode non-bloquant : workflow continue, action en attente</td>
+                            <td><span class="badge valide">OK</span> - Sentinel continue de surveiller pendant l'attente</td>
+                            <td>Jan. 2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">4</span>
+                    <span class="verrou-title">Confiance dynamique et niveau L4_SMS specialise</span>
+                </div>
+                <p>Le niveau L4_SMS a ete cree specifiquement pour l'alerte SMS client. Il integre une interface de selection de contact avec recommandation IA et apprentissage par feedback humain (cache Redis mis a jour si l'humain choisit un contact different).</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment le systeme apprend-il quel contact recommander ? → <strong>Score d'activite GLPI + historique des choix humains</strong></li>
+                        <li>Le score d'activite est-il un proxy fiable ? → <strong>Oui pour 80% des cas, confirmation humaine sinon</strong></li>
+                        <li>Comment gerer les changements de poste ? → <strong>TTL du cache (7j auto, 14j si confirme)</strong></li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Score base sur l'activite recente dans GLPI (tickets, connexions)</td>
+                            <td><span class="badge valide">OK</span> - Bonne correlation avec le referent reel</td>
+                            <td>Jan. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Cache Redis avec TTL variable (7j auto / 14j si confirme humain)</td>
+                            <td><span class="badge valide">OK</span> - Equilibre entre fraicheur et stabilite</td>
+                            <td>Jan. 2026</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Mise a jour du cache si choix humain different de la recommandation</td>
+                            <td><span class="badge valide">OK</span> - Apprentissage effectif observe</td>
+                            <td>Fev. 2026</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>5. Flux d'approbation SAFEGUARD</h2>
+
+            <svg viewBox="0 0 750 650" style="width: 100%; max-width: 750px; height: auto; display: block; margin: 20px auto;">
+                <defs>
+                    <linearGradient id="gradStepSG" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#5a67d8;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradL0L1" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#48bb78;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#38a169;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradL2" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ecc94b;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#d69e2e;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradL3L4" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#fc8181;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#e53e3e;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="gradL4SMS" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#b794f4;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#9f7aea;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="shadowSG" x="-10%" y="-10%" width="120%" height="120%">
+                        <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.15"/>
+                    </filter>
+                    <marker id="arrowSG" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#718096"/>
+                    </marker>
+                </defs>
+
+                <!-- Etape 0: Source -->
+                <rect x="250" y="5" width="250" height="35" rx="17" fill="#e2e8f0" filter="url(#shadowSG)"/>
+                <text x="375" y="28" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="#4a5568">🤖 Agent IA appelle un outil MCP</text>
+
+                <line x1="375" y1="40" x2="375" y2="55" stroke="#718096" stroke-width="2" marker-end="url(#arrowSG)"/>
+
+                <!-- Etape 1: Verification -->
+                <g filter="url(#shadowSG)">
+                    <rect x="175" y="60" width="400" height="60" rx="8" fill="url(#gradStepSG)"/>
+                    <circle cx="205" cy="80" r="12" fill="white"/>
+                    <text x="205" y="85" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#5a67d8">1</text>
+                    <text x="235" y="83" font-family="Segoe UI" font-size="12" font-weight="600" fill="white">MCP Server : Verification SAFEGUARD</text>
+                    <text x="205" y="105" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9">Identification niveau • Check _bypass_safeguard ?</text>
+                </g>
+
+                <!-- Branch bypass -->
+                <line x1="375" y1="120" x2="375" y2="135" stroke="#718096" stroke-width="2"/>
+                <line x1="375" y1="135" x2="150" y2="135" stroke="#718096" stroke-width="2"/>
+                <line x1="375" y1="135" x2="600" y2="135" stroke="#718096" stroke-width="2"/>
+                <line x1="150" y1="135" x2="150" y2="155" stroke="#718096" stroke-width="2" marker-end="url(#arrowSG)"/>
+                <line x1="600" y1="135" x2="600" y2="155" stroke="#718096" stroke-width="2" marker-end="url(#arrowSG)"/>
+
+                <!-- Bypass True -->
+                <rect x="70" y="160" width="160" height="35" rx="6" fill="#38a169" filter="url(#shadowSG)"/>
+                <text x="150" y="183" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">✓ BYPASS = True</text>
+                <line x1="150" y1="195" x2="150" y2="210" stroke="#718096" stroke-width="2" marker-end="url(#arrowSG)"/>
+                <rect x="85" y="215" width="130" height="30" rx="15" fill="#c6f6d5" filter="url(#shadowSG)"/>
+                <text x="150" y="235" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="600" fill="#22543d">Execution directe</text>
+
+                <!-- Bypass False -->
+                <rect x="520" y="160" width="160" height="35" rx="6" fill="#e53e3e" filter="url(#shadowSG)"/>
+                <text x="600" y="183" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">✗ BYPASS = False</text>
+
+                <!-- Etape 2: Evaluation -->
+                <line x1="600" y1="195" x2="600" y2="210" stroke="#718096" stroke-width="2" marker-end="url(#arrowSG)"/>
+                <g filter="url(#shadowSG)">
+                    <rect x="420" y="215" width="360" height="40" rx="8" fill="url(#gradStepSG)"/>
+                    <circle cx="450" cy="235" r="12" fill="white"/>
+                    <text x="450" y="240" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#5a67d8">2</text>
+                    <text x="600" y="240" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">Evaluation selon le niveau</text>
+                </g>
+
+                <!-- Niveaux L0-L4_SMS -->
+                <line x1="600" y1="255" x2="600" y2="270" stroke="#718096" stroke-width="2"/>
+                <line x1="285" y1="270" x2="715" y2="270" stroke="#718096" stroke-width="1"/>
+
+                <!-- L0 -->
+                <line x1="310" y1="270" x2="310" y2="285" stroke="#718096" stroke-width="1" marker-end="url(#arrowSG)"/>
+                <rect x="275" y="290" width="70" height="50" rx="6" fill="url(#gradL0L1)" filter="url(#shadowSG)"/>
+                <text x="310" y="310" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="white">L0</text>
+                <text x="310" y="325" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">AUTO</text>
+
+                <!-- L1 -->
+                <line x1="395" y1="270" x2="395" y2="285" stroke="#718096" stroke-width="1" marker-end="url(#arrowSG)"/>
+                <rect x="360" y="290" width="70" height="50" rx="6" fill="url(#gradL0L1)" filter="url(#shadowSG)"/>
+                <text x="395" y="310" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="white">L1</text>
+                <text x="395" y="325" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">si conf>80%</text>
+
+                <!-- L2 -->
+                <line x1="480" y1="270" x2="480" y2="285" stroke="#718096" stroke-width="1" marker-end="url(#arrowSG)"/>
+                <rect x="445" y="290" width="70" height="50" rx="6" fill="url(#gradL2)" filter="url(#shadowSG)"/>
+                <text x="480" y="310" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="white">L2</text>
+                <text x="480" y="325" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">NOTIF</text>
+
+                <!-- L3 -->
+                <line x1="565" y1="270" x2="565" y2="285" stroke="#718096" stroke-width="1" marker-end="url(#arrowSG)"/>
+                <rect x="530" y="290" width="70" height="50" rx="6" fill="url(#gradL3L4)" filter="url(#shadowSG)"/>
+                <text x="565" y="310" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="white">L3</text>
+                <text x="565" y="325" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">VALID.</text>
+
+                <!-- L4 -->
+                <line x1="650" y1="270" x2="650" y2="285" stroke="#718096" stroke-width="1" marker-end="url(#arrowSG)"/>
+                <rect x="615" y="290" width="70" height="50" rx="6" fill="url(#gradL3L4)" filter="url(#shadowSG)"/>
+                <text x="650" y="310" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="700" fill="white">L4</text>
+                <text x="650" y="325" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">DIFFERE</text>
+
+                <!-- L4_SMS -->
+                <line x1="720" y1="270" x2="720" y2="285" stroke="#718096" stroke-width="1" marker-end="url(#arrowSG)"/>
+                <rect x="685" y="290" width="70" height="50" rx="6" fill="url(#gradL4SMS)" filter="url(#shadowSG)"/>
+                <text x="720" y="310" text-anchor="middle" font-family="Segoe UI" font-size="9" font-weight="700" fill="white">L4_SMS</text>
+                <text x="720" y="325" text-anchor="middle" font-family="Segoe UI" font-size="7" fill="white" fill-opacity="0.9">SPECIAL</text>
+
+                <!-- Convergence vers etape 3 -->
+                <line x1="480" y1="340" x2="480" y2="355" stroke="#718096" stroke-width="1"/>
+                <line x1="565" y1="340" x2="565" y2="355" stroke="#718096" stroke-width="1"/>
+                <line x1="720" y1="340" x2="720" y2="355" stroke="#718096" stroke-width="1"/>
+                <line x1="480" y1="355" x2="720" y2="355" stroke="#718096" stroke-width="1"/>
+                <line x1="600" y1="355" x2="600" y2="370" stroke="#718096" stroke-width="2" marker-end="url(#arrowSG)"/>
+
+                <!-- Etape 3: Creation demande -->
+                <g filter="url(#shadowSG)">
+                    <rect x="420" y="375" width="360" height="55" rx="8" fill="url(#gradStepSG)"/>
+                    <circle cx="450" cy="395" r="12" fill="white"/>
+                    <text x="450" y="400" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#5a67d8">3</text>
+                    <text x="600" y="398" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">Creation demande (PostgreSQL)</text>
+                    <text x="600" y="415" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9">safeguard_approvals • status: pending</text>
+                </g>
+
+                <!-- Etape 4: Notification -->
+                <line x1="600" y1="430" x2="600" y2="445" stroke="#718096" stroke-width="2" marker-end="url(#arrowSG)"/>
+                <g filter="url(#shadowSG)">
+                    <rect x="420" y="450" width="360" height="55" rx="8" fill="#38b2ac"/>
+                    <circle cx="450" cy="470" r="12" fill="white"/>
+                    <text x="450" y="475" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="700" fill="#38b2ac">4</text>
+                    <text x="600" y="473" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">📡 Notification Frontend (SSE)</text>
+                    <text x="600" y="490" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white" fill-opacity="0.9">Interface d'approbation temps reel</text>
+                </g>
+
+                <!-- Decision humaine -->
+                <line x1="600" y1="505" x2="600" y2="520" stroke="#718096" stroke-width="2"/>
+                <line x1="600" y1="520" x2="500" y2="520" stroke="#718096" stroke-width="2"/>
+                <line x1="600" y1="520" x2="700" y2="520" stroke="#718096" stroke-width="2"/>
+                <line x1="500" y1="520" x2="500" y2="535" stroke="#718096" stroke-width="2" marker-end="url(#arrowSG)"/>
+                <line x1="700" y1="520" x2="700" y2="535" stroke="#718096" stroke-width="2" marker-end="url(#arrowSG)"/>
+
+                <!-- Approuve -->
+                <rect x="430" y="540" width="140" height="35" rx="17" fill="#38a169" filter="url(#shadowSG)"/>
+                <text x="500" y="563" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">✓ APPROUVE</text>
+
+                <!-- Refuse -->
+                <rect x="630" y="540" width="140" height="35" rx="17" fill="#e53e3e" filter="url(#shadowSG)"/>
+                <text x="700" y="563" text-anchor="middle" font-family="Segoe UI" font-size="11" font-weight="600" fill="white">✗ REFUSE</text>
+
+                <!-- Etape 5: Callback -->
+                <line x1="500" y1="575" x2="500" y2="590" stroke="#718096" stroke-width="2" marker-end="url(#arrowSG)"/>
+                <g filter="url(#shadowSG)">
+                    <rect x="420" y="595" width="160" height="45" rx="8" fill="url(#gradStepSG)"/>
+                    <circle cx="440" cy="612" r="10" fill="white"/>
+                    <text x="440" y="616" text-anchor="middle" font-family="Segoe UI" font-size="9" font-weight="700" fill="#5a67d8">5</text>
+                    <text x="500" y="612" text-anchor="middle" font-family="Segoe UI" font-size="9" font-weight="600" fill="white">Callback</text>
+                    <text x="500" y="628" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">MCP + bypass</text>
+                </g>
+
+                <!-- Refuse log -->
+                <line x1="700" y1="575" x2="700" y2="590" stroke="#718096" stroke-width="2" marker-end="url(#arrowSG)"/>
+                <rect x="630" y="595" width="140" height="45" rx="8" fill="#a0aec0" filter="url(#shadowSG)"/>
+                <text x="700" y="618" text-anchor="middle" font-family="Segoe UI" font-size="9" fill="white">Action annulee</text>
+                <text x="700" y="632" text-anchor="middle" font-family="Segoe UI" font-size="8" fill="white" fill-opacity="0.9">+ log audit</text>
+
+                <!-- Etape 6: Audit -->
+                <line x1="500" y1="640" x2="500" y2="650" stroke="#718096" stroke-width="1"/>
+                <line x1="500" y1="650" x2="375" y2="650" stroke="#718096" stroke-width="1"/>
+                <line x1="375" y1="650" x2="375" y2="595" stroke="#718096" stroke-width="1"/>
+                <line x1="375" y1="595" x2="20" y2="595" stroke="#718096" stroke-width="1"/>
+                <line x1="20" y1="595" x2="20" y2="610" stroke="#718096" stroke-width="2" marker-end="url(#arrowSG)"/>
+
+                <g filter="url(#shadowSG)">
+                    <rect x="10" y="615" width="180" height="30" rx="6" fill="#1a365d"/>
+                    <text x="100" y="635" text-anchor="middle" font-family="Segoe UI" font-size="10" font-weight="600" fill="white">📋 6. Audit Trail complet</text>
+                </g>
+            </svg>
+        </section>
+
+        <section>
+            <h2>6. Experimentations et resultats</h2>
+
+            <h3>6.1 Protocole de test</h3>
+            <p>SAFEGUARD a ete teste en conditions reelles sur l'environnement de production WIDIP :</p>
+            <ul>
+                <li><strong>Periode de test</strong> : 6 semaines (mi-decembre 2025 - fin janvier 2026)</li>
+                <li><strong>Volume</strong> : ~200 demandes SAFEGUARD traitees</li>
+                <li><strong>Scenarios</strong> : actions AD, alertes SMS, ajout procedures RAG</li>
+                <li><strong>Validation</strong> : revue manuelle de tous les cas L3+ par technicien senior</li>
+            </ul>
+
+            <h3>6.2 Metriques collectees</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metrique</th>
+                        <th>Description</th>
+                        <th>Valeur mesuree</th>
+                        <th>Objectif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Demandes L0-L1</strong></td>
+                        <td>Actions executees automatiquement</td>
+                        <td>~65% du total</td>
+                        <td>> 60%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Demandes L2-L3</strong></td>
+                        <td>Actions necessitant validation</td>
+                        <td>~30% du total</td>
+                        <td>< 35%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Demandes L4_SMS</strong></td>
+                        <td>Alertes SMS avec selection contact</td>
+                        <td>~5% du total</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Taux d'approbation L3</strong></td>
+                        <td>% de demandes L3 approuvees</td>
+                        <td>~92%</td>
+                        <td>> 85%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Temps de reponse humain</strong></td>
+                        <td>Delai median entre demande et decision</td>
+                        <td>~3 min</td>
+                        <td>< 5 min</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Precision recommandation L4_SMS</strong></td>
+                        <td>% de fois ou le contact recommande est choisi</td>
+                        <td>~78%</td>
+                        <td>> 70%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Near-misses bloques</strong></td>
+                        <td>Actions potentiellement dangereuses arretees</td>
+                        <td>3 cas documentes</td>
+                        <td>Documenter</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>6.3 Resultats</h3>
+            <div class="info-box resultats">
+                <h4>Resultats positifs</h4>
+                <ul>
+                    <li><strong>Bug double-blocage resolu</strong> : le mecanisme bypass fonctionne parfaitement depuis mi-janvier</li>
+                    <li><strong>Equilibre autonomie/securite atteint</strong> : 65% d'actions automatiques, 35% avec validation</li>
+                    <li><strong>Apprentissage L4_SMS effectif</strong> : la precision de recommandation est passee de 60% a 78%</li>
+                    <li><strong>3 near-misses detectes</strong> : actions AD inappropriees bloquees par SAFEGUARD L3</li>
+                    <li><strong>Aucun incident de securite</strong> : zero action non autorisee executee depuis le deploiement</li>
+                </ul>
+            </div>
+
+            <div class="info-box warning">
+                <h4>Points d'amelioration identifies</h4>
+                <ul>
+                    <li>Le taux de faux positifs L2 pourrait etre reduit (certaines notifications inutiles)</li>
+                    <li>L'interface d'approbation pourrait etre plus ergonomique sur mobile</li>
+                    <li>Le temps de reponse humain augmente en dehors des heures de bureau (a surveiller)</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <section>
+            <h2>7. Iterations et historique des travaux</h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">Fin novembre 2025</div>
+                    <p><strong>Phase 1 - Prototype N8N</strong></p>
+                    <p>Premier concept de validation d'actions dans N8N. Logique if/else basique. Pas de niveaux, juste "valider ou non".</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Decembre 2025</div>
+                    <p><strong>Phase 2 - Modele L0-L3 (N8N puis Python)</strong></p>
+                    <p>Definition des 4 premiers niveaux. Migration vers Python pour plus de flexibilite. Premiere interface d'approbation.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Debut janvier 2026</div>
+                    <p><strong>Phase 3 - Ajout L4 et L4_SMS</strong></p>
+                    <p>Creation du niveau FORBIDDEN (L4) pour les actions critiques. Conception et implementation du niveau L4_SMS pour les alertes avec selection de contact.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Mi-janvier 2026</div>
+                    <p><strong>Phase 4 - Resolution bug double-blocage</strong></p>
+                    <p>Identification et resolution du probleme de coherence distribuee. Implementation du mecanisme _bypass_safeguard.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">Fin janvier - Fevrier 2026</div>
+                    <p><strong>Phase 5 - Stabilisation et apprentissage</strong></p>
+                    <p>Mise en production. Observation de l'apprentissage L4_SMS. Ajustements mineurs. Documentation.</p>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 12%">Version</th>
+                        <th style="width: 15%">Date</th>
+                        <th style="width: 45%">Modifications / Hypothese testee</th>
+                        <th style="width: 28%">Resultat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>N8N v1</td>
+                        <td>Nov. 2025</td>
+                        <td>Validation binaire (oui/non) dans N8N</td>
+                        <td><span class="badge partiel">Trop simpliste</span></td>
+                    </tr>
+                    <tr>
+                        <td>Python v1</td>
+                        <td>Dec. 2025</td>
+                        <td>Modele L0-L3, interface d'approbation</td>
+                        <td><span class="badge valide">OK</span> - Mais manque L4</td>
+                    </tr>
+                    <tr>
+                        <td>Python v2</td>
+                        <td>Jan. 2026</td>
+                        <td>Ajout L4 + L4_SMS + cache referent</td>
+                        <td><span class="badge valide">OK</span> - Modele complet</td>
+                    </tr>
+                    <tr>
+                        <td>Python v3</td>
+                        <td>Jan. 2026</td>
+                        <td>Resolution bug double-blocage (bypass)</td>
+                        <td><span class="badge resolu">RESOLU</span></td>
+                    </tr>
+                    <tr>
+                        <td>Python v4</td>
+                        <td>Fev. 2026</td>
+                        <td>Stabilisation, metriques, documentation</td>
+                        <td><span class="badge valide">Production</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>8. Preuves materielles disponibles</h2>
+
+            <ul class="checklist">
+                <li class="done">Code source SAFEGUARD (backend + MCP Server)</li>
+                <li class="done">Workflows N8N historiques (phase prototype)</li>
+                <li class="done">Documentation du bug double-blocage (issue + commits de resolution)</li>
+                <li class="done">Logs SAFEGUARD : ~200 demandes traitees avec traces completes</li>
+                <li class="done">Interface frontend d'approbation (captures d'ecran)</li>
+                <li class="done">Schema de la base de donnees (table safeguard_approvals)</li>
+                <li class="done">3 cas de near-misses documentes</li>
+                <li class="done">Evolution du cache referent (logs Redis)</li>
+                <li class="done">Metriques de precision de recommandation L4_SMS</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>9. Evaluation selon les criteres de Frascati</h2>
+
+            <div class="frascati-grid">
+                <div class="frascati-item">
+                    <div class="criterion">Nouveaute</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Creativite</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Incertitude</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Systematisation</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Transferabilite</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Critere</th>
+                        <th>Evaluation</th>
+                        <th>Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nouveaute</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Tres peu de frameworks de controle d'agents IA en production documentes dans la litterature, a fortiori pour du multi-agents sur systemes IT critiques</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creativite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>L'architecture L0-L4_SMS avec confiance dynamique, approbation inline SSE, bypass post-approbation et apprentissage du contact recommande est une conception originale</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incertitude</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Quatre verrous identifies. Le bug double-blocage et son echec initial (hypothese 1) demontrent l'incertitude reelle. La solution a ete trouvee experimentalement.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Systematisation</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Metriques collectees sur 6 semaines, ~200 demandes analysees, 3 near-misses documentes, evolution de la precision de recommandation tracee</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transferabilite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Le framework est generalisable a tout contexte d'agents IA operant sur des systemes avec actions a risque (industrie, sante, finance, IoT)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <footer class="document-footer">
+            <p>Operation de Recherche 3 - Gouvernance de securite multi-agents IA</p>
+            <p>Projet WIDIP - Dossier Credit d'Impot Recherche</p>
+            <p>Periode : Novembre 2025 - Fevrier 2026 | Statut : QUASI FINALISE</p>
+        </footer>
+    </div>
+</body>
+</html>

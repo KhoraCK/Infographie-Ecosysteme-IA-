@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OR2 - Qualification et resolution autonome de tickets IT</title>
+    <style>
+        :root {
+            --primary-color: #1a365d;
+            --secondary-color: #2c5282;
+            --accent-color: #38a169;
+            --success-color: #38a169;
+            --warning-color: #d69e2e;
+            --danger-color: #e53e3e;
+            --text-color: #2d3748;
+            --light-bg: #f7fafc;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #fff;
+            font-size: 11pt;
+        }
+
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        @media print {
+            body { font-size: 10pt; }
+            .page-break { page-break-before: always; }
+            .no-break { page-break-inside: avoid; }
+        }
+
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 20px 40px;
+        }
+
+        /* Header */
+        .document-header {
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .document-header .or-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12pt;
+            margin-bottom: 10px;
+        }
+
+        .document-header h1 {
+            color: var(--primary-color);
+            font-size: 20pt;
+            margin-bottom: 10px;
+        }
+
+        .document-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 10pt;
+            color: #666;
+            margin-top: 15px;
+        }
+
+        .document-meta span {
+            background: var(--light-bg);
+            padding: 5px 12px;
+            border-radius: 4px;
+        }
+
+        .potentiel-badge {
+            background: #c6f6d5 !important;
+            color: #22543d !important;
+            font-weight: 600;
+        }
+
+        /* Sections */
+        section {
+            margin-bottom: 35px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            font-size: 14pt;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: var(--secondary-color);
+            font-size: 12pt;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: var(--text-color);
+            font-size: 11pt;
+            margin-top: 18px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        /* Problematique box */
+        .problematique {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 12pt;
+            font-style: italic;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+
+        /* Verrou cards */
+        .verrou {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .verrou-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .verrou-number {
+            background: var(--accent-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14pt;
+            margin-right: 15px;
+        }
+
+        .verrou-title {
+            font-weight: 600;
+            font-size: 12pt;
+            color: var(--primary-color);
+        }
+
+        .incertitudes {
+            background: #faf5ff;
+            border-left: 3px solid #805ad5;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .incertitudes h5 {
+            color: #553c9a;
+            font-size: 10pt;
+            margin-bottom: 10px;
+        }
+
+        .incertitudes ul {
+            margin: 0 0 0 20px;
+            font-size: 10pt;
+        }
+
+        .incertitudes li {
+            margin-bottom: 6px;
+        }
+
+        /* Hypotheses table */
+        .hypotheses-table {
+            background: #fffaf0;
+            border: 1px solid #ed8936;
+        }
+
+        .hypotheses-table th {
+            background: #ed8936;
+        }
+
+        /* Info boxes */
+        .info-box {
+            padding: 18px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .info-box.etat-art {
+            background: #e6fffa;
+            border-left: 4px solid #38b2ac;
+        }
+
+        .info-box.resultats {
+            background: #f0fff4;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .info-box.warning {
+            background: #fffaf0;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .info-box.critical {
+            background: #fff5f5;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .info-box h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        /* Diagram */
+        .diagram {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+            margin: 20px 0;
+        }
+
+        /* Frascati evaluation */
+        .frascati-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .frascati-item {
+            text-align: center;
+            padding: 15px 8px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .frascati-item .criterion {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .frascati-item .evaluation {
+            font-weight: 700;
+            font-size: 11pt;
+        }
+
+        .frascati-item .evaluation.fort {
+            color: #22543d;
+        }
+
+        .frascati-item .evaluation.moyen {
+            color: #744210;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 9pt;
+            font-weight: 600;
+        }
+
+        .badge.fort {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge.moyen {
+            background: #fefcbf;
+            color: #744210;
+        }
+
+        .badge.a-completer {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        /* Niveau qualification */
+        .niveau-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .niveau-card {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .niveau-card.simple {
+            background: #c6f6d5;
+            border: 2px solid #38a169;
+        }
+
+        .niveau-card.moyen {
+            background: #fefcbf;
+            border: 2px solid #d69e2e;
+        }
+
+        .niveau-card.complexe {
+            background: #fed7aa;
+            border: 2px solid #dd6b20;
+        }
+
+        .niveau-card.expert {
+            background: #fed7d7;
+            border: 2px solid #e53e3e;
+        }
+
+        .niveau-card h5 {
+            margin-bottom: 8px;
+            font-size: 11pt;
+        }
+
+        .niveau-card p {
+            font-size: 9pt;
+            margin: 0;
+            text-align: center;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 12px 0 12px 25px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        /* Checklist */
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .checklist li:before {
+            content: "☐ ";
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .document-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 9pt;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Metrics placeholder */
+        .metric-placeholder {
+            color: #a0aec0;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- En-tete -->
+        <header class="document-header">
+            <span class="or-badge">OPERATION DE RECHERCHE 2</span>
+            <h1>Qualification et resolution autonome de tickets IT avec indice de confiance calibre</h1>
+            <div class="document-meta">
+                <span><strong>Projet :</strong> WIDIP / WIBOT</span>
+                <span><strong>Composants :</strong> Assistant Ticket + Sentinel</span>
+                <span class="potentiel-badge">Potentiel CIR : FORT</span>
+            </div>
+        </header>
+
+        <!-- Problematique -->
+        <section>
+            <h2>1. Problematique scientifique</h2>
+            <div class="problematique">
+                Comment un systeme IA peut-il qualifier de maniere fiable la difficulte d'un ticket IT et resoudre les cas simples de facon autonome — tout en garantissant un niveau de confiance calibre et un fallback sur vers l'humain lorsque l'incertitude est trop elevee ?
+            </div>
+        </section>
+
+        <!-- Etat de l'art -->
+        <section>
+            <h2>2. Etat de l'art</h2>
+
+            <div class="info-box etat-art">
+                <h4>Contexte scientifique</h4>
+                <p>La calibration de confiance des LLM est un probleme de recherche reconnu. Les modeles de langage sont notoirement mal calibres : ils expriment souvent une haute confiance meme lorsqu'ils se trompent. Appliquer ces modeles a des actions IT avec consequences reelles pose des defis specifiques non resolus.</p>
+            </div>
+
+            <h3>2.1 Solutions existantes et leurs limites</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Solution / Approche</th>
+                        <th>Description</th>
+                        <th>Limites identifiees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Classification supervisee traditionnelle</td>
+                        <td>Modeles ML entraines sur tickets etiquetes</td>
+                        <td>Necessite annotations massives, peu adaptatif aux nouveaux types</td>
+                    </tr>
+                    <tr>
+                        <td>Routage par mots-cles</td>
+                        <td>Regles basees sur la presence de termes specifiques</td>
+                        <td>Rigide, nombreux faux positifs, maintenance lourde</td>
+                    </tr>
+                    <tr>
+                        <td>LLM avec prompt engineering</td>
+                        <td>Classification par LLM sans calibration</td>
+                        <td>Confiance non fiable, risque d'erreurs sur cas critiques</td>
+                    </tr>
+                    <tr>
+                        <td>Temperature sampling</td>
+                        <td>Utilisation de la temperature pour estimer l'incertitude</td>
+                        <td>Correlation faible avec la precision reelle</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.2 Litterature sur la calibration de confiance des LLM</h3>
+            <div class="info-box warning">
+                <h4>References a documenter</h4>
+                <p>Inclure les travaux de recherche sur : calibration de confiance, uncertainty quantification in LLMs, selective prediction, human-in-the-loop systems.</p>
+            </div>
+
+            <h3>2.3 Positionnement du projet</h3>
+            <p>L'approche WIDIP se distingue par :</p>
+            <ul>
+                <li><strong>Calibration contextuelle</strong> : ajustement du seuil de confiance par type d'action et par client</li>
+                <li><strong>Fallback structure</strong> : integration native avec SAFEGUARD pour escalade humaine</li>
+                <li><strong>Feedback loop</strong> : les tickets "IA_NON_RESOLU" alimentent l'apprentissage</li>
+                <li><strong>Actions IT reelles</strong> : validation dans un contexte operationnel (pas seulement benchmark)</li>
+            </ul>
+        </section>
+
+        <!-- Matrice de qualification -->
+        <section>
+            <h2>3. Matrice de qualification des tickets</h2>
+
+            <div class="niveau-grid">
+                <div class="niveau-card simple">
+                    <h5>SIMPLE</h5>
+                    <p>L'IA peut resoudre seule</p>
+                    <p><em>Reset MDP, deblocage</em></p>
+                </div>
+                <div class="niveau-card moyen">
+                    <h5>MOYEN</h5>
+                    <p>L'IA peut tenter</p>
+                    <p><em>Ajout groupe AD</em></p>
+                </div>
+                <div class="niveau-card complexe">
+                    <h5>COMPLEXE</h5>
+                    <p>Technicien N1 requis</p>
+                    <p><em>Diagnostic reseau</em></p>
+                </div>
+                <div class="niveau-card expert">
+                    <h5>EXPERT</h5>
+                    <p>Technicien N2+ requis</p>
+                    <p><em>Migration serveur</em></p>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Niveau</th>
+                        <th>Traitement</th>
+                        <th>Seuil confiance</th>
+                        <th>Exemples</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>SIMPLE</strong></td>
+                        <td>Resolution automatique + validation SAFEGUARD</td>
+                        <td>> 80%</td>
+                        <td>Reset mot de passe, deblocage compte</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MOYEN</strong></td>
+                        <td>Tentative avec escalade si echec</td>
+                        <td>> 70%</td>
+                        <td>Ajout groupe AD, modification droits</td>
+                    </tr>
+                    <tr>
+                        <td><strong>COMPLEXE</strong></td>
+                        <td>Flagging + notification technicien</td>
+                        <td>-</td>
+                        <td>Diagnostic reseau, probleme applicatif</td>
+                    </tr>
+                    <tr>
+                        <td><strong>EXPERT</strong></td>
+                        <td>Escalade immediate</td>
+                        <td>-</td>
+                        <td>Migration serveur, incident securite</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Verrous techniques -->
+        <section>
+            <h2>4. Verrous techniques identifies</h2>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">1</span>
+                    <span class="verrou-title">Qualification automatique en 4 niveaux de difficulte</span>
+                </div>
+                <p>L'Assistant Ticket doit classer chaque ticket entrant en SIMPLE / MOYEN / COMPLEXE / EXPERT. Cette classification determine directement le traitement : resolution IA autonome vs escalade humaine. Une erreur de classification a des consequences operationnelles directes.</p>
+
+                <div class="info-box critical">
+                    <h4>Cas critique : le faux SIMPLE</h4>
+                    <p>Un ticket classe SIMPLE par l'IA alors qu'il necessitait un expert peut entrainer : action inappropriee sur le systeme client, perte de temps, degradation de la relation client.</p>
+                </div>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment un LLM peut-il evaluer la difficulte reelle d'un ticket a partir d'une description souvent incomplete ou ambigue ?</li>
+                        <li>Comment gerer le cas critique du faux SIMPLE (ticket classe simple mais qui necessitait un expert) ?</li>
+                        <li>Comment integrer le contexte historique du client (tickets passes, infrastructure) dans la qualification ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">2</span>
+                    <span class="verrou-title">Calibration de l'indice de confiance</span>
+                </div>
+                <p>Le systeme SAFEGUARD utilise un seuil de confiance (> 80% pour execution automatique en L1). Ce seuil conditionne le degre d'autonomie du systeme. Or, les LLM sont notoirement <strong>mal calibres</strong> en termes de confiance — ils expriment souvent une haute confiance meme lorsqu'ils se trompent.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment obtenir un score de confiance fiable d'un LLM pour des actions IT concretes ?</li>
+                        <li>Comment calibrer ce score (faire en sorte que "80% de confiance" corresponde reellement a 80% de reussite) ?</li>
+                        <li>Le seuil optimal est-il universel ou doit-il varier par type d'action, par client, par complexite ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">3</span>
+                    <span class="verrou-title">Resolution autonome avec actions irreversibles</span>
+                </div>
+                <p>Resoudre un ticket simple implique des actions reelles : reset de mot de passe AD, deblocage de compte, creation d'utilisateur. Ces actions ont des effets concrets et certaines sont irreversibles.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment valider qu'une procedure RAG retrouvee est applicable au cas precis du ticket courant ?</li>
+                        <li>Comment detecter une mauvaise application de procedure avant l'execution de l'action ?</li>
+                        <li>Quel protocole de rollback pour les actions partiellement executees en cas d'erreur detectee en cours ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="verrou no-break">
+                <div class="verrou-header">
+                    <span class="verrou-number">4</span>
+                    <span class="verrou-title">Decision autonome dans le monitoring proactif (Sentinel)</span>
+                </div>
+                <p>Sentinel doit prendre des decisions en temps reel : identifier les clients impactes par une panne, determiner s'il s'agit d'une panne FAI ou infrastructure, decider quand et qui alerter.</p>
+
+                <div class="incertitudes">
+                    <h5>Incertitudes scientifiques</h5>
+                    <ul>
+                        <li>Comment l'IA peut-elle distinguer automatiquement une panne FAI d'une panne infrastructure WIDIP sans intervention humaine ?</li>
+                        <li>Comment le parsing de hostnames (format CLIENT-SITE-VILLE-DEVICE) peut-il gerer les cas non conformes au pattern standard ?</li>
+                        <li>Comment correler automatiquement un equipement Observium DOWN avec les bonnes entites GLPI quand les nomenclatures ne sont pas parfaitement alignees ?</li>
+                    </ul>
+                </div>
+
+                <h4>Hypotheses testees</h4>
+                <table class="hypotheses-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 40%">Hypothese</th>
+                            <th style="width: 35%">Resultat</th>
+                            <th style="width: 20%">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">A completer</span></td>
+                            <td><span class="metric-placeholder">-</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Architecture -->
+        <section>
+            <h2>5. Architecture et flux de qualification</h2>
+
+            <div class="diagram">
+    NOUVEAU TICKET (GLPI)
+              |
+              v
+    +------------------------------------------+
+    | 1. ANALYSE DU TICKET                     |
+    |    - Extraction du contenu               |
+    |    - Contexte client (historique)        |
+    |    - Mots-cles et patterns               |
+    +------------------------------------------+
+              |
+              v
+    +------------------------------------------+
+    | 2. QUALIFICATION PAR LLM                 |
+    |    - Classification SIMPLE/MOYEN/...     |
+    |    - Score de confiance                  |
+    |    - Justification                       |
+    +------------------------------------------+
+              |
+              v
+    +------------------------------------------+
+    | 3. DECISION BASEE SUR CONFIANCE          |
+    +------------------------------------------+
+              |
+     +--------+--------+--------+--------+
+     |        |        |        |        |
+     v        v        v        v        v
+ SIMPLE   SIMPLE    MOYEN   COMPLEXE  EXPERT
+ >80%     <80%      >70%       |        |
+   |        |        |         |        |
+   v        v        v         v        v
++------+ +------+ +------+ +--------+ +--------+
+|RESOL.| |ESCAL.| |TENTA-| |FLAGGING| |ESCALADE|
+|AUTO  | |L1    | |TIVE  | |N1      | |N2+     |
++------+ +------+ +------+ +--------+ +--------+
+   |        |        |
+   v        v        v
++------------------------------------------+
+| 4. SAFEGUARD                             |
+|    - Validation selon niveau action      |
+|    - L1: auto si confiance suffisante    |
+|    - L2+: validation humaine             |
++------------------------------------------+
+              |
+              v
+    +------------------------------------------+
+    | 5. EXECUTION ET FEEDBACK                 |
+    |    - Action executee ou refusee          |
+    |    - Flag "IA_NON_RESOLU" si echec       |
+    |    - Alimentation boucle apprentissage   |
+    +------------------------------------------+
+            </div>
+        </section>
+
+        <!-- Experimentations -->
+        <section>
+            <h2>6. Experimentations et resultats</h2>
+
+            <h3>6.1 Protocole de test - Qualification</h3>
+            <div class="info-box warning">
+                <h4>A documenter</h4>
+                <p>Description du protocole : echantillon de tickets utilise, methode de labellisation de reference (ground truth), criteres d'evaluation.</p>
+            </div>
+
+            <h3>6.2 Protocole de test - Calibration</h3>
+            <div class="info-box warning">
+                <h4>A documenter</h4>
+                <p>Methode de mesure de la calibration : comparaison confiance exprimee vs taux de succes reel, courbe de calibration, ECE (Expected Calibration Error).</p>
+            </div>
+
+            <h3>6.3 Metriques collectees</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Metrique</th>
+                        <th>Description</th>
+                        <th>Valeur initiale</th>
+                        <th>Valeur actuelle</th>
+                        <th>Objectif</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Precision qualification</strong></td>
+                        <td>% de tickets correctement classifies</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>> 85%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Taux faux SIMPLE</strong></td>
+                        <td>% de tickets SIMPLE qui etaient COMPLEXE+</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>< 5%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ECE (Expected Calibration Error)</strong></td>
+                        <td>Ecart entre confiance et precision reelle</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>< 0.1</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Taux resolution auto reussie</strong></td>
+                        <td>% de tickets resolus par l'IA sans erreur</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>> 90%</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Taux escalade correcte</strong></td>
+                        <td>% d'escalades qui etaient justifiees</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td class="metric-placeholder">A mesurer</td>
+                        <td>> 80%</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>6.4 Resultats</h3>
+            <div class="info-box resultats">
+                <h4>Resultats des experimentations</h4>
+                <p class="metric-placeholder">A completer : matrice de confusion, courbe de calibration, analyse des erreurs, evolution dans le temps.</p>
+            </div>
+        </section>
+
+        <div class="page-break"></div>
+
+        <!-- Iterations -->
+        <section>
+            <h2>7. Iterations et historique des travaux</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 12%">Version</th>
+                        <th style="width: 15%">Date</th>
+                        <th style="width: 45%">Modifications / Hypothese testee</th>
+                        <th style="width: 28%">Resultat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="metric-placeholder">v1</td>
+                        <td class="metric-placeholder">-</td>
+                        <td class="metric-placeholder">A completer</td>
+                        <td class="metric-placeholder">A completer</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-placeholder">v2</td>
+                        <td class="metric-placeholder">-</td>
+                        <td class="metric-placeholder">A completer</td>
+                        <td class="metric-placeholder">A completer</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-placeholder">v3</td>
+                        <td class="metric-placeholder">-</td>
+                        <td class="metric-placeholder">A completer</td>
+                        <td class="metric-placeholder">A completer</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Preuves -->
+        <section>
+            <h2>8. Preuves materielles a constituer</h2>
+
+            <ul class="checklist">
+                <li>Matrice de confusion : qualification predite vs qualification reelle (echantillon valide humainement)</li>
+                <li>Courbe de calibration : confiance exprimee vs taux de reussite effectif</li>
+                <li>Logs de resolution : tickets resolus automatiquement, incidents causes par l'IA</li>
+                <li>Historique des tickets "IA_NON_RESOLU" : analyse post-resolution humaine</li>
+                <li>Documentation des iterations sur les seuils de confiance</li>
+                <li>Pour Sentinel : taux de faux positifs/negatifs sur l'identification automatique des pannes</li>
+                <li>Exemples de cas critiques (faux SIMPLE) et leur analyse</li>
+            </ul>
+        </section>
+
+        <!-- Evaluation Frascati -->
+        <section>
+            <h2>9. Evaluation selon les criteres de Frascati</h2>
+
+            <div class="frascati-grid">
+                <div class="frascati-item">
+                    <div class="criterion">Nouveaute</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Creativite</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Incertitude</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Systematisation</div>
+                    <div class="evaluation moyen">A DOCUMENTER</div>
+                </div>
+                <div class="frascati-item">
+                    <div class="criterion">Transferabilite</div>
+                    <div class="evaluation fort">FORT</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Critere</th>
+                        <th>Evaluation</th>
+                        <th>Justification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nouveaute</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>La calibration de confiance d'un LLM pour des actions IT operationnelles avec consequences reelles est un probleme ouvert dans la litterature</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Creativite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Le couplage qualification → resolution → flagging "IA_NON_RESOLU" → enrichissement ulterieur est une boucle de feedback innovante</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Incertitude</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>Quatre verrous identifies, dont la calibration de confiance qui est un probleme de recherche reconnu en IA</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Systematisation</strong></td>
+                        <td><span class="badge moyen">A documenter</span></td>
+                        <td>Necessite matrice de confusion qualification, logs de resolution, mesure taux d'erreur, protocole de test</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Transferabilite</strong></td>
+                        <td><span class="badge fort">Fort</span></td>
+                        <td>La methodologie de qualification par confiance calibree est transposable a tout domaine d'automatisation par IA</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Footer -->
+        <footer class="document-footer">
+            <p>Operation de Recherche 2 - Qualification et resolution autonome de tickets IT</p>
+            <p>Projet WIDIP - Dossier Credit d'Impot Recherche</p>
+            <p><em>Document a completer au fil des travaux de recherche</em></p>
+        </footer>
+    </div>
+</body>
+</html>

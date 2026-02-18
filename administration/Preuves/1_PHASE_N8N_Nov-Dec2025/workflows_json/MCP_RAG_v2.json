@@ -1,0 +1,545 @@
+{
+  "name": "MCP_RAG_v2",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "mcp-rag-v2",
+        "options": {}
+      },
+      "id": "sse-trigger",
+      "name": "SSE Trigger",
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "agentic_query",
+              "leftValue": "={{ $json.tool }}",
+              "rightValue": "agentic_query",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "get_client_360",
+              "leftValue": "={{ $json.tool }}",
+              "rightValue": "get_client_360",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "graph_query",
+              "leftValue": "={{ $json.tool }}",
+              "rightValue": "graph_query",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "search_similar_incidents",
+              "leftValue": "={{ $json.tool }}",
+              "rightValue": "search_similar_incidents",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "get_procedure",
+              "leftValue": "={{ $json.tool }}",
+              "rightValue": "get_procedure_with_context",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "vector_search",
+              "leftValue": "={{ $json.tool }}",
+              "rightValue": "vector_search",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "router",
+      "name": "Tool Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/query/agentic",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ query: $json.params.query, mode: $json.params.mode || 'auto', max_iterations: $json.params.max_iterations || 3, include_sources: $json.params.include_sources !== false }) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "id": "agentic-query",
+      "name": "Agentic Query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [750, 100]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/client/360",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ client_identifier: $json.params.client_identifier, include: $json.params.include || ['contract', 'equipment', 'incidents', 'contacts', 'sla'] }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "get-client-360",
+      "name": "Get Client 360",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [750, 220]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/query/graph",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ query: $json.params.query, entity_type: $json.params.entity_type, depth: $json.params.depth || 2 }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "graph-query",
+      "name": "Graph Query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [750, 340]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/incidents/similar",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ incident_description: $json.params.incident_description, equipment_type: $json.params.equipment_type, client_id: $json.params.client_id, include_resolution: $json.params.include_resolution !== false, top_k: $json.params.top_k || 5 }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "similar-incidents",
+      "name": "Search Similar Incidents",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [750, 460]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/procedures/search",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ problem_description: $json.params.problem_description, client_id: $json.params.client_id, equipment_model: $json.params.equipment_model }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "get-procedure",
+      "name": "Get Procedure",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [750, 580]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/query/vector",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ query: $json.params.query, collection: $json.params.collection || 'widip_docs', filters: $json.params.filters || {}, top_k: $json.params.top_k || 5, min_score: $json.params.min_score || 0.7, use_rerank: $json.params.use_rerank !== false }) }}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "vector-search",
+      "name": "Vector Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [750, 700]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "={{ JSON.stringify($json) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "format-response-1",
+      "name": "Format Response 1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1000, 100]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "={{ JSON.stringify($json) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "format-response-2",
+      "name": "Format Response 2",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1000, 220]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "={{ JSON.stringify($json) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "format-response-3",
+      "name": "Format Response 3",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1000, 340]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "={{ JSON.stringify($json) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "format-response-4",
+      "name": "Format Response 4",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1000, 460]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "={{ JSON.stringify($json) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "format-response-5",
+      "name": "Format Response 5",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1000, 580]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "result",
+              "value": "={{ JSON.stringify($json) }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "format-response-6",
+      "name": "Format Response 6",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1000, 700]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "merge-responses",
+      "name": "Merge Responses",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [1250, 400]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json.result }}",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond to MCP",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1500, 400]
+    }
+  ],
+  "connections": {
+    "SSE Trigger": {
+      "main": [
+        [
+          {
+            "node": "Tool Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tool Router": {
+      "main": [
+        [
+          {
+            "node": "Agentic Query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Client 360",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Graph Query",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Search Similar Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Procedure",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Vector Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agentic Query": {
+      "main": [
+        [
+          {
+            "node": "Format Response 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Client 360": {
+      "main": [
+        [
+          {
+            "node": "Format Response 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Graph Query": {
+      "main": [
+        [
+          {
+            "node": "Format Response 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Similar Incidents": {
+      "main": [
+        [
+          {
+            "node": "Format Response 4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Procedure": {
+      "main": [
+        [
+          {
+            "node": "Format Response 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Search": {
+      "main": [
+        [
+          {
+            "node": "Format Response 6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response 1": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response 2": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response 3": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response 4": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response 5": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response 6": {
+      "main": [
+        [
+          {
+            "node": "Merge Responses",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Responses": {
+      "main": [
+        [
+          {
+            "node": "Respond to MCP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "widip-rag-v2"
+  },
+  "pinData": {},
+  "tags": [
+    {
+      "name": "RAG",
+      "createdAt": "2025-12-10T00:00:00.000Z",
+      "updatedAt": "2025-12-10T00:00:00.000Z"
+    },
+    {
+      "name": "MCP",
+      "createdAt": "2025-12-10T00:00:00.000Z",
+      "updatedAt": "2025-12-10T00:00:00.000Z"
+    }
+  ]
+}

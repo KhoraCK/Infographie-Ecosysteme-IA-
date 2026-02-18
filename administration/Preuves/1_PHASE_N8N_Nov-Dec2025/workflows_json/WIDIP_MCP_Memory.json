@@ -1,0 +1,242 @@
+{
+    "name": "WIDIP_MCP_Memory",
+    "nodes": [
+        {
+            "parameters": {
+                "path": "mcp-memory/sse",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                0,
+                0
+            ],
+            "id": "webhook-mcp-memory",
+            "name": "MCP Memory Endpoint"
+        },
+        {
+            "parameters": {
+                "dataType": "string",
+                "value1": "={{ $json.query.operation }}",
+                "rules": {
+                    "values": [
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "typeValidation": "strict",
+                                    "version": 1
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.query.operation }}",
+                                        "rightValue": "search_similar_cases",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "equals"
+                                        }
+                                    }
+                                ],
+                                "combinator": "and"
+                            },
+                            "renameOutput": true,
+                            "outputKey": "search"
+                        },
+                        {
+                            "conditions": {
+                                "options": {
+                                    "caseSensitive": true,
+                                    "leftValue": "",
+                                    "typeValidation": "strict",
+                                    "version": 1
+                                },
+                                "conditions": [
+                                    {
+                                        "leftValue": "={{ $json.query.operation }}",
+                                        "rightValue": "add_knowledge",
+                                        "operator": {
+                                            "type": "string",
+                                            "operation": "equals"
+                                        }
+                                    }
+                                ],
+                                "combinator": "and"
+                            },
+                            "renameOutput": true,
+                            "outputKey": "add"
+                        }
+                    ]
+                },
+                "fallbackOutput": 0
+            },
+            "type": "n8n-nodes-base.switch",
+            "typeVersion": 3,
+            "position": [
+                220,
+                0
+            ],
+            "id": "route-operation",
+            "name": "Route Operation"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "http://widip-ai:11434/api/embeddings",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "model",
+                            "value": "nomic-embed-text"
+                        },
+                        {
+                            "name": "prompt",
+                            "value": "={{ $json.query.query || $json.body.query }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                460,
+                -100
+            ],
+            "id": "ollama-embed-search",
+            "name": "Embed Query (Ollama)"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "={{ 'SELECT ticket_id, problem_summary, solution_summary, 1 - (embedding <=> \\'' + JSON.stringify($json.embedding) + '\\'::vector) as similarity FROM widip_knowledge_base WHERE 1 - (embedding <=> \\'' + JSON.stringify($json.embedding) + '\\'::vector) > 0.6 ORDER BY similarity DESC LIMIT 3;' }}"
+            },
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.4,
+            "position": [
+                680,
+                -100
+            ],
+            "id": "pg-vector-search",
+            "name": "Vector Search",
+            "credentials": {
+                "postgres": {
+                    "id": "Postgres_WIDIP",
+                    "name": "Postgres Local"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const results = $input.all().map(item => item.json);\n\nif (results.length === 0) {\n  return [{ json: { \n    knowledge_found: false, \n    message: \"Aucun cas similaire trouvé dans la mémoire.\" \n  }}];\n}\n\nreturn [{ \n  json: { \n    knowledge_found: true,\n    count: results.length,\n    cases: results.map(r => ({\n      ticket: r.ticket_id,\n      problem: r.problem_summary,\n      solution: r.solution_summary,\n      similarity: Math.round(r.similarity * 100) + '%'\n    }))\n  }\n}];"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                900,
+                -100
+            ],
+            "id": "format-results",
+            "name": "Format Results"
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ JSON.stringify($json) }}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                1120,
+                0
+            ],
+            "id": "respond-mcp",
+            "name": "Respond MCP"
+        },
+        {
+            "parameters": {
+                "content": "## 🧠 MCP Memory (RAG)\nFournit une mémoire à long terme aux agents.\n\n### Outils\n- `search_similar_cases(query)` : Trouve des tickets passés similaires.\n- `add_knowledge(...)` : (To be implemented) Ajoute un ticket clos.\n\n### Dépendances\n- Ollama: `nomic-embed-text`\n- Postgres: `pgvector`",
+                "height": 240,
+                "width": 300,
+                "color": 4
+            },
+            "type": "n8n-nodes-base.stickyNote",
+            "position": [
+                0,
+                -200
+            ],
+            "typeVersion": 1,
+            "id": "doc-memory",
+            "name": "Documentation"
+        }
+    ],
+    "pinData": {},
+    "connections": {
+        "MCP Memory Endpoint": {
+            "main": [
+                [
+                    {
+                        "node": "Route Operation",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Route Operation": {
+            "main": [
+                [
+                    {
+                        "node": "Embed Query (Ollama)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Respond MCP",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Embed Query (Ollama)": {
+            "main": [
+                [
+                    {
+                        "node": "Vector Search",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Vector Search": {
+            "main": [
+                [
+                    {
+                        "node": "Format Results",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Results": {
+            "main": [
+                [
+                    {
+                        "node": "Respond MCP",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}
